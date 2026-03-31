@@ -16,6 +16,7 @@ async function seed() {
     district: "Kathmandu",
     province: "Bagmati",
     inchargeName: "Dr. Health",
+    
   };
 
   const facilityResult = await db

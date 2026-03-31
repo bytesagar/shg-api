@@ -23,6 +23,7 @@ export const userRoleEnum = pgEnum("user_role_enum", [
   "admin",
   "user",
   "facility",
+  "doctor",
 ]);
 
 export const logLevelEnum = pgEnum("log_level_enum", [
@@ -1126,21 +1127,11 @@ export const appointments = pgTable(
     patientId: uuid("patient_id")
       .notNull()
       .references(() => patients.id),
-    encounterId: uuid("encounter_id").references(() => encounters.id),
-    pregnancyId: uuid("pregnancy_id").references(() => pregnancies.id),
-    childImmunizationId: uuid("child_immunization_id").references(
-      () => child_immunizations.id,
-    ),
-    familyPlanningId: uuid("family_planning_id").references(
-      () => family_plannings.id,
-    ),
-    status: appointmentStatusEnum("status").default("scheduled").notNull(),
-    date: timestamp("date"),
     facilityId: uuid("facility_id").references(() => health_facilities.id),
+    date: timestamp("date").notNull(),
+    status: appointmentStatusEnum("status").default("scheduled").notNull(),
     service: varchar("service", { length: 255 }),
-    callDuration: integer("call_duration").default(0),
     consent: integer("consent").default(1),
-    consultationStarted: timestamp("consultation_started"),
     createdBy: uuid("created_by").references(() => users.id),
     updatedBy: uuid("updated_by").references(() => users.id),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -1154,6 +1145,22 @@ export const appointments = pgTable(
     date_idx: index("appointment_date_idx").on(t.date),
   }),
 );
+
+export const telehealth_sessions = pgTable("telehealth_sessions", {
+  id: uuid("id")
+    .primaryKey()
+    .notNull()
+    .default(sql`gen_random_uuid()`),
+  appointmentId: uuid("appointment_id")
+    .notNull()
+    .unique()
+    .references(() => appointments.id),
+  provider: varchar("provider", { length: 50 }),
+  roomName: varchar("room_name", { length: 255 }),
+  meetingUrl: text("meeting_url"),
+  startedAt: timestamp("started_at"),
+  durationSeconds: integer("duration_seconds").default(0),
+});
 
 export const notifications = pgTable(
   "notifications",
@@ -1595,7 +1602,6 @@ export const encountersRelations = relations(encounters, ({ one, many }) => ({
   tests: many(tests),
   treatments: many(treatments),
   medications: many(medications),
-  appointments: many(appointments),
 }));
 
 export const vitalsRelations = relations(vitals, ({ one }) => ({
@@ -1657,7 +1663,6 @@ export const pregnanciesRelations = relations(pregnancies, ({ one, many }) => ({
   postnatalCares: many(postnatal_cares),
   homeMotherPnc: many(home_mother_postnatal_cares),
   homeBabyPnc: many(home_baby_postnatal_cares),
-  appointments: many(appointments),
 }));
 
 export const antenatalCaresRelations = relations(
@@ -1684,23 +1689,25 @@ export const appointmentsRelations = relations(appointments, ({ one }) => ({
     fields: [appointments.patientId],
     references: [patients.id],
   }),
-  encounter: one(encounters, {
-    fields: [appointments.encounterId],
-    references: [encounters.id],
+  facility: one(health_facilities, {
+    fields: [appointments.facilityId],
+    references: [health_facilities.id],
   }),
-  pregnancy: one(pregnancies, {
-    fields: [appointments.pregnancyId],
-    references: [pregnancies.id],
-  }),
-  childImmunization: one(child_immunizations, {
-    fields: [appointments.childImmunizationId],
-    references: [child_immunizations.id],
-  }),
-  familyPlanning: one(family_plannings, {
-    fields: [appointments.familyPlanningId],
-    references: [family_plannings.id],
+  telehealthSession: one(telehealth_sessions, {
+    fields: [appointments.id],
+    references: [telehealth_sessions.appointmentId],
   }),
 }));
+
+export const telehealthSessionsRelations = relations(
+  telehealth_sessions,
+  ({ one }) => ({
+    appointment: one(appointments, {
+      fields: [telehealth_sessions.appointmentId],
+      references: [appointments.id],
+    }),
+  }),
+);
 
 export const rostersRelations = relations(rosters, ({ one }) => ({
   user: one(users, {
@@ -1725,7 +1732,6 @@ export const familyPlanningsRelations = relations(
       fields: [family_plannings.facilityId],
       references: [health_facilities.id],
     }),
-    appointments: many(appointments),
     news: many(family_planning_news),
     removals: many(family_planning_removals),
   }),

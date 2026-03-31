@@ -8,6 +8,41 @@
       "when": 1774865763923,
       "tag": "0000_smooth_power_pack",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774907826312,
+      "tag": "0001_status_enums",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774915048508,
+      "tag": "0002_add_doctor_role",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1774918993720,
+      "tag": "0003_telehealth_appointments",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1774920888208,
+      "tag": "0004_appointment_context",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1774921808748,
+      "tag": "0005_refactor_appointments",
+      "breakpoints": true
     }
   ]
 }

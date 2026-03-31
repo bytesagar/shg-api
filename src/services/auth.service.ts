@@ -2,11 +2,9 @@ import { db } from "../db";
 import { users } from "../db/schema";
 import { eq } from "drizzle-orm";
 import * as bcrypt from "bcryptjs";
-import * as jwt from "jsonwebtoken";
+import { signJwt } from "../utils/jwt";
 
 export class AuthService {
-  private secret = process.env.JWT_SECRET || "default_secret";
-
   public async login(email: string, password: string) {
     const userResult = await db
       .select()
@@ -26,13 +24,18 @@ export class AuthService {
       throw new Error("Invalid credentials");
     }
 
-    const token = jwt.sign(
+    if (!foundUser.facilityId) {
+      throw new Error("User is not associated with a facility");
+    }
+
+    const token = signJwt(
       {
         id: foundUser.id,
         email: foundUser.email,
         role: foundUser.userType,
+        userType: foundUser.userType,
+        facilityId: foundUser.facilityId,
       },
-      this.secret,
       { expiresIn: "1d" },
     );
 

@@ -34,9 +34,11 @@ export const patientCreateSchema = z.object({
   service: z.string().min(1, "Service is required").max(255),
   nationalId: z.string().max(100).optional().nullable(),
   nhisNumber: z.string().max(100).optional().nullable(),
-  facilityId: z.string().uuid().min(1, "Facility is required"),
+  facilityId: z.string().uuid().optional().nullable(),
   assignedUserId: z.string().uuid().optional().nullable(),
-  status: z.enum(["active", "inactive", "deceased", "discharged", "referred"]).default("active"),
+  status: z
+    .enum(["active", "inactive", "deceased", "discharged", "referred"])
+    .default("active"),
   education: z.string().max(255).optional().nullable(),
   occupation: z.string().max(255).optional().nullable(),
   otherOccupation: z.string().max(255).optional().nullable(),

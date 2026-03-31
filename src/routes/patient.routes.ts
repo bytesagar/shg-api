@@ -33,7 +33,6 @@ const patientController = new PatientController();
  *               - ward
  *               - phoneNumber
  *               - service
- *               - facilityId
  *             properties:
  *               firstName:
  *                 type: string
@@ -67,9 +66,6 @@ const patientController = new PatientController();
  *                 type: string
  *               service:
  *                 type: string
- *               facilityId:
- *                 type: string
- *                 format: uuid
  *     responses:
  *       201:
  *         description: Patient created
@@ -88,6 +84,19 @@ router.post("/", authMiddleware, patientController.createPatient);
  *     operationId: getPatients
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - name: searchString
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: Search across patientId, phoneNumber, firstName, lastName, and name.
+ *       - name: service
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: Filter by service (case-insensitive exact match).
  *     responses:
  *       200:
  *         description: List of patients
