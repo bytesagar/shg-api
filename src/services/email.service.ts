@@ -26,7 +26,6 @@ export class EmailService {
   private ensureTransporter() {
     if (this.transporter) return;
     const cfg = getSmtpConfig();
-    console.log(cfg);
     if (!cfg) return;
 
     this.from = cfg.from;

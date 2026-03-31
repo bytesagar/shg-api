@@ -6,6 +6,7 @@ import patientRoutes from "./patient.routes";
 import healthFacilityRoutes from "./health-facility.routes";
 import encounterRoutes from "./encounter.routes";
 import telehealthRoutes from "./telehealth.routes";
+import familyPlanningRoutes from "./family-planning.routes";
 
 const router = Router();
 
@@ -33,5 +34,6 @@ router.use("/patients", patientRoutes);
 router.use("/health-facilities", healthFacilityRoutes);
 router.use("/encounters", encounterRoutes);
 router.use("/telehealth", telehealthRoutes);
+router.use("/family-plannings", familyPlanningRoutes);
 
 export default router;
