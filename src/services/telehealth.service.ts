@@ -106,9 +106,9 @@ export class TelehealthService {
       const result = await this.email.send({
         to: doctor.email,
         subject: "New telehealth appointment booked",
-        text: `A telehealth appointment has been booked.\n\nPatient: ${patientName}\nScheduled At: ${input.scheduledAt.toISOString()}\nJoin: ${doctorJoinUrl}\n`,
+        body: `A telehealth appointment has been booked.\n\nPatient: ${patientName}\nScheduled At: ${input.scheduledAt.toISOString()}\nJoin: ${doctorJoinUrl}\n`,
       });
-      emailSent = result.sent;
+      emailSent = result.success;
       emailError = result.error;
     }
 
