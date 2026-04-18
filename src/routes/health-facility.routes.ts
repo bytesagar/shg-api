@@ -27,6 +27,8 @@ const healthFacilityController = new HealthFacilityController();
  *         required: false
  *         schema:
  *           type: integer
+ *           minimum: 1
+ *           maximum: 100
  *           default: 30
  *       - name: searchString
  *         in: query

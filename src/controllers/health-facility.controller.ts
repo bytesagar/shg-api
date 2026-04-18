@@ -7,6 +7,10 @@ import { HealthFacilityService } from "../services/health-facility.service";
 import { healthFacilityCreateSchema } from "../validations/health-facility.validation";
 import { AuthRequest } from "../middlewares/auth.middleware";
 import { requireFacilityContext } from "../utils/request-context";
+import {
+  healthFacilitiesListQuerySchema,
+  parseListQuery,
+} from "../utils/query-parser";
 
 export class HealthFacilityController extends BaseController {
   constructor() {
@@ -43,27 +47,11 @@ export class HealthFacilityController extends BaseController {
 
   public getHealthFacilities = catchAsync(
     async (req: AuthRequest, res: Response) => {
-      const page = Number.parseInt(String(req.query.page ?? "1"), 10) || 1;
-      const pageSize =
-        Number.parseInt(String(req.query.pageSize ?? "30"), 10) || 30;
-      const searchString =
-        typeof req.query.searchString === "string"
-          ? req.query.searchString
-          : undefined;
-      const municipalityId =
-        typeof req.query.municipalityId === "string"
-          ? req.query.municipalityId
-          : undefined;
-
+      const query = parseListQuery(req.query, healthFacilitiesListQuerySchema);
       const context = requireFacilityContext(req);
 
       const healthFacilityService = new HealthFacilityService(context);
-      const result = await healthFacilityService.getHealthFacilities({
-        page,
-        pageSize,
-        searchString,
-        municipalityId,
-      });
+      const result = await healthFacilityService.getHealthFacilities(query);
 
       return this.ok(res, result, "Health facilities retrieved successfully");
     },

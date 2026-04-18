@@ -8,57 +8,53 @@ import {
   complaintCreateSchema,
   confirmDiagnosisCreateSchema,
   documentCreateSchema,
-  encounterCreateSchema,
   historyCreateSchema,
   medicationCreateSchema,
   physicalExaminationCreateSchema,
   provisionalDiagnosisCreateSchema,
   testCreateSchema,
   treatmentCreateSchema,
+  visitCreateSchema,
   vitalsCreateSchema,
-} from "../validations/encounter.validation";
-import { EncounterService } from "../services/encounter.service";
-import { EncounterRecordService } from "../services/encounter-record.service";
+} from "../validations/visit.validation";
+import { VisitService } from "../services/visit.service";
+import { VisitRecordService } from "../services/visit-record.service";
 import { requireFacilityContext } from "../utils/request-context";
 
-export class EncounterController extends BaseController {
-  public createEncounter = catchAsync(
-    async (req: AuthRequest, res: Response) => {
-      const context = requireFacilityContext(req);
-
-      const validatedData = encounterCreateSchema.safeParse(req.body);
-      if (!validatedData.success) {
-        const errorMessages = validatedData.error.issues
-          .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-          .join(", ");
-        throw new AppError(
-          `Validation failed: ${errorMessages}`,
-          HTTP_STATUS.BAD_REQUEST,
-        );
-      }
-
-      const encounterService = new EncounterService(context);
-      const encounter = await encounterService.createEncounter(
-        validatedData.data,
-      );
-      if (!encounter) {
-        throw new AppError("Patient not found", HTTP_STATUS.NOT_FOUND);
-      }
-
-      return this.created(res, encounter, "Encounter created successfully");
-    },
-  );
-
-  public getEncounter = catchAsync(async (req: AuthRequest, res: Response) => {
+export class VisitController extends BaseController {
+  public createVisit = catchAsync(async (req: AuthRequest, res: Response) => {
     const context = requireFacilityContext(req);
 
-    const { id } = req.params;
-    const encounterService = new EncounterService(context);
-    const encounter = await encounterService.getEncounterById(id as string);
-    if (!encounter) {
-      throw new AppError("Encounter not found", HTTP_STATUS.NOT_FOUND);
+    const validatedData = visitCreateSchema.safeParse(req.body);
+    if (!validatedData.success) {
+      const errorMessages = validatedData.error.issues
+        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+        .join(", ");
+      throw new AppError(
+        `Validation failed: ${errorMessages}`,
+        HTTP_STATUS.BAD_REQUEST,
+      );
     }
-    return this.ok(res, encounter, "Encounter retrieved successfully");
+
+    const visitService = new VisitService(context);
+    const visit = await visitService.createVisit(validatedData.data);
+    if (!visit) {
+      throw new AppError("Patient not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    return this.created(res, visit, "Visit created successfully");
+  });
+
+  public getVisit = catchAsync(async (req: AuthRequest, res: Response) => {
+    const context = requireFacilityContext(req);
+
+    const { visitId } = req.params;
+    const visitService = new VisitService(context);
+    const visit = await visitService.getVisitById(visitId as string);
+    if (!visit) {
+      throw new AppError("Visit not found", HTTP_STATUS.NOT_FOUND);
+    }
+    return this.ok(res, visit, "Visit retrieved successfully");
   });
 
   public addVitals = catchAsync(async (req: AuthRequest, res: Response) => {
@@ -74,14 +70,14 @@ export class EncounterController extends BaseController {
       );
     }
 
-    const { id } = req.params;
-    const recordService = new EncounterRecordService(context);
+    const { visitId } = req.params;
+    const recordService = new VisitRecordService(context);
     const record = await recordService.addVitals(
-      id as string,
+      visitId as string,
       validatedData.data,
     );
     if (!record) {
-      throw new AppError("Encounter not found", HTTP_STATUS.NOT_FOUND);
+      throw new AppError("Visit not found", HTTP_STATUS.NOT_FOUND);
     }
     return this.created(res, record, "Vitals recorded successfully");
   });
@@ -99,14 +95,14 @@ export class EncounterController extends BaseController {
       );
     }
 
-    const { id } = req.params;
-    const recordService = new EncounterRecordService(context);
+    const { visitId } = req.params;
+    const recordService = new VisitRecordService(context);
     const record = await recordService.addHistory(
-      id as string,
+      visitId as string,
       validatedData.data,
     );
     if (!record) {
-      throw new AppError("Encounter not found", HTTP_STATUS.NOT_FOUND);
+      throw new AppError("Visit not found", HTTP_STATUS.NOT_FOUND);
     }
     return this.created(res, record, "History recorded successfully");
   });
@@ -124,14 +120,14 @@ export class EncounterController extends BaseController {
       );
     }
 
-    const { id } = req.params;
-    const recordService = new EncounterRecordService(context);
+    const { visitId } = req.params;
+    const recordService = new VisitRecordService(context);
     const record = await recordService.addComplaint(
-      id as string,
+      visitId as string,
       validatedData.data,
     );
     if (!record) {
-      throw new AppError("Encounter not found", HTTP_STATUS.NOT_FOUND);
+      throw new AppError("Visit not found", HTTP_STATUS.NOT_FOUND);
     }
     return this.created(res, record, "Complaint recorded successfully");
   });
@@ -150,14 +146,14 @@ export class EncounterController extends BaseController {
         );
       }
 
-      const { id } = req.params;
-      const recordService = new EncounterRecordService(context);
+      const { visitId } = req.params;
+      const recordService = new VisitRecordService(context);
       const record = await recordService.addPhysicalExamination(
-        id as string,
+        visitId as string,
         validatedData.data,
       );
       if (!record) {
-        throw new AppError("Encounter not found", HTTP_STATUS.NOT_FOUND);
+        throw new AppError("Visit not found", HTTP_STATUS.NOT_FOUND);
       }
       return this.created(
         res,
@@ -183,14 +179,14 @@ export class EncounterController extends BaseController {
         );
       }
 
-      const { id } = req.params;
-      const recordService = new EncounterRecordService(context);
+      const { visitId } = req.params;
+      const recordService = new VisitRecordService(context);
       const record = await recordService.addProvisionalDiagnosis(
-        id as string,
+        visitId as string,
         validatedData.data,
       );
       if (!record) {
-        throw new AppError("Encounter not found", HTTP_STATUS.NOT_FOUND);
+        throw new AppError("Visit not found", HTTP_STATUS.NOT_FOUND);
       }
       return this.created(
         res,
@@ -214,14 +210,14 @@ export class EncounterController extends BaseController {
         );
       }
 
-      const { id } = req.params;
-      const recordService = new EncounterRecordService(context);
+      const { visitId } = req.params;
+      const recordService = new VisitRecordService(context);
       const record = await recordService.addConfirmDiagnosis(
-        id as string,
+        visitId as string,
         validatedData.data,
       );
       if (!record) {
-        throw new AppError("Encounter not found", HTTP_STATUS.NOT_FOUND);
+        throw new AppError("Visit not found", HTTP_STATUS.NOT_FOUND);
       }
       return this.created(res, record, "Final diagnosis recorded successfully");
     },
@@ -240,14 +236,14 @@ export class EncounterController extends BaseController {
       );
     }
 
-    const { id } = req.params;
-    const recordService = new EncounterRecordService(context);
+    const { visitId } = req.params;
+    const recordService = new VisitRecordService(context);
     const record = await recordService.addTest(
-      id as string,
+      visitId as string,
       validatedData.data,
     );
     if (!record) {
-      throw new AppError("Encounter not found", HTTP_STATUS.NOT_FOUND);
+      throw new AppError("Visit not found", HTTP_STATUS.NOT_FOUND);
     }
     return this.created(res, record, "Test recorded successfully");
   });
@@ -265,14 +261,14 @@ export class EncounterController extends BaseController {
       );
     }
 
-    const { id } = req.params;
-    const recordService = new EncounterRecordService(context);
+    const { visitId } = req.params;
+    const recordService = new VisitRecordService(context);
     const record = await recordService.addTreatment(
-      id as string,
+      visitId as string,
       validatedData.data,
     );
     if (!record) {
-      throw new AppError("Encounter not found", HTTP_STATUS.NOT_FOUND);
+      throw new AppError("Visit not found", HTTP_STATUS.NOT_FOUND);
     }
     return this.created(res, record, "Treatment recorded successfully");
   });
@@ -290,14 +286,14 @@ export class EncounterController extends BaseController {
       );
     }
 
-    const { id } = req.params;
-    const recordService = new EncounterRecordService(context);
+    const { visitId } = req.params;
+    const recordService = new VisitRecordService(context);
     const record = await recordService.addMedication(
-      id as string,
+      visitId as string,
       validatedData.data,
     );
     if (!record) {
-      throw new AppError("Encounter not found", HTTP_STATUS.NOT_FOUND);
+      throw new AppError("Visit not found", HTTP_STATUS.NOT_FOUND);
     }
     return this.created(res, record, "Medication recorded successfully");
   });
@@ -315,14 +311,14 @@ export class EncounterController extends BaseController {
       );
     }
 
-    const { id } = req.params;
-    const recordService = new EncounterRecordService(context);
+    const { visitId } = req.params;
+    const recordService = new VisitRecordService(context);
     const record = await recordService.addDocument(
-      id as string,
+      visitId as string,
       validatedData.data,
     );
     if (!record) {
-      throw new AppError("Encounter not found", HTTP_STATUS.NOT_FOUND);
+      throw new AppError("Visit not found", HTTP_STATUS.NOT_FOUND);
     }
     return this.created(res, record, "Document recorded successfully");
   });

@@ -2,7 +2,7 @@ import { db } from "../db";
 import { users } from "../db/schema";
 import { FacilityContext } from "../context/facility-context";
 import { FacilityRepository } from "./facility-repository";
-import { SQL, eq } from "drizzle-orm";
+import { SQL, count, desc, eq } from "drizzle-orm";
 
 export class UserRepository extends FacilityRepository {
   constructor(context: FacilityContext) {
@@ -29,11 +29,29 @@ export class UserRepository extends FacilityRepository {
     updatedAt: users.updatedAt,
   };
 
-  public async findAll(where?: SQL) {
-    return db
+  public async countAll(where?: SQL) {
+    const result = await db
+      .select({ count: count() })
+      .from(users)
+      .where(this.withFacilityScope(where));
+    return Number(result[0]?.count ?? 0);
+  }
+
+  public async findAll(
+    where?: SQL,
+    opts?: { limit: number; offset: number },
+  ) {
+    const base = db
       .select(this.userSelect)
       .from(users)
       .where(this.withFacilityScope(where));
+    if (opts) {
+      return base
+        .orderBy(desc(users.createdAt))
+        .limit(opts.limit)
+        .offset(opts.offset);
+    }
+    return base;
   }
 
   public async findById(id: string) {

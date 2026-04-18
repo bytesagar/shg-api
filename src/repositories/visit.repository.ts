@@ -1,19 +1,19 @@
 import { db } from "../db";
-import { encounters } from "../db/schema";
+import { visits } from "../db/schema";
 import { FacilityContext } from "../context/facility-context";
 import { FacilityRepository } from "./facility-repository";
 import { eq } from "drizzle-orm";
 
-export class EncounterRepository extends FacilityRepository {
+export class VisitRepository extends FacilityRepository {
   constructor(context: FacilityContext) {
-    super(context, encounters.facilityId);
+    super(context, visits.facilityId);
   }
 
   public async findById(id: string) {
     const result = await db
       .select()
-      .from(encounters)
-      .where(this.withFacilityScope(eq(encounters.id, id)))
+      .from(visits)
+      .where(this.withFacilityScope(eq(visits.id, id)))
       .limit(1);
     return result[0];
   }
@@ -27,7 +27,7 @@ export class EncounterRepository extends FacilityRepository {
     status?: "planned" | "arrived" | "in_progress" | "finished" | "cancelled" | null;
     doctorId?: string | null;
   }) {
-    const inserted = await db.insert(encounters).values(data).returning();
+    const inserted = await db.insert(visits).values(data).returning();
     return inserted[0];
   }
 }

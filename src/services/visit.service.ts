@@ -1,24 +1,24 @@
 import { FacilityContext } from "../context/facility-context";
-import { EncounterRepository } from "../repositories/encounter.repository";
+import { VisitRepository } from "../repositories/visit.repository";
 import { PatientRepository } from "../repositories/patient.repository";
-import { EncounterCreateInput } from "../validations/encounter.validation";
+import { VisitCreateInput } from "../validations/visit.validation";
 
-export class EncounterService {
-  private encounterRepository: EncounterRepository;
+export class VisitService {
+  private visitRepository: VisitRepository;
   private patientRepository: PatientRepository;
 
   constructor(private readonly context: FacilityContext) {
-    this.encounterRepository = new EncounterRepository(context);
+    this.visitRepository = new VisitRepository(context);
     this.patientRepository = new PatientRepository(context);
   }
 
-  public async createEncounter(input: EncounterCreateInput) {
+  public async createVisit(input: VisitCreateInput) {
     const patient = await this.patientRepository.findById(input.patientId);
     if (!patient) {
       return null;
     }
 
-    return this.encounterRepository.create({
+    return this.visitRepository.create({
       patientId: patient.id,
       facilityId: this.context.facilityId,
       date: input.date ?? new Date(),
@@ -29,7 +29,7 @@ export class EncounterService {
     });
   }
 
-  public async getEncounterById(id: string) {
-    return this.encounterRepository.findById(id);
+  public async getVisitById(id: string) {
+    return this.visitRepository.findById(id);
   }
 }

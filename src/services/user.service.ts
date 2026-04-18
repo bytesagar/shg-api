@@ -10,8 +10,18 @@ export class UserService {
     this.userRepository = new UserRepository(context);
   }
 
-  public async getAllUsers() {
-    return this.userRepository.findAll();
+  public async getAllUsers(params: { page: number; pageSize: number }) {
+    const total = await this.userRepository.countAll();
+    const items = await this.userRepository.findAll(undefined, {
+      limit: params.pageSize,
+      offset: (params.page - 1) * params.pageSize,
+    });
+    return {
+      items,
+      total,
+      page: params.page,
+      pageSize: params.pageSize,
+    };
   }
 
   public async getUserById(id: string) {

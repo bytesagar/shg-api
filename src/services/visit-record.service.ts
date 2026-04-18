@@ -12,7 +12,7 @@ import {
   vitals,
 } from "../db/schema";
 import { FacilityContext } from "../context/facility-context";
-import { EncounterRepository } from "../repositories/encounter.repository";
+import { VisitRepository } from "../repositories/visit.repository";
 import {
   ComplaintCreateInput,
   ConfirmDiagnosisCreateInput,
@@ -24,28 +24,28 @@ import {
   TestCreateInput,
   TreatmentCreateInput,
   VitalsCreateInput,
-} from "../validations/encounter.validation";
+} from "../validations/visit.validation";
 
-export class EncounterRecordService {
-  private encounterRepository: EncounterRepository;
+export class VisitRecordService {
+  private visitRepository: VisitRepository;
 
   constructor(private readonly context: FacilityContext) {
-    this.encounterRepository = new EncounterRepository(context);
+    this.visitRepository = new VisitRepository(context);
   }
 
-  private async getOwnedEncounter(encounterId: string) {
-    return this.encounterRepository.findById(encounterId);
+  private async getOwnedVisit(visitId: string) {
+    return this.visitRepository.findById(visitId);
   }
 
-  public async addVitals(encounterId: string, input: VitalsCreateInput) {
-    const encounter = await this.getOwnedEncounter(encounterId);
-    if (!encounter) return null;
+  public async addVitals(visitId: string, input: VitalsCreateInput) {
+    const visit = await this.getOwnedVisit(visitId);
+    if (!visit) return null;
 
     const inserted = await db
       .insert(vitals)
       .values({
         ...input,
-        encounterId: encounter.id,
+        visitId: visit.id,
         createdBy: this.context.userId,
         updatedBy: this.context.userId,
       })
@@ -53,15 +53,15 @@ export class EncounterRecordService {
     return inserted[0];
   }
 
-  public async addHistory(encounterId: string, input: HistoryCreateInput) {
-    const encounter = await this.getOwnedEncounter(encounterId);
-    if (!encounter) return null;
+  public async addHistory(visitId: string, input: HistoryCreateInput) {
+    const visit = await this.getOwnedVisit(visitId);
+    if (!visit) return null;
 
     const inserted = await db
       .insert(histories)
       .values({
         ...input,
-        encounterId: encounter.id,
+        visitId: visit.id,
         createdBy: this.context.userId,
         updatedBy: this.context.userId,
       })
@@ -69,16 +69,16 @@ export class EncounterRecordService {
     return inserted[0];
   }
 
-  public async addComplaint(encounterId: string, input: ComplaintCreateInput) {
-    const encounter = await this.getOwnedEncounter(encounterId);
-    if (!encounter) return null;
+  public async addComplaint(visitId: string, input: ComplaintCreateInput) {
+    const visit = await this.getOwnedVisit(visitId);
+    if (!visit) return null;
 
     const inserted = await db
       .insert(complaints)
       .values({
         ...input,
-        patientId: encounter.patientId,
-        encounterId: encounter.id,
+        patientId: visit.patientId,
+        visitId: visit.id,
         createdBy: this.context.userId,
         updatedBy: this.context.userId,
       })
@@ -87,18 +87,18 @@ export class EncounterRecordService {
   }
 
   public async addPhysicalExamination(
-    encounterId: string,
+    visitId: string,
     input: PhysicalExaminationCreateInput,
   ) {
-    const encounter = await this.getOwnedEncounter(encounterId);
-    if (!encounter) return null;
+    const visit = await this.getOwnedVisit(visitId);
+    if (!visit) return null;
 
     const inserted = await db
       .insert(physical_examinations)
       .values({
         ...input,
-        patientId: encounter.patientId,
-        encounterId: encounter.id,
+        patientId: visit.patientId,
+        visitId: visit.id,
         createdBy: this.context.userId,
         updatedBy: this.context.userId,
       })
@@ -107,18 +107,18 @@ export class EncounterRecordService {
   }
 
   public async addProvisionalDiagnosis(
-    encounterId: string,
+    visitId: string,
     input: ProvisionalDiagnosisCreateInput,
   ) {
-    const encounter = await this.getOwnedEncounter(encounterId);
-    if (!encounter) return null;
+    const visit = await this.getOwnedVisit(visitId);
+    if (!visit) return null;
 
     const inserted = await db
       .insert(provisional_diagnoses)
       .values({
         ...input,
-        patientId: encounter.patientId,
-        encounterId: encounter.id,
+        patientId: visit.patientId,
+        visitId: visit.id,
         createdBy: this.context.userId,
         updatedBy: this.context.userId,
       })
@@ -127,18 +127,18 @@ export class EncounterRecordService {
   }
 
   public async addConfirmDiagnosis(
-    encounterId: string,
+    visitId: string,
     input: ConfirmDiagnosisCreateInput,
   ) {
-    const encounter = await this.getOwnedEncounter(encounterId);
-    if (!encounter) return null;
+    const visit = await this.getOwnedVisit(visitId);
+    if (!visit) return null;
 
     const inserted = await db
       .insert(confirm_diagnoses)
       .values({
         ...input,
-        patientId: encounter.patientId,
-        encounterId: encounter.id,
+        patientId: visit.patientId,
+        visitId: visit.id,
         createdBy: this.context.userId,
         updatedBy: this.context.userId,
       })
@@ -146,15 +146,15 @@ export class EncounterRecordService {
     return inserted[0];
   }
 
-  public async addTest(encounterId: string, input: TestCreateInput) {
-    const encounter = await this.getOwnedEncounter(encounterId);
-    if (!encounter) return null;
+  public async addTest(visitId: string, input: TestCreateInput) {
+    const visit = await this.getOwnedVisit(visitId);
+    if (!visit) return null;
 
     const inserted = await db
       .insert(tests)
       .values({
         ...input,
-        encounterId: encounter.id,
+        visitId: visit.id,
         createdBy: this.context.userId,
         updatedBy: this.context.userId,
       })
@@ -162,16 +162,16 @@ export class EncounterRecordService {
     return inserted[0];
   }
 
-  public async addTreatment(encounterId: string, input: TreatmentCreateInput) {
-    const encounter = await this.getOwnedEncounter(encounterId);
-    if (!encounter) return null;
+  public async addTreatment(visitId: string, input: TreatmentCreateInput) {
+    const visit = await this.getOwnedVisit(visitId);
+    if (!visit) return null;
 
     const inserted = await db
       .insert(treatments)
       .values({
         ...input,
-        patientId: encounter.patientId,
-        encounterId: encounter.id,
+        patientId: visit.patientId,
+        visitId: visit.id,
         createdBy: this.context.userId,
         updatedBy: this.context.userId,
       })
@@ -180,18 +180,18 @@ export class EncounterRecordService {
   }
 
   public async addMedication(
-    encounterId: string,
+    visitId: string,
     input: MedicationCreateInput,
   ) {
-    const encounter = await this.getOwnedEncounter(encounterId);
-    if (!encounter) return null;
+    const visit = await this.getOwnedVisit(visitId);
+    if (!visit) return null;
 
     const inserted = await db
       .insert(medications)
       .values({
         ...input,
-        patientId: encounter.patientId,
-        encounterId: encounter.id,
+        patientId: visit.patientId,
+        visitId: visit.id,
         createdBy: this.context.userId,
         updatedBy: this.context.userId,
       })
@@ -199,16 +199,16 @@ export class EncounterRecordService {
     return inserted[0];
   }
 
-  public async addDocument(encounterId: string, input: DocumentCreateInput) {
-    const encounter = await this.getOwnedEncounter(encounterId);
-    if (!encounter) return null;
+  public async addDocument(visitId: string, input: DocumentCreateInput) {
+    const visit = await this.getOwnedVisit(visitId);
+    if (!visit) return null;
 
     const inserted = await db
       .insert(documents)
       .values({
         ...input,
-        patientId: encounter.patientId,
-        encounterId: encounter.id,
+        patientId: visit.patientId,
+        visitId: visit.id,
         createdBy: this.context.userId,
         updatedBy: this.context.userId,
       })

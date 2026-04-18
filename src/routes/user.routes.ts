@@ -17,6 +17,22 @@ const userController = new UserController();
  *     description: Retrieve a list of all registered users.
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - name: page
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *       - name: pageSize
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 30
  *     responses:
  *       200:
  *         description: Successfully retrieved users

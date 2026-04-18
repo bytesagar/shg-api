@@ -19,20 +19,22 @@ export class PatientService {
 
   public async createPatient(data: PatientCreateInput) {
     const patientId = await generatePatientId();
-    return this.patientRepository.createWithInitialEncounter(data, patientId);
+    return this.patientRepository.createWithInitialVisit(data, patientId);
   }
 
   public async getPatientById(id: string) {
     return this.patientRepository.findById(id);
   }
 
-  public async getAllPatients(filters?: {
+  public async getAllPatients(params: {
+    page: number;
+    pageSize: number;
     searchString?: string;
     service?: string;
   }) {
     const clauses: Array<SqlFilter | undefined> = [];
 
-    const searchString = filters?.searchString?.trim();
+    const searchString = params.searchString?.trim();
     if (searchString) {
       clauses.push(
         orFilter(
@@ -45,7 +47,7 @@ export class PatientService {
       );
     }
 
-    const service = filters?.service?.trim();
+    const service = params.service?.trim();
     if (service) {
       clauses.push({
         ilike: {
@@ -57,6 +59,17 @@ export class PatientService {
     }
 
     const where = toSqlWhere(andFilter(...clauses));
-    return this.patientRepository.findAll(where);
+    const total = await this.patientRepository.countAll(where);
+    const items = await this.patientRepository.findAll(where, {
+      limit: params.pageSize,
+      offset: (params.page - 1) * params.pageSize,
+    });
+
+    return {
+      items,
+      total,
+      page: params.page,
+      pageSize: params.pageSize,
+    };
   }
 }

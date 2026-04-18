@@ -1,20 +1,38 @@
 import { db } from "../db";
-import { encounters, patients } from "../db/schema";
+import { patients, visits } from "../db/schema";
 import { FacilityRepository } from "./facility-repository";
 import { FacilityContext } from "../context/facility-context";
 import { PatientCreateInput } from "../validations/patient.validation";
-import { SQL, eq } from "drizzle-orm";
+import { SQL, count, desc, eq } from "drizzle-orm";
 
 export class PatientRepository extends FacilityRepository {
   constructor(context: FacilityContext) {
     super(context, patients.facilityId);
   }
 
-  public async findAll(where?: SQL) {
-    return db
+  public async countAll(where?: SQL) {
+    const result = await db
+      .select({ count: count() })
+      .from(patients)
+      .where(this.withFacilityScope(where));
+    return Number(result[0]?.count ?? 0);
+  }
+
+  public async findAll(
+    where?: SQL,
+    opts?: { limit: number; offset: number },
+  ) {
+    const base = db
       .select()
       .from(patients)
       .where(this.withFacilityScope(where));
+    if (opts) {
+      return base
+        .orderBy(desc(patients.createdAt))
+        .limit(opts.limit)
+        .offset(opts.offset);
+    }
+    return base;
   }
 
   public async findById(id: string) {
@@ -26,7 +44,7 @@ export class PatientRepository extends FacilityRepository {
     return result[0];
   }
 
-  public async createWithInitialEncounter(
+  public async createWithInitialVisit(
     data: PatientCreateInput,
     patientId: string,
   ) {
@@ -43,7 +61,7 @@ export class PatientRepository extends FacilityRepository {
       const newPatient = inserted[0];
 
       if (data.service.toLowerCase() !== "family-planning") {
-        await tx.insert(encounters).values({
+        await tx.insert(visits).values({
           date: new Date(),
           reason: "Patient Registration",
           patientId: newPatient.id,

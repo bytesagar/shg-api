@@ -93,21 +93,23 @@ export class LogService {
     });
   }
 
-  public static async getLogs(page: number = 1, limit: number = 20) {
-    const offset = (page - 1) * limit;
-    const logs = await db
+  public static async getLogs(page: number = 1, pageSize: number = 30) {
+    const offset = (page - 1) * pageSize;
+    const items = await db
       .select()
       .from(system_logs)
       .orderBy(desc(system_logs.createdAt))
-      .limit(limit)
+      .limit(pageSize)
       .offset(offset);
 
-    const totalLogs = await db.select({ count: count() }).from(system_logs);
+    const totalResult = await db.select({ count: count() }).from(system_logs);
+    const total = Number(totalResult[0]?.count ?? 0);
 
     return {
-      logs,
-      totalPages: Math.ceil(totalLogs[0].count / limit),
-      currentPage: page,
+      items,
+      total,
+      page,
+      pageSize,
     };
   }
 }

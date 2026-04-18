@@ -25,10 +25,12 @@ const logController = new LogController();
  *           default: 1
  *         description: Page number for pagination.
  *       - in: query
- *         name: limit
+ *         name: pageSize
  *         schema:
  *           type: integer
- *           default: 20
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 30
  *         description: Number of logs per page.
  *     responses:
  *       200:

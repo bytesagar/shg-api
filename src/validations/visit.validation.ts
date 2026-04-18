@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-export const encounterCreateSchema = z.object({
-  patientId: z.string().uuid(),
+export const visitCreateSchema = z.object({
+  patientId: z.string(),
   date: z.preprocess(
     (val) => (typeof val === "string" ? new Date(val) : val),
     z.date().optional().nullable(),
@@ -15,7 +15,7 @@ export const encounterCreateSchema = z.object({
   doctorId: z.string().uuid().optional().nullable(),
 });
 
-export type EncounterCreateInput = z.infer<typeof encounterCreateSchema>;
+export type VisitCreateInput = z.infer<typeof visitCreateSchema>;
 
 export const vitalsCreateSchema = z.object({
   diastolic: z.number().int().optional().nullable(),

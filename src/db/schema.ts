@@ -96,7 +96,7 @@ export const patientStatusEnum = pgEnum("patient_status_enum", [
   "referred",
 ]);
 
-export const encounterStatusEnum = pgEnum("encounter_status_enum", [
+export const visitStatusEnum = pgEnum("visit_status_enum", [
   "planned",
   "arrived",
   "in_progress",
@@ -367,11 +367,11 @@ export const patients = pgTable(
 );
 
 // ============================================================
-// ENCOUNTER
+// VISITS (clinical encounter sessions)
 // ============================================================
 
-export const encounters = pgTable(
-  "encounters",
+export const visits = pgTable(
+  "visits",
   {
     id: uuid("id")
       .primaryKey()
@@ -380,7 +380,7 @@ export const encounters = pgTable(
     date: timestamp("date").notNull(),
     reason: text("reason").notNull(),
     service: varchar("service", { length: 255 }),
-    status: encounterStatusEnum("status").default("planned"),
+    status: visitStatusEnum("status").default("planned"),
     patientId: uuid("patient_id")
       .notNull()
       .references(() => patients.id),
@@ -393,9 +393,9 @@ export const encounters = pgTable(
     deletedAt: timestamp("deleted_at"),
   },
   (t) => ({
-    patient_idx: index("encounter_patient_id_idx").on(t.patientId),
-    doctor_idx: index("encounter_doctor_id_idx").on(t.doctorId),
-    facility_idx: index("encounter_facility_id_idx").on(t.facilityId),
+    patient_idx: index("visit_patient_id_idx").on(t.patientId),
+    doctor_idx: index("visit_doctor_id_idx").on(t.doctorId),
+    facility_idx: index("visit_facility_id_idx").on(t.facilityId),
   }),
 );
 
@@ -418,9 +418,9 @@ export const vitals = pgTable(
     spo2: integer("spo2").notNull(),
     weight: real("weight"),
     height: real("height"),
-    encounterId: uuid("encounter_id")
+    visitId: uuid("visit_id")
       .notNull()
-      .references(() => encounters.id),
+      .references(() => visits.id),
     createdBy: uuid("created_by").references(() => users.id),
     updatedBy: uuid("updated_by").references(() => users.id),
     deletedBy: uuid("deleted_by").references(() => users.id),
@@ -429,7 +429,7 @@ export const vitals = pgTable(
     deletedAt: timestamp("deleted_at"),
   },
   (t) => ({
-    encounter_idx: index("vital_encounter_id_idx").on(t.encounterId),
+    visit_idx: index("vital_visit_id_idx").on(t.visitId),
   }),
 );
 
@@ -447,9 +447,9 @@ export const histories = pgTable(
     familyHistory: text("family_history").notNull(),
     social: text("social").notNull(),
     other: text("other"),
-    encounterId: uuid("encounter_id")
+    visitId: uuid("visit_id")
       .notNull()
-      .references(() => encounters.id),
+      .references(() => visits.id),
     createdBy: uuid("created_by").references(() => users.id),
     updatedBy: uuid("updated_by").references(() => users.id),
     deletedBy: uuid("deleted_by").references(() => users.id),
@@ -458,7 +458,7 @@ export const histories = pgTable(
     deletedAt: timestamp("deleted_at"),
   },
   (t) => ({
-    encounter_idx: index("history_encounter_id_idx").on(t.encounterId),
+    visit_idx: index("history_visit_id_idx").on(t.visitId),
   }),
 );
 
@@ -477,9 +477,9 @@ export const complaints = pgTable(
     patientId: uuid("patient_id")
       .notNull()
       .references(() => patients.id),
-    encounterId: uuid("encounter_id")
+    visitId: uuid("visit_id")
       .notNull()
-      .references(() => encounters.id),
+      .references(() => visits.id),
     createdBy: uuid("created_by").references(() => users.id),
     updatedBy: uuid("updated_by").references(() => users.id),
     deletedBy: uuid("deleted_by").references(() => users.id),
@@ -489,7 +489,7 @@ export const complaints = pgTable(
   },
   (t) => ({
     patient_idx: index("complaint_patient_id_idx").on(t.patientId),
-    encounter_idx: index("complaint_encounter_id_idx").on(t.encounterId),
+    visit_idx: index("complaint_visit_id_idx").on(t.visitId),
   }),
 );
 
@@ -509,9 +509,9 @@ export const physical_examinations = pgTable(
     patientId: uuid("patient_id")
       .notNull()
       .references(() => patients.id),
-    encounterId: uuid("encounter_id")
+    visitId: uuid("visit_id")
       .notNull()
-      .references(() => encounters.id),
+      .references(() => visits.id),
     createdBy: uuid("created_by").references(() => users.id),
     updatedBy: uuid("updated_by").references(() => users.id),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -521,9 +521,7 @@ export const physical_examinations = pgTable(
   },
   (t) => ({
     patient_idx: index("physical_examination_patient_id_idx").on(t.patientId),
-    encounter_idx: index("physical_examination_encounter_id_idx").on(
-      t.encounterId,
-    ),
+    visit_idx: index("physical_examination_visit_id_idx").on(t.visitId),
   }),
 );
 
@@ -538,9 +536,9 @@ export const provisional_diagnoses = pgTable(
     patientId: uuid("patient_id")
       .notNull()
       .references(() => patients.id),
-    encounterId: uuid("encounter_id")
+    visitId: uuid("visit_id")
       .notNull()
-      .references(() => encounters.id),
+      .references(() => visits.id),
     createdBy: uuid("created_by").references(() => users.id),
     updatedBy: uuid("updated_by").references(() => users.id),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -550,9 +548,7 @@ export const provisional_diagnoses = pgTable(
   },
   (t) => ({
     patient_idx: index("provisional_diagnosis_patient_id_idx").on(t.patientId),
-    encounter_idx: index("provisional_diagnosis_encounter_id_idx").on(
-      t.encounterId,
-    ),
+    visit_idx: index("provisional_diagnosis_visit_id_idx").on(t.visitId),
   }),
 );
 
@@ -568,9 +564,9 @@ export const confirm_diagnoses = pgTable(
     patientId: uuid("patient_id")
       .notNull()
       .references(() => patients.id),
-    encounterId: uuid("encounter_id")
+    visitId: uuid("visit_id")
       .notNull()
-      .references(() => encounters.id),
+      .references(() => visits.id),
     createdBy: uuid("created_by").references(() => users.id),
     updatedBy: uuid("updated_by").references(() => users.id),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -580,9 +576,7 @@ export const confirm_diagnoses = pgTable(
   },
   (t) => ({
     patient_idx: index("confirm_diagnosis_patient_id_idx").on(t.patientId),
-    encounter_idx: index("confirm_diagnosis_encounter_id_idx").on(
-      t.encounterId,
-    ),
+    visit_idx: index("confirm_diagnosis_visit_id_idx").on(t.visitId),
   }),
 );
 
@@ -596,9 +590,9 @@ export const tests = pgTable(
     testName: varchar("test_name", { length: 255 }).notNull(),
     testResult: text("test_result"),
     testCategory: testCategoryEnum("test_category").notNull(),
-    encounterId: uuid("encounter_id")
+    visitId: uuid("visit_id")
       .notNull()
-      .references(() => encounters.id),
+      .references(() => visits.id),
     createdBy: uuid("created_by").references(() => users.id),
     updatedBy: uuid("updated_by").references(() => users.id),
     deletedBy: uuid("deleted_by").references(() => users.id),
@@ -607,7 +601,7 @@ export const tests = pgTable(
     deletedAt: timestamp("deleted_at"),
   },
   (t) => ({
-    encounter_idx: index("test_encounter_id_idx").on(t.encounterId),
+    visit_idx: index("test_visit_id_idx").on(t.visitId),
   }),
 );
 
@@ -626,9 +620,9 @@ export const treatments = pgTable(
     patientId: uuid("patient_id")
       .notNull()
       .references(() => patients.id),
-    encounterId: uuid("encounter_id")
+    visitId: uuid("visit_id")
       .notNull()
-      .references(() => encounters.id),
+      .references(() => visits.id),
     createdBy: uuid("created_by").references(() => users.id),
     updatedBy: uuid("updated_by").references(() => users.id),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -638,7 +632,7 @@ export const treatments = pgTable(
   },
   (t) => ({
     patient_idx: index("treatment_patient_id_idx").on(t.patientId),
-    encounter_idx: index("treatment_encounter_id_idx").on(t.encounterId),
+    visit_idx: index("treatment_visit_id_idx").on(t.visitId),
   }),
 );
 
@@ -660,9 +654,9 @@ export const medications = pgTable(
     patientId: uuid("patient_id")
       .notNull()
       .references(() => patients.id),
-    encounterId: uuid("encounter_id")
+    visitId: uuid("visit_id")
       .notNull()
-      .references(() => encounters.id),
+      .references(() => visits.id),
     createdBy: uuid("created_by").references(() => users.id),
     updatedBy: uuid("updated_by").references(() => users.id),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -672,7 +666,7 @@ export const medications = pgTable(
   },
   (t) => ({
     patient_idx: index("medication_patient_id_idx").on(t.patientId),
-    encounter_idx: index("medication_encounter_id_idx").on(t.encounterId),
+    visit_idx: index("medication_visit_id_idx").on(t.visitId),
   }),
 );
 
@@ -688,7 +682,7 @@ export const documents = pgTable(
     patientId: uuid("patient_id")
       .notNull()
       .references(() => patients.id),
-    encounterId: uuid("encounter_id").references(() => encounters.id),
+    visitId: uuid("visit_id").references(() => visits.id),
     createdBy: uuid("created_by"),
     updatedBy: uuid("updated_by"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -1497,7 +1491,7 @@ export const healthFacilitiesRelations = relations(
     }),
     users: many(users),
     patients: many(patients),
-    encounters: many(encounters),
+    visits: many(visits),
     pregnancies: many(pregnancies),
     child_immunizations: many(child_immunizations),
     appointments: many(appointments),
@@ -1535,7 +1529,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   }),
   logs: many(system_logs),
   assignedPatients: many(patients, { relationName: "assignedUser" }),
-  encountersAsDoctor: many(encounters, { relationName: "encounterDoctor" }),
+  visitsAsDoctor: many(visits, { relationName: "visitDoctor" }),
   appointmentsAsDoctor: many(appointments, {
     relationName: "appointmentDoctor",
   }),
@@ -1571,7 +1565,7 @@ export const patientsRelations = relations(patients, ({ many, one }) => ({
     references: [users.id],
     relationName: "assignedUser",
   }),
-  encounters: many(encounters),
+  visits: many(visits),
   appointments: many(appointments),
   smsLogs: many(sms_logs),
   pregnancies: many(pregnancies),
@@ -1579,19 +1573,19 @@ export const patientsRelations = relations(patients, ({ many, one }) => ({
   familyPlannings: many(family_plannings),
 }));
 
-export const encountersRelations = relations(encounters, ({ one, many }) => ({
+export const visitsRelations = relations(visits, ({ one, many }) => ({
   patient: one(patients, {
-    fields: [encounters.patientId],
+    fields: [visits.patientId],
     references: [patients.id],
   }),
   facility: one(health_facilities, {
-    fields: [encounters.facilityId],
+    fields: [visits.facilityId],
     references: [health_facilities.id],
   }),
   doctor: one(users, {
-    fields: [encounters.doctorId],
+    fields: [visits.doctorId],
     references: [users.id],
-    relationName: "encounterDoctor",
+    relationName: "visitDoctor",
   }),
   vitals: many(vitals),
   histories: many(histories),
@@ -1605,9 +1599,9 @@ export const encountersRelations = relations(encounters, ({ one, many }) => ({
 }));
 
 export const vitalsRelations = relations(vitals, ({ one }) => ({
-  encounter: one(encounters, {
-    fields: [vitals.encounterId],
-    references: [encounters.id],
+  visit: one(visits, {
+    fields: [vitals.visitId],
+    references: [visits.id],
   }),
   creator: one(users, {
     fields: [vitals.createdBy],
@@ -1617,9 +1611,9 @@ export const vitalsRelations = relations(vitals, ({ one }) => ({
 }));
 
 export const historiesRelations = relations(histories, ({ one }) => ({
-  encounter: one(encounters, {
-    fields: [histories.encounterId],
-    references: [encounters.id],
+  visit: one(visits, {
+    fields: [histories.visitId],
+    references: [visits.id],
   }),
   creator: one(users, {
     fields: [histories.createdBy],
@@ -1629,9 +1623,9 @@ export const historiesRelations = relations(histories, ({ one }) => ({
 }));
 
 export const complaintsRelations = relations(complaints, ({ one }) => ({
-  encounter: one(encounters, {
-    fields: [complaints.encounterId],
-    references: [encounters.id],
+  visit: one(visits, {
+    fields: [complaints.visitId],
+    references: [visits.id],
   }),
   patient: one(patients, {
     fields: [complaints.patientId],

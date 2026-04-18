@@ -4,7 +4,7 @@ import authRoutes from "./auth.routes";
 import logRoutes from "./log.routes";
 import patientRoutes from "./patient.routes";
 import healthFacilityRoutes from "./health-facility.routes";
-import encounterRoutes from "./encounter.routes";
+import visitRoutes from "./visit.routes";
 import telehealthRoutes from "./telehealth.routes";
 import familyPlanningRoutes from "./family-planning.routes";
 
@@ -32,7 +32,7 @@ router.use("/users", userRoutes);
 router.use("/logs", logRoutes);
 router.use("/patients", patientRoutes);
 router.use("/health-facilities", healthFacilityRoutes);
-router.use("/encounters", encounterRoutes);
+router.use("/visits", visitRoutes);
 router.use("/telehealth", telehealthRoutes);
 router.use("/family-plannings", familyPlanningRoutes);
 

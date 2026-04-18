@@ -43,6 +43,13 @@
       "when": 1774921808748,
       "tag": "0005_refactor_appointments",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1775000000000,
+      "tag": "0006_visits_rename",
+      "breakpoints": true
     }
   ]
 }

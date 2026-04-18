@@ -7,9 +7,9 @@ async function cleanupEnums() {
     // Patients
     await db.execute(sql`UPDATE patients SET status = 'active' WHERE LOWER(status) = 'active' OR status IS NULL`);
     
-    // Encounters
-    await db.execute(sql`UPDATE encounters SET status = 'finished' WHERE LOWER(status) = 'active' OR status IS NULL`);
-    await db.execute(sql`UPDATE encounters SET status = 'planned' WHERE status NOT IN ('planned', 'arrived', 'in_progress', 'finished', 'cancelled') OR status IS NULL`);
+    // Visits
+    await db.execute(sql`UPDATE visits SET status = 'finished' WHERE LOWER(status) = 'active' OR status IS NULL`);
+    await db.execute(sql`UPDATE visits SET status = 'planned' WHERE status NOT IN ('planned', 'arrived', 'in_progress', 'finished', 'cancelled') OR status IS NULL`);
 
     // Call Requests
     await db.execute(sql`UPDATE call_requests SET status = 'pending' WHERE status NOT IN ('pending', 'accepted', 'declined', 'completed') OR status IS NULL`);

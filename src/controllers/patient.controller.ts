@@ -7,6 +7,10 @@ import { AppError } from "../utils/app-error";
 import { HTTP_STATUS } from "../config/constants";
 import { AuthRequest } from "../middlewares/auth.middleware";
 import { requireFacilityContext } from "../utils/request-context";
+import {
+  parseListQuery,
+  patientsListQuerySchema,
+} from "../utils/query-parser";
 
 export class PatientController extends BaseController {
   constructor() {
@@ -39,19 +43,10 @@ export class PatientController extends BaseController {
   public getPatients = catchAsync(async (req: AuthRequest, res: Response) => {
     const context = requireFacilityContext(req);
 
+    const query = parseListQuery(req.query, patientsListQuerySchema);
     const patientService = new PatientService(context);
-    const searchString =
-      typeof req.query.searchString === "string"
-        ? req.query.searchString
-        : undefined;
-    const service =
-      typeof req.query.service === "string" ? req.query.service : undefined;
-
-    const patients = await patientService.getAllPatients({
-      searchString,
-      service,
-    });
-    return this.ok(res, patients, "Patients retrieved successfully");
+    const result = await patientService.getAllPatients(query);
+    return this.ok(res, result, "Patients retrieved successfully");
   });
 
   public getPatient = catchAsync(async (req: AuthRequest, res: Response) => {

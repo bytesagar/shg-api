@@ -7,6 +7,7 @@ import { AppError } from "../utils/app-error";
 import { HTTP_STATUS } from "../config/constants";
 import { userCreateSchema } from "../validations/user.validation";
 import { requireFacilityContext } from "../utils/request-context";
+import { parseListQuery, usersListQuerySchema } from "../utils/query-parser";
 
 export class UserController extends BaseController {
   constructor() {
@@ -16,9 +17,10 @@ export class UserController extends BaseController {
   public getUsers = catchAsync(async (req: AuthRequest, res: Response) => {
     const context = requireFacilityContext(req);
 
+    const query = parseListQuery(req.query, usersListQuerySchema);
     const userService = new UserService(context);
-    const users = await userService.getAllUsers();
-    return this.ok(res, users, "Users retrieved successfully");
+    const result = await userService.getAllUsers(query);
+    return this.ok(res, result, "Users retrieved successfully");
   });
 
   public createUser = catchAsync(async (req: AuthRequest, res: Response) => {

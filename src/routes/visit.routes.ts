@@ -1,18 +1,18 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
-import { EncounterController } from "../controllers/encounter.controller";
+import { VisitController } from "../controllers/visit.controller";
 
 const router = Router();
-const encounterController = new EncounterController();
+const visitController = new VisitController();
 
 /**
  * @openapi
- * /encounters:
+ * /visits:
  *   post:
  *     tags:
- *       - Encounters
- *     summary: Create a patient visit (encounter)
- *     operationId: createEncounter
+ *       - Visits
+ *     summary: Create a patient visit
+ *     operationId: createVisit
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -43,7 +43,7 @@ const encounterController = new EncounterController();
  *                 format: uuid
  *     responses:
  *       201:
- *         description: Encounter created
+ *         description: Visit created
  *       400:
  *         description: Validation failed
  *       401:
@@ -51,20 +51,20 @@ const encounterController = new EncounterController();
  *       404:
  *         description: Patient not found
  */
-router.post("/", authMiddleware, encounterController.createEncounter);
+router.post("/", authMiddleware, visitController.createVisit);
 
 /**
  * @openapi
- * /encounters/{id}:
+ * /visits/{visitId}:
  *   get:
  *     tags:
- *       - Encounters
- *     summary: Get encounter by ID
- *     operationId: getEncounterById
+ *       - Visits
+ *     summary: Get visit by ID
+ *     operationId: getVisitById
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: id
+ *       - name: visitId
  *         in: path
  *         required: true
  *         schema:
@@ -72,26 +72,26 @@ router.post("/", authMiddleware, encounterController.createEncounter);
  *           format: uuid
  *     responses:
  *       200:
- *         description: Encounter retrieved
+ *         description: Visit retrieved
  *       401:
  *         description: Unauthorized
  *       404:
- *         description: Encounter not found
+ *         description: Visit not found
  */
-router.get("/:id", authMiddleware, encounterController.getEncounter);
+router.get("/:visitId", authMiddleware, visitController.getVisit);
 
 /**
  * @openapi
- * /encounters/{id}/vitals:
+ * /visits/{visitId}/vitals:
  *   post:
  *     tags:
- *       - Encounters
- *     summary: Record vitals for an encounter
+ *       - Visits
+ *     summary: Record vitals for a visit
  *     operationId: addVitals
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: id
+ *       - name: visitId
  *         in: path
  *         required: true
  *         schema:
@@ -129,22 +129,22 @@ router.get("/:id", authMiddleware, encounterController.getEncounter);
  *       401:
  *         description: Unauthorized
  *       404:
- *         description: Encounter not found
+ *         description: Visit not found
  */
-router.post("/:id/vitals", authMiddleware, encounterController.addVitals);
+router.post("/:visitId/vitals", authMiddleware, visitController.addVitals);
 
 /**
  * @openapi
- * /encounters/{id}/histories:
+ * /visits/{visitId}/histories:
  *   post:
  *     tags:
- *       - Encounters
- *     summary: Record client history for an encounter
+ *       - Visits
+ *     summary: Record client history for a visit
  *     operationId: addHistory
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: id
+ *       - name: visitId
  *         in: path
  *         required: true
  *         schema:
@@ -180,22 +180,22 @@ router.post("/:id/vitals", authMiddleware, encounterController.addVitals);
  *       401:
  *         description: Unauthorized
  *       404:
- *         description: Encounter not found
+ *         description: Visit not found
  */
-router.post("/:id/histories", authMiddleware, encounterController.addHistory);
+router.post("/:visitId/histories", authMiddleware, visitController.addHistory);
 
 /**
  * @openapi
- * /encounters/{id}/complaints:
+ * /visits/{visitId}/complaints:
  *   post:
  *     tags:
- *       - Encounters
- *     summary: Record chief complaint for an encounter
+ *       - Visits
+ *     summary: Record chief complaint for a visit
  *     operationId: addComplaint
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: id
+ *       - name: visitId
  *         in: path
  *         required: true
  *         schema:
@@ -229,22 +229,22 @@ router.post("/:id/histories", authMiddleware, encounterController.addHistory);
  *       401:
  *         description: Unauthorized
  *       404:
- *         description: Encounter not found
+ *         description: Visit not found
  */
-router.post("/:id/complaints", authMiddleware, encounterController.addComplaint);
+router.post("/:visitId/complaints", authMiddleware, visitController.addComplaint);
 
 /**
  * @openapi
- * /encounters/{id}/physical-examinations:
+ * /visits/{visitId}/physical-examinations:
  *   post:
  *     tags:
- *       - Encounters
- *     summary: Record physical examination for an encounter
+ *       - Visits
+ *     summary: Record physical examination for a visit
  *     operationId: addPhysicalExamination
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: id
+ *       - name: visitId
  *         in: path
  *         required: true
  *         schema:
@@ -284,26 +284,26 @@ router.post("/:id/complaints", authMiddleware, encounterController.addComplaint)
  *       401:
  *         description: Unauthorized
  *       404:
- *         description: Encounter not found
+ *         description: Visit not found
  */
 router.post(
-  "/:id/physical-examinations",
+  "/:visitId/physical-examinations",
   authMiddleware,
-  encounterController.addPhysicalExamination,
+  visitController.addPhysicalExamination,
 );
 
 /**
  * @openapi
- * /encounters/{id}/provisional-diagnoses:
+ * /visits/{visitId}/provisional-diagnoses:
  *   post:
  *     tags:
- *       - Encounters
- *     summary: Record provisional diagnosis for an encounter
+ *       - Visits
+ *     summary: Record provisional diagnosis for a visit
  *     operationId: addProvisionalDiagnosis
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: id
+ *       - name: visitId
  *         in: path
  *         required: true
  *         schema:
@@ -327,26 +327,26 @@ router.post(
  *       401:
  *         description: Unauthorized
  *       404:
- *         description: Encounter not found
+ *         description: Visit not found
  */
 router.post(
-  "/:id/provisional-diagnoses",
+  "/:visitId/provisional-diagnoses",
   authMiddleware,
-  encounterController.addProvisionalDiagnosis,
+  visitController.addProvisionalDiagnosis,
 );
 
 /**
  * @openapi
- * /encounters/{id}/confirm-diagnoses:
+ * /visits/{visitId}/confirm-diagnoses:
  *   post:
  *     tags:
- *       - Encounters
- *     summary: Record final diagnosis for an encounter
+ *       - Visits
+ *     summary: Record final diagnosis for a visit
  *     operationId: addConfirmDiagnosis
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: id
+ *       - name: visitId
  *         in: path
  *         required: true
  *         schema:
@@ -372,26 +372,26 @@ router.post(
  *       401:
  *         description: Unauthorized
  *       404:
- *         description: Encounter not found
+ *         description: Visit not found
  */
 router.post(
-  "/:id/confirm-diagnoses",
+  "/:visitId/confirm-diagnoses",
   authMiddleware,
-  encounterController.addConfirmDiagnosis,
+  visitController.addConfirmDiagnosis,
 );
 
 /**
  * @openapi
- * /encounters/{id}/tests:
+ * /visits/{visitId}/tests:
  *   post:
  *     tags:
- *       - Encounters
- *     summary: Record lab/radiology test for an encounter
+ *       - Visits
+ *     summary: Record lab/radiology test for a visit
  *     operationId: addTest
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: id
+ *       - name: visitId
  *         in: path
  *         required: true
  *         schema:
@@ -420,22 +420,22 @@ router.post(
  *       401:
  *         description: Unauthorized
  *       404:
- *         description: Encounter not found
+ *         description: Visit not found
  */
-router.post("/:id/tests", authMiddleware, encounterController.addTest);
+router.post("/:visitId/tests", authMiddleware, visitController.addTest);
 
 /**
  * @openapi
- * /encounters/{id}/treatments:
+ * /visits/{visitId}/treatments:
  *   post:
  *     tags:
- *       - Encounters
- *     summary: Record treatment for an encounter
+ *       - Visits
+ *     summary: Record treatment for a visit
  *     operationId: addTreatment
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: id
+ *       - name: visitId
  *         in: path
  *         required: true
  *         schema:
@@ -467,22 +467,22 @@ router.post("/:id/tests", authMiddleware, encounterController.addTest);
  *       401:
  *         description: Unauthorized
  *       404:
- *         description: Encounter not found
+ *         description: Visit not found
  */
-router.post("/:id/treatments", authMiddleware, encounterController.addTreatment);
+router.post("/:visitId/treatments", authMiddleware, visitController.addTreatment);
 
 /**
  * @openapi
- * /encounters/{id}/medications:
+ * /visits/{visitId}/medications:
  *   post:
  *     tags:
- *       - Encounters
- *     summary: Record medication for an encounter
+ *       - Visits
+ *     summary: Record medication for a visit
  *     operationId: addMedication
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: id
+ *       - name: visitId
  *         in: path
  *         required: true
  *         schema:
@@ -519,22 +519,22 @@ router.post("/:id/treatments", authMiddleware, encounterController.addTreatment)
  *       401:
  *         description: Unauthorized
  *       404:
- *         description: Encounter not found
+ *         description: Visit not found
  */
-router.post("/:id/medications", authMiddleware, encounterController.addMedication);
+router.post("/:visitId/medications", authMiddleware, visitController.addMedication);
 
 /**
  * @openapi
- * /encounters/{id}/documents:
+ * /visits/{visitId}/documents:
  *   post:
  *     tags:
- *       - Encounters
- *     summary: Record a document/report for an encounter
+ *       - Visits
+ *     summary: Record a document/report for a visit
  *     operationId: addDocument
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - name: id
+ *       - name: visitId
  *         in: path
  *         required: true
  *         schema:
@@ -559,8 +559,8 @@ router.post("/:id/medications", authMiddleware, encounterController.addMedicatio
  *       401:
  *         description: Unauthorized
  *       404:
- *         description: Encounter not found
+ *         description: Visit not found
  */
-router.post("/:id/documents", authMiddleware, encounterController.addDocument);
+router.post("/:visitId/documents", authMiddleware, visitController.addDocument);
 
 export default router;

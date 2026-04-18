@@ -85,6 +85,21 @@ router.post("/", authMiddleware, patientController.createPatient);
  *     security:
  *       - bearerAuth: []
  *     parameters:
+ *       - name: page
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *       - name: pageSize
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 30
  *       - name: searchString
  *         in: query
  *         required: false
