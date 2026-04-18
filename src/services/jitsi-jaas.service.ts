@@ -27,6 +27,14 @@ export class JitsiJaasService {
     return `https://8x8.vc/${cfg.appId}/${room}`;
   }
 
+  /**
+   * Short-lived JWT for join links (default 15m). Override with JITSI_JOIN_JWT_EXPIRES_IN.
+   */
+  public createJoinToken(room: string, user: JaasUser) {
+    const ttl = process.env.JITSI_JOIN_JWT_EXPIRES_IN ?? "15m";
+    return this.createToken(room, user, ttl);
+  }
+
   public createToken(room: string, user: JaasUser, expiresIn: string = "2h") {
     const cfg = getJaasConfig();
     if (!cfg) return null;

@@ -288,11 +288,11 @@ export const users = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    email_unique_idx: uniqueIndex("user_email_unique").on(t.email),
-    username_unique_idx: uniqueIndex("user_username_unique").on(t.username),
-    facility_idx: index("user_facility_id_idx").on(t.facilityId),
-  }),
+  (t) => [
+    uniqueIndex("user_email_unique").on(t.email),
+    uniqueIndex("user_username_unique").on(t.username),
+    index("user_facility_id_idx").on(t.facilityId),
+  ],
 );
 
 export const password_resets = pgTable("password_resets", {
@@ -357,13 +357,13 @@ export const patients = pgTable(
     childrenMale: integer("children_male"),
     childrenFemale: integer("children_female"),
   },
-  (t) => ({
-    patient_id_unique_idx: uniqueIndex("patient_patient_id_unique").on(
+  (t) => [
+    uniqueIndex("patient_patient_id_unique").on(
       t.patientId,
     ),
-    facility_idx: index("patient_facility_id_idx").on(t.facilityId),
-    municipality_idx: index("patient_municipality_id_idx").on(t.municipalityId),
-  }),
+    index("patient_facility_id_idx").on(t.facilityId),
+    index("patient_municipality_id_idx").on(t.municipalityId),
+  ],
 );
 
 // ============================================================
@@ -392,11 +392,11 @@ export const visits = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("visit_patient_id_idx").on(t.patientId),
-    doctor_idx: index("visit_doctor_id_idx").on(t.doctorId),
-    facility_idx: index("visit_facility_id_idx").on(t.facilityId),
-  }),
+  (t) => [
+    index("visit_patient_id_idx").on(t.patientId),
+    index("visit_doctor_id_idx").on(t.doctorId),
+    index("visit_facility_id_idx").on(t.facilityId),
+  ],
 );
 
 // ============================================================
@@ -428,9 +428,9 @@ export const vitals = pgTable(
     updatedAt: timestamp("updated_at"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    visit_idx: index("vital_visit_id_idx").on(t.visitId),
-  }),
+  (t) => [
+    index("vital_visit_id_idx").on(t.visitId),
+  ],
 );
 
 export const histories = pgTable(
@@ -457,9 +457,9 @@ export const histories = pgTable(
     updatedAt: timestamp("updated_at"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    visit_idx: index("history_visit_id_idx").on(t.visitId),
-  }),
+  (t) => [
+    index("history_visit_id_idx").on(t.visitId),
+  ],
 );
 
 export const complaints = pgTable(
@@ -487,10 +487,10 @@ export const complaints = pgTable(
     updatedAt: timestamp("updated_at"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("complaint_patient_id_idx").on(t.patientId),
-    visit_idx: index("complaint_visit_id_idx").on(t.visitId),
-  }),
+  (t) => [
+    index("complaint_patient_id_idx").on(t.patientId),
+    index("complaint_visit_id_idx").on(t.visitId),
+  ],
 );
 
 export const physical_examinations = pgTable(
@@ -519,10 +519,10 @@ export const physical_examinations = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("physical_examination_patient_id_idx").on(t.patientId),
-    visit_idx: index("physical_examination_visit_id_idx").on(t.visitId),
-  }),
+  (t) => [
+    index("physical_examination_patient_id_idx").on(t.patientId),
+    index("physical_examination_visit_id_idx").on(t.visitId),
+  ],
 );
 
 export const provisional_diagnoses = pgTable(
@@ -546,10 +546,10 @@ export const provisional_diagnoses = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("provisional_diagnosis_patient_id_idx").on(t.patientId),
-    visit_idx: index("provisional_diagnosis_visit_id_idx").on(t.visitId),
-  }),
+  (t) => [
+    index("provisional_diagnosis_patient_id_idx").on(t.patientId),
+    index("provisional_diagnosis_visit_id_idx").on(t.visitId),
+  ],
 );
 
 export const confirm_diagnoses = pgTable(
@@ -574,10 +574,10 @@ export const confirm_diagnoses = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("confirm_diagnosis_patient_id_idx").on(t.patientId),
-    visit_idx: index("confirm_diagnosis_visit_id_idx").on(t.visitId),
-  }),
+  (t) => [
+    index("confirm_diagnosis_patient_id_idx").on(t.patientId),
+    index("confirm_diagnosis_visit_id_idx").on(t.visitId),
+  ],
 );
 
 export const tests = pgTable(
@@ -600,9 +600,9 @@ export const tests = pgTable(
     updatedAt: timestamp("updated_at"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    visit_idx: index("test_visit_id_idx").on(t.visitId),
-  }),
+  (t) => [
+    index("test_visit_id_idx").on(t.visitId),
+  ],
 );
 
 export const treatments = pgTable(
@@ -630,10 +630,10 @@ export const treatments = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("treatment_patient_id_idx").on(t.patientId),
-    visit_idx: index("treatment_visit_id_idx").on(t.visitId),
-  }),
+  (t) => [
+    index("treatment_patient_id_idx").on(t.patientId),
+    index("treatment_visit_id_idx").on(t.visitId),
+  ],
 );
 
 export const medications = pgTable(
@@ -664,10 +664,10 @@ export const medications = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("medication_patient_id_idx").on(t.patientId),
-    visit_idx: index("medication_visit_id_idx").on(t.visitId),
-  }),
+  (t) => [
+    index("medication_patient_id_idx").on(t.patientId),
+    index("medication_visit_id_idx").on(t.visitId),
+  ],
 );
 
 export const documents = pgTable(
@@ -690,9 +690,9 @@ export const documents = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("document_patient_id_idx").on(t.patientId),
-  }),
+  (t) => [
+    index("document_patient_id_idx").on(t.patientId),
+  ],
 );
 
 export const call_requests = pgTable("call_requests", {
@@ -736,9 +736,9 @@ export const pregnancies = pgTable(
     deletedAt: timestamp("deleted_at"),
     assignedFchvId: uuid("assigned_fchv_id").references(() => users.id),
   },
-  (t) => ({
-    patient_idx: index("pregnancy_patient_id_idx").on(t.patientId),
-  }),
+  (t) => [
+    index("pregnancy_patient_id_idx").on(t.patientId),
+  ],
 );
 
 export const antenatal_cares = pgTable(
@@ -792,10 +792,10 @@ export const antenatal_cares = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("antenatal_care_patient_id_idx").on(t.patientId),
-    pregnancy_idx: index("antenatal_care_pregnancy_id_idx").on(t.pregnancyId),
-  }),
+  (t) => [
+    index("antenatal_care_patient_id_idx").on(t.patientId),
+    index("antenatal_care_pregnancy_id_idx").on(t.pregnancyId),
+  ],
 );
 
 export const deliveries = pgTable(
@@ -840,10 +840,10 @@ export const deliveries = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("delivery_patient_id_idx").on(t.patientId),
-    pregnancy_idx: index("delivery_pregnancy_id_idx").on(t.pregnancyId),
-  }),
+  (t) => [
+    index("delivery_patient_id_idx").on(t.patientId),
+    index("delivery_pregnancy_id_idx").on(t.pregnancyId),
+  ],
 );
 
 export const delivery_children = pgTable(
@@ -873,10 +873,10 @@ export const delivery_children = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    delivery_idx: index("delivery_children_delivery_id_idx").on(t.deliveryId),
-    patient_idx: index("delivery_children_patient_id_idx").on(t.patientId),
-  }),
+  (t) => [
+    index("delivery_children_delivery_id_idx").on(t.deliveryId),
+    index("delivery_children_patient_id_idx").on(t.patientId),
+  ],
 );
 
 export const postnatal_cares = pgTable(
@@ -924,10 +924,10 @@ export const postnatal_cares = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("postnatal_care_patient_id_idx").on(t.patientId),
-    pregnancy_idx: index("postnatal_care_pregnancy_id_idx").on(t.pregnancyId),
-  }),
+  (t) => [
+    index("postnatal_care_patient_id_idx").on(t.patientId),
+    index("postnatal_care_pregnancy_id_idx").on(t.pregnancyId),
+  ],
 );
 
 export const home_mother_postnatal_cares = pgTable(
@@ -965,10 +965,10 @@ export const home_mother_postnatal_cares = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("home_mother_pnc_patient_id_idx").on(t.patientId),
-    pregnancy_idx: index("home_mother_pnc_pregnancy_id_idx").on(t.pregnancyId),
-  }),
+  (t) => [
+    index("home_mother_pnc_patient_id_idx").on(t.patientId),
+    index("home_mother_pnc_pregnancy_id_idx").on(t.pregnancyId),
+  ],
 );
 
 export const home_baby_postnatal_cares = pgTable(
@@ -1008,10 +1008,10 @@ export const home_baby_postnatal_cares = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("home_baby_pnc_patient_id_idx").on(t.patientId),
-    pregnancy_idx: index("home_baby_pnc_pregnancy_id_idx").on(t.pregnancyId),
-  }),
+  (t) => [
+    index("home_baby_pnc_patient_id_idx").on(t.patientId),
+    index("home_baby_pnc_pregnancy_id_idx").on(t.pregnancyId),
+  ],
 );
 
 // ============================================================
@@ -1037,9 +1037,9 @@ export const child_immunizations = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("child_immunization_patient_id_idx").on(t.patientId),
-  }),
+  (t) => [
+    index("child_immunization_patient_id_idx").on(t.patientId),
+  ],
 );
 
 export const immunization_histories = pgTable(
@@ -1067,12 +1067,12 @@ export const immunization_histories = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("immunization_history_patient_id_idx").on(t.patientId),
-    child_idx: index("immunization_history_child_immunization_id_idx").on(
+  (t) => [
+    index("immunization_history_patient_id_idx").on(t.patientId),
+    index("immunization_history_child_immunization_id_idx").on(
       t.childImmunizationId,
     ),
-  }),
+  ],
 );
 
 export const growths = pgTable(
@@ -1099,9 +1099,9 @@ export const growths = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("growth_patient_id_idx").on(t.patientId),
-  }),
+  (t) => [
+    index("growth_patient_id_idx").on(t.patientId),
+  ],
 );
 
 // ============================================================
@@ -1133,11 +1133,11 @@ export const appointments = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    doctor_idx: index("appointment_doctor_id_idx").on(t.doctorId),
-    patient_idx: index("appointment_patient_id_idx").on(t.patientId),
-    date_idx: index("appointment_date_idx").on(t.date),
-  }),
+  (t) => [
+    index("appointment_doctor_id_idx").on(t.doctorId),
+    index("appointment_patient_id_idx").on(t.patientId),
+    index("appointment_date_idx").on(t.date),
+  ],
 );
 
 export const telehealth_sessions = pgTable("telehealth_sessions", {
@@ -1151,7 +1151,6 @@ export const telehealth_sessions = pgTable("telehealth_sessions", {
     .references(() => appointments.id),
   provider: varchar("provider", { length: 50 }),
   roomName: varchar("room_name", { length: 255 }),
-  meetingUrl: text("meeting_url"),
   startedAt: timestamp("started_at"),
   durationSeconds: integer("duration_seconds").default(0),
 });
@@ -1178,9 +1177,9 @@ export const notifications = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    user_idx: index("notification_user_id_idx").on(t.userId),
-  }),
+  (t) => [
+    index("notification_user_id_idx").on(t.userId),
+  ],
 );
 
 export const sms_logs = pgTable(
@@ -1205,9 +1204,9 @@ export const sms_logs = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("sms_log_patient_id_idx").on(t.patientId),
-  }),
+  (t) => [
+    index("sms_log_patient_id_idx").on(t.patientId),
+  ],
 );
 
 export const rosters = pgTable(
@@ -1235,11 +1234,11 @@ export const rosters = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    user_idx: index("roster_user_id_idx").on(t.userId),
-    facility_idx: index("roster_facility_id_idx").on(t.facilityId),
-    date_idx: index("roster_date_idx").on(t.date),
-  }),
+  (t) => [
+    index("roster_user_id_idx").on(t.userId),
+    index("roster_facility_id_idx").on(t.facilityId),
+    index("roster_date_idx").on(t.date),
+  ],
 );
 
 // ============================================================
@@ -1277,10 +1276,10 @@ export const family_plannings = pgTable(
     deletedBy: uuid("deleted_by").references(() => users.id),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    patient_idx: index("family_planning_patient_id_idx").on(t.patientId),
-    facility_idx: index("family_planning_facility_id_idx").on(t.facilityId),
-  }),
+  (t) => [
+    index("family_planning_patient_id_idx").on(t.patientId),
+    index("family_planning_facility_id_idx").on(t.facilityId),
+  ],
 );
 
 export const family_planning_olds = pgTable("family_planning_olds", {
@@ -1332,14 +1331,14 @@ export const family_planning_news = pgTable(
     deletedBy: uuid("deleted_by").references(() => users.id),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    family_planning_id_unique: uniqueIndex("fpn_family_planning_id_unique").on(
+  (t) => [
+    uniqueIndex("fpn_family_planning_id_unique").on(
       t.familyPlanningId,
     ),
-    previous_device_id_unique: uniqueIndex("fpn_previous_device_id_unique").on(
+    uniqueIndex("fpn_previous_device_id_unique").on(
       t.previousDeviceId,
     ),
-  }),
+  ],
 );
 
 export const family_planning_removals = pgTable(
@@ -1371,14 +1370,14 @@ export const family_planning_removals = pgTable(
     updatedAt: timestamp("updated_at"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    family_planning_id_unique: uniqueIndex("fpr_family_planning_id_unique").on(
+  (t) => [
+    uniqueIndex("fpr_family_planning_id_unique").on(
       t.familyPlanningId,
     ),
-    previous_device_id_unique: uniqueIndex("fpr_previous_device_id_unique").on(
+    uniqueIndex("fpr_previous_device_id_unique").on(
       t.previousDeviceId,
     ),
-  }),
+  ],
 );
 
 export const fp_hormonal_details = pgTable(
@@ -1411,9 +1410,9 @@ export const fp_hormonal_details = pgTable(
     updatedAt: timestamp("updated_at"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    new_fp_id_unique: uniqueIndex("fph_new_fp_id_unique").on(t.newFpId),
-  }),
+  (t) => [
+    uniqueIndex("fph_new_fp_id_unique").on(t.newFpId),
+  ],
 );
 
 export const fp_iucd_details = pgTable(
@@ -1440,9 +1439,9 @@ export const fp_iucd_details = pgTable(
     updatedAt: timestamp("updated_at"),
     deletedAt: timestamp("deleted_at"),
   },
-  (t) => ({
-    new_fp_id_unique: uniqueIndex("fpi_new_fp_id_unique").on(t.newFpId),
-  }),
+  (t) => [
+    uniqueIndex("fpi_new_fp_id_unique").on(t.newFpId),
+  ],
 );
 
 // ============================================================

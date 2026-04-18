@@ -36,7 +36,10 @@ const telehealthController = new TelehealthController();
  *                 type: string
  *     responses:
  *       201:
- *         description: Appointment booked
+ *         description: >
+ *           Appointment booked. The `meeting` object includes `provider` and `room` (Jitsi room name) only.
+ *           Do not expect join URLs here; call POST `/telehealth/appointments/{id}/join` with `as=doctor` or `as=patient`
+ *           to receive a short-lived signed `joinUrl`.
  *       400:
  *         description: Validation failed
  *       401:
@@ -56,7 +59,7 @@ router.post(
  *   post:
  *     tags:
  *       - Telehealth
- *     summary: Create a signed JaaS join link for a doctor or patient
+ *     summary: Create a short-lived signed JaaS join URL (JWT) for a doctor or patient
  *     operationId: getTelehealthJoinLink
  *     security:
  *       - bearerAuth: []
@@ -75,7 +78,7 @@ router.post(
  *           enum: [doctor, patient]
  *     responses:
  *       200:
- *         description: Join link created
+ *         description: Join URL with embedded JWT (typically 15 minutes TTL; override via JITSI_JOIN_JWT_EXPIRES_IN)
  *       400:
  *         description: Validation failed
  *       401:

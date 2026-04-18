@@ -38,33 +38,12 @@ export class TelehealthService {
 
     const appointmentId = randomUUID();
     const room = this.jitsi.buildRoomName(appointmentId);
-    const meetingUrl = this.jitsi.buildMeetingUrl(room);
 
     const doctorName = `${doctor.firstName} ${doctor.lastName}`.trim();
     const patientName =
       `${patient.firstName ?? ""} ${patient.lastName ?? ""}`.trim() ||
       patient.name ||
       "Patient";
-
-    const doctorToken =
-      meetingUrl && doctor.email
-        ? this.jitsi.createToken(room, {
-            id: doctor.id,
-            name: doctorName || "Doctor",
-            email: doctor.email,
-            moderator: true,
-          })
-        : null;
-
-    const patientToken =
-      meetingUrl && this.context.userId
-        ? this.jitsi.createToken(room, {
-            id: this.context.userId,
-            name: patientName,
-            email: "",
-            moderator: false,
-          })
-        : null;
 
     const appointment = await this.appointmentRepository.create({
       id: appointmentId,
@@ -85,28 +64,17 @@ export class TelehealthService {
           appointmentId: appointment.id,
           provider: "jitsi_jaas",
           roomName: room,
-          meetingUrl: meetingUrl,
         })
         .returning()
     )[0];
 
-    const doctorJoinUrl =
-      meetingUrl && doctorToken
-        ? `${meetingUrl}?jwt=${doctorToken}`
-        : meetingUrl;
-
-    const patientJoinUrl =
-      meetingUrl && patientToken
-        ? `${meetingUrl}?jwt=${patientToken}`
-        : meetingUrl;
-
     let emailSent = false;
     let emailError: string | undefined = undefined;
-    if (doctor.email && doctorJoinUrl) {
+    if (doctor.email) {
       const result = await this.email.send({
         to: doctor.email,
         subject: "New telehealth appointment booked",
-        body: `A telehealth appointment has been booked.\n\nPatient: ${patientName}\nScheduled At: ${input.scheduledAt.toISOString()}\nJoin: ${doctorJoinUrl}\n`,
+        body: `A telehealth appointment has been booked.\n\nPatient: ${patientName}\nScheduled At: ${input.scheduledAt.toISOString()}\n\nTo join the video call, open this appointment in the app and use the Join button (a secure link is generated when you join).\n`,
       });
       emailSent = result.success;
       emailError = result.error;
@@ -117,9 +85,6 @@ export class TelehealthService {
       meeting: {
         provider: "jitsi_jaas" as const,
         room: session.roomName,
-        url: session.meetingUrl,
-        doctorJoinUrl,
-        patientJoinUrl,
       },
       emailSent,
       emailError,
@@ -148,9 +113,6 @@ export class TelehealthService {
     let session = sessionResult[0];
     if (!session) {
       const roomName = this.jitsi.buildRoomName(appt.id);
-      const meetingUrl = this.jitsi.buildMeetingUrl(roomName);
-      if (!meetingUrl) return { error: "MEETING_URL_NOT_AVAILABLE" as const };
-
       session = (
         await db
           .insert(telehealth_sessions)
@@ -158,18 +120,20 @@ export class TelehealthService {
             appointmentId: appt.id,
             provider: "jitsi_jaas",
             roomName: roomName,
-            meetingUrl: meetingUrl,
           })
           .returning()
       )[0];
     }
 
-    if (!session?.roomName || !session?.meetingUrl) {
+    if (!session?.roomName) {
       return { error: "MEETING_URL_NOT_AVAILABLE" as const };
     }
 
     const room = session.roomName;
-    const meetingUrl = session.meetingUrl;
+    const meetingUrl = this.jitsi.buildMeetingUrl(room);
+    if (!meetingUrl) {
+      return { error: "MEETING_URL_NOT_AVAILABLE" as const };
+    }
 
     let token: string | null = null;
     if (params.as === "doctor") {
@@ -177,7 +141,7 @@ export class TelehealthService {
       if (!doctor) return { error: "DOCTOR_NOT_FOUND" as const };
       const doctorName =
         `${doctor.firstName} ${doctor.lastName}`.trim() || "Doctor";
-      token = this.jitsi.createToken(room, {
+      token = this.jitsi.createJoinToken(room, {
         id: doctor.id,
         name: doctorName,
         email: doctor.email ?? "",
@@ -190,7 +154,7 @@ export class TelehealthService {
         `${patient.firstName ?? ""} ${patient.lastName ?? ""}`.trim() ||
         patient.name ||
         "Patient";
-      token = this.jitsi.createToken(room, {
+      token = this.jitsi.createJoinToken(room, {
         id: this.context.userId,
         name: patientName,
         email: "",
