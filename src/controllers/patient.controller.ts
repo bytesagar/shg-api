@@ -20,7 +20,6 @@ export class PatientController extends BaseController {
   public createPatient = catchAsync(async (req: AuthRequest, res: Response) => {
     const context = requireFacilityContext(req);
 
-    // 1. Validate request body with Zod
     const validatedData = patientCreateSchema.safeParse(req.body);
 
     if (!validatedData.success) {
@@ -36,7 +35,6 @@ export class PatientController extends BaseController {
     const patientService = new PatientService(context);
     const newPatient = await patientService.createPatient(validatedData.data);
 
-    // 3. Return response
     return this.created(res, newPatient, "Patient registered successfully");
   });
 
