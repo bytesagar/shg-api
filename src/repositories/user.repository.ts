@@ -2,7 +2,7 @@ import { db } from "../db";
 import { users } from "../db/schema";
 import { FacilityContext } from "../context/facility-context";
 import { FacilityRepository } from "./facility-repository";
-import { SQL, count, desc, eq } from "drizzle-orm";
+import { SQL, count, desc, eq, inArray } from "drizzle-orm";
 
 export class UserRepository extends FacilityRepository {
   constructor(context: FacilityContext) {
@@ -52,6 +52,36 @@ export class UserRepository extends FacilityRepository {
         .offset(opts.offset);
     }
     return base;
+  }
+
+  /** Staff types that can appear on a facility roster (excludes global admins). */
+  private static readonly rosterAssignableUserTypes = [
+    "doctor",
+    "user",
+    "facility",
+  ] as const;
+
+  public async countAssignableForRoster() {
+    return this.countAll(
+      inArray(users.userType, UserRepository.rosterAssignableUserTypes),
+    );
+  }
+
+  public async findAssignableForRoster(opts: {
+    limit: number;
+    offset: number;
+  }) {
+    return db
+      .select(this.userSelect)
+      .from(users)
+      .where(
+        this.withFacilityScope(
+          inArray(users.userType, UserRepository.rosterAssignableUserTypes),
+        ),
+      )
+      .orderBy(desc(users.createdAt))
+      .limit(opts.limit)
+      .offset(opts.offset);
   }
 
   public async findById(id: string) {

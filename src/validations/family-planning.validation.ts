@@ -86,32 +86,32 @@ const fpRemovalSchema = z.object({
 export const familyPlanningCreateSchema = z.discriminatedUnion("serviceType", [
   z.object({
     serviceType: z.literal("new"),
-    patientId: z.string().uuid(),
+    patientId: z.uuid(),
     serviceDate: z.preprocess(
       (val) => (typeof val === "string" ? new Date(val) : val),
       z.date(),
     ),
-    serviceProviderId: z.string().uuid().optional().nullable(),
+    serviceProviderId: z.uuid().optional().nullable(),
     details: fpNewSchema,
   }),
   z.object({
     serviceType: z.literal("follow_up"),
-    patientId: z.string().uuid(),
+    patientId: z.uuid(),
     serviceDate: z.preprocess(
       (val) => (typeof val === "string" ? new Date(val) : val),
       z.date(),
     ),
-    serviceProviderId: z.string().uuid().optional().nullable(),
+    serviceProviderId: z.uuid().optional().nullable(),
     details: fpNewSchema,
   }),
   z.object({
     serviceType: z.literal("removal"),
-    patientId: z.string().uuid(),
+    patientId: z.uuid(),
     serviceDate: z.preprocess(
       (val) => (typeof val === "string" ? new Date(val) : val),
       z.date(),
     ),
-    serviceProviderId: z.string().uuid().optional().nullable(),
+    serviceProviderId: z.uuid().optional().nullable(),
     details: fpRemovalSchema,
   }),
 ]);

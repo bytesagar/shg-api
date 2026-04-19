@@ -23,9 +23,9 @@ export const patientCreateSchema = z.object({
   province: z.string().min(1, "Province is required").max(255),
   district: z.string().min(1, "District is required").max(255),
   palika: z.string().min(1, "Palika is required").max(255),
-  provinceId: z.string().uuid().optional().nullable(),
-  districtId: z.string().uuid().optional().nullable(),
-  municipalityId: z.string().uuid().optional().nullable(),
+  provinceId: z.uuid().optional().nullable(),
+  districtId: z.uuid().optional().nullable(),
+  municipalityId: z.uuid().optional().nullable(),
   ward: z.number().int().min(1),
   phoneNumber: z
     .string()
@@ -34,8 +34,8 @@ export const patientCreateSchema = z.object({
   service: z.string().min(1, "Service is required").max(255),
   nationalId: z.string().max(100).optional().nullable(),
   nhisNumber: z.string().max(100).optional().nullable(),
-  facilityId: z.string().uuid().optional().nullable(),
-  assignedUserId: z.string().uuid().optional().nullable(),
+  facilityId: z.uuid().optional().nullable(),
+  assignedUserId: z.uuid().optional().nullable(),
   status: z
     .enum(["active", "inactive", "deceased", "discharged", "referred"])
     .default("active"),

@@ -70,3 +70,25 @@ export const healthFacilitiesListQuerySchema = createListQuerySchema({
 export const logsListQuerySchema = paginationQuerySchema;
 
 export const usersListQuerySchema = paginationQuerySchema;
+
+const isoDateParam = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Expected YYYY-MM-DD");
+
+export const rosterListQuerySchema = createListQuerySchema({
+  fromDate: isoDateParam,
+  toDate: isoDateParam,
+  userId: z.uuid().optional(),
+  service: optionalQueryString,
+});
+
+export const rosterAvailableUsersQuerySchema = z
+  .object({
+    date: isoDateParam,
+    service: optionalQueryString,
+    atTime: optionalQueryString,
+  })
+  .strict();
+
+/** Pagination only — users eligible for the roster "User" dropdown (facility staff, excludes admins). */
+export const rosterAssignableUsersQuerySchema = paginationQuerySchema;

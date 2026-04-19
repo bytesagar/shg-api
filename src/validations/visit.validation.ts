@@ -12,7 +12,7 @@ export const visitCreateSchema = z.object({
     .enum(["planned", "arrived", "in_progress", "finished", "cancelled"])
     .optional()
     .nullable(),
-  doctorId: z.string().uuid().optional().nullable(),
+  doctorId: z.uuid().optional().nullable(),
 });
 
 export type VisitCreateInput = z.infer<typeof visitCreateSchema>;

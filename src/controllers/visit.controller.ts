@@ -7,7 +7,6 @@ import { AuthRequest } from "../middlewares/auth.middleware";
 import {
   complaintCreateSchema,
   confirmDiagnosisCreateSchema,
-  documentCreateSchema,
   historyCreateSchema,
   medicationCreateSchema,
   physicalExaminationCreateSchema,
@@ -298,28 +297,10 @@ export class VisitController extends BaseController {
     return this.created(res, record, "Medication recorded successfully");
   });
 
-  public addDocument = catchAsync(async (req: AuthRequest, res: Response) => {
-    const context = requireFacilityContext(req);
-    const validatedData = documentCreateSchema.safeParse(req.body);
-    if (!validatedData.success) {
-      const errorMessages = validatedData.error.issues
-        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-        .join(", ");
-      throw new AppError(
-        `Validation failed: ${errorMessages}`,
-        HTTP_STATUS.BAD_REQUEST,
-      );
-    }
-
-    const { visitId } = req.params;
-    const recordService = new VisitRecordService(context);
-    const record = await recordService.addDocument(
-      visitId as string,
-      validatedData.data,
+  public addDocument = catchAsync(async () => {
+    throw new AppError(
+      "This endpoint is deprecated. Use POST /attachments/generate-upload-url, upload to S3, then POST /attachments with a sourceType from ATTACHMENT_SOURCES (see server constants), sourceId, and facilityId when required for that source.",
+      HTTP_STATUS.GONE,
     );
-    if (!record) {
-      throw new AppError("Visit not found", HTTP_STATUS.NOT_FOUND);
-    }
-    return this.created(res, record, "Document recorded successfully");
   });
 }

@@ -695,6 +695,36 @@ export const documents = pgTable(
   ],
 );
 
+/** Polymorphic file metadata; `file_url` stores the S3 object key (private bucket). */
+export const attachments = pgTable(
+  "attachments",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    sourceType: varchar("source_type", { length: 50 }).notNull(),
+    sourceId: uuid("source_id").notNull(),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
+    name: varchar("name", { length: 500 }).notNull(),
+    fileUrl: text("file_url").notNull(),
+    fileSize: integer("file_size"),
+    fileType: varchar("file_type", { length: 255 }),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedBy: uuid("deleted_by"),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [
+    index("attachment_facility_id_idx").on(t.facilityId),
+    index("attachment_source_idx").on(t.sourceType, t.sourceId),
+  ],
+);
+
 export const call_requests = pgTable("call_requests", {
   id: uuid("id")
     .primaryKey()

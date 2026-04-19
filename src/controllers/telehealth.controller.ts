@@ -38,6 +38,12 @@ export class TelehealthController extends BaseController {
         if (result.error === "DOCTOR_NOT_FOUND") {
           throw new AppError("Doctor not found", HTTP_STATUS.NOT_FOUND);
         }
+        if (result.error === "PROVIDER_NOT_ON_ROSTER") {
+          throw new AppError(
+            "Selected provider is not on the roster for this facility, date, time, and telehealth service",
+            HTTP_STATUS.BAD_REQUEST,
+          );
+        }
         throw new AppError(
           "Unable to book appointment",
           HTTP_STATUS.BAD_REQUEST,

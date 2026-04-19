@@ -9,6 +9,10 @@ import { EmailService } from "./email.service";
 import { db } from "../db";
 import { telehealth_sessions } from "../db/schema";
 import { eq } from "drizzle-orm";
+import {
+  RosterService,
+  TELEHEALTH_ROSTER_SERVICE,
+} from "./roster.service";
 
 export class TelehealthService {
   private appointmentRepository: AppointmentRepository;
@@ -35,6 +39,16 @@ export class TelehealthService {
     if (!doctor) return { error: "DOCTOR_NOT_FOUND" as const };
     if (doctor.userType !== "doctor")
       return { error: "DOCTOR_NOT_FOUND" as const };
+
+    const rosterService = new RosterService(this.context);
+    const onRoster = await rosterService.isUserOnRosterForBooking({
+      userId: doctor.id,
+      scheduledAt: input.scheduledAt,
+      service: TELEHEALTH_ROSTER_SERVICE,
+    });
+    if (!onRoster) {
+      return { error: "PROVIDER_NOT_ON_ROSTER" as const };
+    }
 
     const appointmentId = randomUUID();
     const room = this.jitsi.buildRoomName(appointmentId);

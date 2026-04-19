@@ -529,7 +529,7 @@ router.post("/:visitId/medications", authMiddleware, visitController.addMedicati
  *   post:
  *     tags:
  *       - Visits
- *     summary: Record a document/report for a visit
+ *     summary: Deprecated — use POST /attachments (S3 presigned flow)
  *     operationId: addDocument
  *     security:
  *       - bearerAuth: []

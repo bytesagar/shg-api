@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export const telehealthAppointmentCreateSchema = z.object({
-  patientId: z.string().uuid(),
-  doctorId: z.string().uuid(),
+  patientId: z.uuid(),
+  doctorId: z.uuid(),
   scheduledAt: z.preprocess(
     (val) => (typeof val === "string" ? new Date(val) : val),
     z.date(),
