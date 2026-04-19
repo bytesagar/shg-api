@@ -40,15 +40,29 @@ export class TelehealthService {
     if (doctor.userType !== "doctor")
       return { error: "DOCTOR_NOT_FOUND" as const };
 
-    const rosterService = new RosterService(this.context);
-    const onRoster = await rosterService.isUserOnRosterForBooking({
-      userId: doctor.id,
-      scheduledAt: input.scheduledAt,
-      service: TELEHEALTH_ROSTER_SERVICE,
-    });
-    if (!onRoster) {
-      return { error: "PROVIDER_NOT_ON_ROSTER" as const };
+    const dayConflict = await this.appointmentRepository.findTelehealthDayConflict(
+      {
+        doctorId: doctor.id,
+        patientId: patient.id,
+        scheduledAt: input.scheduledAt,
+      },
+    );
+    if (dayConflict === "DOCTOR_DAY_TAKEN") {
+      return { error: "TELEHEALTH_DOCTOR_DAY_TAKEN" as const };
     }
+    if (dayConflict === "PATIENT_DAY_TAKEN") {
+      return { error: "TELEHEALTH_PATIENT_DAY_TAKEN" as const };
+    }
+
+    // const rosterService = new RosterService(this.context);
+    // const onRoster = await rosterService.isUserOnRosterForBooking({
+    //   userId: doctor.id,
+    //   scheduledAt: input.scheduledAt,
+    //   service: TELEHEALTH_ROSTER_SERVICE,
+    // });
+    // if (!onRoster) {
+    //   return { error: "PROVIDER_NOT_ON_ROSTER" as const };
+    // }
 
     const appointmentId = randomUUID();
     const room = this.jitsi.buildRoomName(appointmentId);

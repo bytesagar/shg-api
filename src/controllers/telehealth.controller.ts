@@ -32,22 +32,27 @@ export class TelehealthController extends BaseController {
       );
 
       if ("error" in result) {
-        if (result.error === "PATIENT_NOT_FOUND") {
-          throw new AppError("Patient not found", HTTP_STATUS.NOT_FOUND);
+        switch (result.error) {
+          case "PATIENT_NOT_FOUND":
+            throw new AppError("Patient not found", HTTP_STATUS.NOT_FOUND);
+          case "DOCTOR_NOT_FOUND":
+            throw new AppError("Doctor not found", HTTP_STATUS.NOT_FOUND);
+          case "TELEHEALTH_DOCTOR_DAY_TAKEN":
+            throw new AppError(
+              "This doctor already has a telehealth appointment on that calendar day (UTC)",
+              HTTP_STATUS.CONFLICT,
+            );
+          case "TELEHEALTH_PATIENT_DAY_TAKEN":
+            throw new AppError(
+              "This patient already has a telehealth appointment on that calendar day (UTC)",
+              HTTP_STATUS.CONFLICT,
+            );
+          default:
+            throw new AppError(
+              "Unable to book appointment",
+              HTTP_STATUS.BAD_REQUEST,
+            );
         }
-        if (result.error === "DOCTOR_NOT_FOUND") {
-          throw new AppError("Doctor not found", HTTP_STATUS.NOT_FOUND);
-        }
-        if (result.error === "PROVIDER_NOT_ON_ROSTER") {
-          throw new AppError(
-            "Selected provider is not on the roster for this facility, date, time, and telehealth service",
-            HTTP_STATUS.BAD_REQUEST,
-          );
-        }
-        throw new AppError(
-          "Unable to book appointment",
-          HTTP_STATUS.BAD_REQUEST,
-        );
       }
 
       return this.created(

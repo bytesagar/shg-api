@@ -1200,7 +1200,15 @@ export const telehealth_sessions = pgTable("telehealth_sessions", {
   provider: varchar("provider", { length: 50 }),
   roomName: varchar("room_name", { length: 255 }),
   startedAt: timestamp("started_at"),
+  endedAt: timestamp("ended_at"),
   durationSeconds: integer("duration_seconds").default(0),
+  jaasSessionId: varchar("jaas_session_id", { length: 255 }),
+});
+
+/** Dedupe JaaS webhook deliveries (same idempotencyKey = duplicate). */
+export const jaas_webhook_idempotency = pgTable("jaas_webhook_idempotency", {
+  idempotencyKey: text("idempotency_key").primaryKey().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const notifications = pgTable(

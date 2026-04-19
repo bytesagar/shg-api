@@ -10,6 +10,7 @@ import familyPlanningRoutes from "./family-planning.routes";
 import rosterRoutes from "./roster.routes";
 import attachmentRoutes from "./attachment.routes";
 import icd11CodeRoutes from "./icd11-code.routes";
+import jaasWebhookRoutes from "./jaas-webhook.routes";
 
 const router = Router();
 
@@ -41,5 +42,6 @@ router.use("/family-plannings", familyPlanningRoutes);
 router.use("/rosters", rosterRoutes);
 router.use("/attachments", attachmentRoutes);
 router.use("/icd11-codes", icd11CodeRoutes);
+router.use("/webhooks/jaas", jaasWebhookRoutes);
 
 export default router;
