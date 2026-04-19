@@ -69,10 +69,45 @@ router.get(
  *   get:
  *     tags:
  *       - Rosters
- *     summary: List roster shifts for the facility in a date range
+ *     summary: List roster shifts for the facility (optional date range)
  *     operationId: listRosters
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - name: fromDate
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Inclusive start (YYYY-MM-DD). Omit with toDate to list all dates.
+ *       - name: toDate
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Inclusive end (YYYY-MM-DD). Omit with fromDate to list all dates.
+ *       - name: page
+ *         in: query
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *       - name: pageSize
+ *         in: query
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *       - name: userId
+ *         in: query
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - name: service
+ *         in: query
+ *         schema:
+ *           type: string
  */
 router.get("/", authMiddleware, rosterController.listRosters);
 

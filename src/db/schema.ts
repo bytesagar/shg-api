@@ -580,6 +580,24 @@ export const confirm_diagnoses = pgTable(
   ],
 );
 
+/** ICD-11 MMS reference rows (e.g. Nepal common list); not facility-scoped. */
+export const icd11_codes = pgTable(
+  "icd11_codes",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    code: varchar("code", { length: 50 }).notNull(),
+    title: text("title").notNull(),
+    category: varchar("category", { length: 255 }).notNull(),
+  },
+  (t) => [
+    uniqueIndex("icd11_codes_code_uidx").on(t.code),
+    index("icd11_codes_category_idx").on(t.category),
+  ],
+);
+
 export const tests = pgTable(
   "tests",
   {

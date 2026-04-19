@@ -1,0 +1,1103 @@
+{
+  "metadata": {
+    "source": "ICD-11 MMS Linearization (WHO 2026 Apr release)",
+    "country": "Nepal",
+    "basis": "Nepal HMIS, WHO Nepal country profile, Nepal Health Sector Strategy 2023-2030, NDHS, Nepal Cancer Registry",
+    "total_codes": 182,
+    "generated": "2026-04-19"
+  },
+  "codes": [
+    {
+      "code": "1A07",
+      "title": "Typhoid fever",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Endemic - high burden"
+    },
+    {
+      "code": "1A07.Z",
+      "title": "Typhoid fever, unspecified",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Endemic - high burden"
+    },
+    {
+      "code": "1A00",
+      "title": "Cholera",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Epidemic-prone"
+    },
+    {
+      "code": "1A02",
+      "title": "Intestinal infections due to Shigella",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Endemic"
+    },
+    {
+      "code": "1A36",
+      "title": "Amoebiasis",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Endemic"
+    },
+    {
+      "code": "1A36.0",
+      "title": "Intestinal infections due to Entamoeba",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Endemic"
+    },
+    {
+      "code": "1A31",
+      "title": "Giardiasis",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Endemic"
+    },
+    {
+      "code": "1A40",
+      "title": "Gastroenteritis or colitis without specification of infectious agent",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Very common"
+    },
+    {
+      "code": "1A40.0",
+      "title": "Gastroenteritis or colitis without specification of origin",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Very common"
+    },
+    {
+      "code": "1A22",
+      "title": "Gastroenteritis due to Rotavirus",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Leading cause child diarrhea"
+    },
+    {
+      "code": "1B11",
+      "title": "Tuberculosis of the nervous system",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "High burden - national program"
+    },
+    {
+      "code": "1B11.0",
+      "title": "Tuberculous meningitis",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "High burden"
+    },
+    {
+      "code": "1B11.Z",
+      "title": "Tuberculosis of the nervous system, unspecified",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "High burden"
+    },
+    {
+      "code": "1B12",
+      "title": "Tuberculosis of other systems or organs",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Significant"
+    },
+    {
+      "code": "1C62",
+      "title": "Human immunodeficiency virus disease without mention of tuberculosis or malaria",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "National program"
+    },
+    {
+      "code": "1C62.Z",
+      "title": "Human immunodeficiency virus disease without mention of tuberculosis or malaria, clinical stage unspecified",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "National program"
+    },
+    {
+      "code": "1D00",
+      "title": "Infectious encephalitis, not elsewhere classified",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Endemic terai"
+    },
+    {
+      "code": "1D00.0",
+      "title": "Bacterial encephalitis",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Terai region"
+    },
+    {
+      "code": "1D00.1",
+      "title": "Fungal encephalitis",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Most common type Nepal"
+    },
+    {
+      "code": "1C81",
+      "title": "Acute poliomyelitis",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Emerging - increasing burden"
+    },
+    {
+      "code": "1C81.Z",
+      "title": "Dengue, unspecified",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Emerging"
+    },
+    {
+      "code": "1A32",
+      "title": "Cryptosporidiosis",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Endemic"
+    },
+    {
+      "code": "1F03",
+      "title": "Measles",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "High prevalence"
+    },
+    {
+      "code": "1F04",
+      "title": "Erythema infectiosum",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Endemic"
+    },
+    {
+      "code": "1F06",
+      "title": "Hookworm disease",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Endemic"
+    },
+    {
+      "code": "1A94",
+      "title": "Anogenital herpes simplex infection",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Endemic - outbreaks common"
+    },
+    {
+      "code": "1E50",
+      "title": "Acute viral hepatitis",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Significant burden"
+    },
+    {
+      "code": "1E51",
+      "title": "Chronic viral hepatitis",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Significant burden"
+    },
+    {
+      "code": "1E80",
+      "title": "Common warts",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Epidemic-prone - Nepal 2014 outbreak"
+    },
+    {
+      "code": "1C10",
+      "title": "Actinomycosis",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "EPI program"
+    },
+    {
+      "code": "CA40",
+      "title": "Pneumonia",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Seasonal burden"
+    },
+    {
+      "code": "CA40.Z",
+      "title": "Pneumonia, organism unspecified",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Seasonal burden"
+    },
+    {
+      "code": "1F20",
+      "title": "Aspergillosis",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Endemic terai - national program"
+    },
+    {
+      "code": "1G00",
+      "title": "Pediculosis",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Emerging"
+    },
+    {
+      "code": "1C90",
+      "title": "Scrub typhus",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Emerging - hill regions"
+    },
+    {
+      "code": "1B90",
+      "title": "Rat-bite fevers",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Elimination phase"
+    },
+    {
+      "code": "1C1A",
+      "title": "Listeriosis",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "EPI program - terai"
+    },
+    {
+      "code": "1C43",
+      "title": "Actinomycetoma",
+      "category": "Infectious & Parasitic",
+      "nepal_context": "Dog bite burden"
+    },
+    {
+      "code": "CA00",
+      "title": "Acute nasopharyngitis",
+      "category": "Respiratory",
+      "nepal_context": "Leading OPD cause"
+    },
+    {
+      "code": "CA00.Z",
+      "title": "Acute upper respiratory infection, unspecified",
+      "category": "Respiratory",
+      "nepal_context": "Leading OPD cause"
+    },
+    {
+      "code": "CA01",
+      "title": "Acute sinusitis",
+      "category": "Respiratory",
+      "nepal_context": "Very common"
+    },
+    {
+      "code": "CA02",
+      "title": "Acute pharyngitis",
+      "category": "Respiratory",
+      "nepal_context": "Very common"
+    },
+    {
+      "code": "CA03",
+      "title": "Acute tonsillitis",
+      "category": "Respiratory",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "CA22",
+      "title": "Chronic obstructive pulmonary disease",
+      "category": "Respiratory",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "CA22.Z",
+      "title": "Chronic obstructive pulmonary disease, unspecified",
+      "category": "Respiratory",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "CA23",
+      "title": "Asthma",
+      "category": "Respiratory",
+      "nepal_context": "Leading infant hospitalization"
+    },
+    {
+      "code": "CA40.0",
+      "title": "Bacterial pneumonia",
+      "category": "Respiratory",
+      "nepal_context": "Severe influenza"
+    },
+    {
+      "code": "CA09",
+      "title": "Chronic rhinitis, nasopharyngitis or pharyngitis",
+      "category": "Respiratory",
+      "nepal_context": "Major child mortality cause"
+    },
+    {
+      "code": "CA09.Z",
+      "title": "Acute lower respiratory infection, unspecified",
+      "category": "Respiratory",
+      "nepal_context": "Major child mortality cause"
+    },
+    {
+      "code": "CA22.0",
+      "title": "Chronic obstructive pulmonary disease with acute exacerbation, unspecified",
+      "category": "Respiratory",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "CB00",
+      "title": "Acute respiratory distress syndrome",
+      "category": "Respiratory",
+      "nepal_context": "Top cause child death"
+    },
+    {
+      "code": "CB00.Z",
+      "title": "Pneumonia, unspecified",
+      "category": "Respiratory",
+      "nepal_context": "Top cause child death"
+    },
+    {
+      "code": "CB01",
+      "title": "Pulmonary oedema",
+      "category": "Respiratory",
+      "nepal_context": "Common pathogen"
+    },
+    {
+      "code": "CA81",
+      "title": "Respiratory conditions due to inhalation of chemicals, gases, fumes or vapours",
+      "category": "Respiratory",
+      "nepal_context": "Major NCD - biomass fuel"
+    },
+    {
+      "code": "CA81.Z",
+      "title": "Respiratory conditions due to inhalation of chemicals, gases, fumes or vapours, unspecified",
+      "category": "Respiratory",
+      "nepal_context": "Major NCD - biomass fuel"
+    },
+    {
+      "code": "CA83",
+      "title": "Asthma",
+      "category": "Respiratory",
+      "nepal_context": "High prevalence"
+    },
+    {
+      "code": "CA83.Z",
+      "title": "Asthma, unspecified",
+      "category": "Respiratory",
+      "nepal_context": "High prevalence"
+    },
+    {
+      "code": "JA00",
+      "title": "Abortion",
+      "category": "Maternal Health",
+      "nepal_context": "Leading maternal mortality cause"
+    },
+    {
+      "code": "JA00.Z",
+      "title": "Antepartum haemorrhage, unspecified",
+      "category": "Maternal Health",
+      "nepal_context": "Leading maternal mortality cause"
+    },
+    {
+      "code": "JA00.1",
+      "title": "Induced abortion",
+      "category": "Maternal Health",
+      "nepal_context": "Significant"
+    },
+    {
+      "code": "JA01",
+      "title": "Ectopic pregnancy",
+      "category": "Maternal Health",
+      "nepal_context": "Top maternal death cause"
+    },
+    {
+      "code": "JA01.Z",
+      "title": "Ectopic pregnancy, unspecified",
+      "category": "Maternal Health",
+      "nepal_context": "Top maternal death cause"
+    },
+    {
+      "code": "JA22",
+      "title": "Gestational oedema or proteinuria without hypertension",
+      "category": "Maternal Health",
+      "nepal_context": "Major maternal mortality cause"
+    },
+    {
+      "code": "JA22.1",
+      "title": "Gestational oedema without hypertension",
+      "category": "Maternal Health",
+      "nepal_context": "Major maternal mortality cause"
+    },
+    {
+      "code": "JA24",
+      "title": "Pre-eclampsia",
+      "category": "Maternal Health",
+      "nepal_context": "Major maternal mortality cause"
+    },
+    {
+      "code": "JA24.Z",
+      "title": "Pre-eclampsia, unspecified",
+      "category": "Maternal Health",
+      "nepal_context": "Major maternal mortality cause"
+    },
+    {
+      "code": "JA65",
+      "title": "Maternal care for other conditions predominantly related to pregnancy",
+      "category": "Maternal Health",
+      "nepal_context": "Significant mortality cause"
+    },
+    {
+      "code": "JA40",
+      "title": "Haemorrhage in early pregnancy",
+      "category": "Maternal Health",
+      "nepal_context": "Significant in rural Nepal"
+    },
+    {
+      "code": "JA84",
+      "title": "Maternal care for abnormality of pelvic organs",
+      "category": "Maternal Health",
+      "nepal_context": "Very high prevalence"
+    },
+    {
+      "code": "JA25",
+      "title": "Eclampsia",
+      "category": "Maternal Health",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "JA60",
+      "title": "Excessive vomiting in pregnancy",
+      "category": "Maternal Health",
+      "nepal_context": "Significant"
+    },
+    {
+      "code": "JB00",
+      "title": "Preterm labour or delivery",
+      "category": "Maternal Health",
+      "nepal_context": "Legal since 2002 - high volume"
+    },
+    {
+      "code": "JB00.Z",
+      "title": "Preterm labour or delivery, unspecified",
+      "category": "Maternal Health",
+      "nepal_context": "High volume"
+    },
+    {
+      "code": "KA20",
+      "title": "Disorders of newborn related to slow fetal growth or fetal malnutrition",
+      "category": "Perinatal",
+      "nepal_context": "Top neonatal death cause"
+    },
+    {
+      "code": "KA21",
+      "title": "Disorders of newborn related to short gestation or low birth weight, not elsewhere classified",
+      "category": "Perinatal",
+      "nepal_context": "Top neonatal death cause"
+    },
+    {
+      "code": "KA21.Z",
+      "title": "Neonatal sepsis, unspecified",
+      "category": "Perinatal",
+      "nepal_context": "Top neonatal death cause"
+    },
+    {
+      "code": "KA00",
+      "title": "Fetus or newborn affected by maternal conditions that may be unrelated to present pregnancy",
+      "category": "Perinatal",
+      "nepal_context": "Top neonatal death cause"
+    },
+    {
+      "code": "KA01",
+      "title": "Fetus or newborn affected by maternal complications of pregnancy",
+      "category": "Perinatal",
+      "nepal_context": "Significant"
+    },
+    {
+      "code": "KA02",
+      "title": "Fetus or newborn affected by complications of placenta",
+      "category": "Perinatal",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "KA40",
+      "title": "Birth injury to central nervous system",
+      "category": "Perinatal",
+      "nepal_context": "Very common"
+    },
+    {
+      "code": "KA40.Z",
+      "title": "Birth injury to central nervous system, unspecified",
+      "category": "Perinatal",
+      "nepal_context": "Very common"
+    },
+    {
+      "code": "KB22",
+      "title": "Metabolic acidaemia in newborn",
+      "category": "Perinatal",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "KA80",
+      "title": "Fetal blood loss",
+      "category": "Perinatal",
+      "nepal_context": "High prevalence Nepal"
+    },
+    {
+      "code": "5B55",
+      "title": "Vitamin A deficiency",
+      "category": "Nutrition",
+      "nepal_context": "Significant child malnutrition"
+    },
+    {
+      "code": "5B55.Z",
+      "title": "Vitamin A deficiency, unspecified",
+      "category": "Nutrition",
+      "nepal_context": "Significant"
+    },
+    {
+      "code": "5B56",
+      "title": "Vitamin C deficiency",
+      "category": "Nutrition",
+      "nepal_context": "Present"
+    },
+    {
+      "code": "5B71",
+      "title": "Protein deficiency",
+      "category": "Nutrition",
+      "nepal_context": "Very high prevalence"
+    },
+    {
+      "code": "5B71.Z",
+      "title": "Iron deficiency anaemia, unspecified",
+      "category": "Nutrition",
+      "nepal_context": "Very high prevalence"
+    },
+    {
+      "code": "5B73",
+      "title": "Vitamin B12 deficiency anaemia",
+      "category": "Nutrition",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "5B50",
+      "title": "Underweight in infants, children or adolescents",
+      "category": "Nutrition",
+      "nepal_context": "Historical - program ongoing"
+    },
+    {
+      "code": "5B52",
+      "title": "Acute malnutrition in infants, children or adolescents",
+      "category": "Nutrition",
+      "nepal_context": "Historically high - program"
+    },
+    {
+      "code": "5B61",
+      "title": "Sequelae of vitamin A deficiency",
+      "category": "Nutrition",
+      "nepal_context": "Common child"
+    },
+    {
+      "code": "5C00",
+      "title": "Obesity",
+      "category": "Nutrition",
+      "nepal_context": "Emerging NCD"
+    },
+    {
+      "code": "BA80",
+      "title": "Essential hypertension",
+      "category": "Cardiovascular",
+      "nepal_context": "Major NCD burden"
+    },
+    {
+      "code": "BA80.Z",
+      "title": "Essential hypertension, unspecified",
+      "category": "Cardiovascular",
+      "nepal_context": "Major NCD burden"
+    },
+    {
+      "code": "BA41",
+      "title": "Acute myocardial infarction",
+      "category": "Cardiovascular",
+      "nepal_context": "Increasing burden"
+    },
+    {
+      "code": "BA41.Z",
+      "title": "Acute myocardial infarction, unspecified",
+      "category": "Cardiovascular",
+      "nepal_context": "Increasing burden"
+    },
+    {
+      "code": "BA80.0",
+      "title": "Isolated systolic hypertension",
+      "category": "Cardiovascular",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "BA01",
+      "title": "Hypertensive heart disease",
+      "category": "Cardiovascular",
+      "nepal_context": "High burden - strep endemic"
+    },
+    {
+      "code": "BA02",
+      "title": "Hypertensive renal disease",
+      "category": "Cardiovascular",
+      "nepal_context": "High burden Nepal"
+    },
+    {
+      "code": "BA02.Z",
+      "title": "Chronic rheumatic heart disease, unspecified",
+      "category": "Cardiovascular",
+      "nepal_context": "High burden Nepal"
+    },
+    {
+      "code": "BA60",
+      "title": "Certain current complications following acute myocardial infarction",
+      "category": "Cardiovascular",
+      "nepal_context": "Growing NCD"
+    },
+    {
+      "code": "BG20",
+      "title": "Stroke",
+      "category": "Cardiovascular",
+      "nepal_context": "Major cause death/disability"
+    },
+    {
+      "code": "BG20.Z",
+      "title": "Stroke, unspecified",
+      "category": "Cardiovascular",
+      "nepal_context": "Major cause death/disability"
+    },
+    {
+      "code": "BG21",
+      "title": "Transient ischaemic attack",
+      "category": "Cardiovascular",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "BA83",
+      "title": "Coronary artery fistula, acquired",
+      "category": "Cardiovascular",
+      "nepal_context": "Common sequela"
+    },
+    {
+      "code": "BA83.Z",
+      "title": "Heart failure, unspecified",
+      "category": "Cardiovascular",
+      "nepal_context": "Common sequela"
+    },
+    {
+      "code": "5A10",
+      "title": "Type 1 diabetes mellitus",
+      "category": "Endocrine",
+      "nepal_context": "Growing burden"
+    },
+    {
+      "code": "5A11",
+      "title": "Type 2 diabetes mellitus",
+      "category": "Endocrine",
+      "nepal_context": "Major NCD - 8.5% prevalence"
+    },
+    {
+      "code": "5A11.Z",
+      "title": "Type 2 diabetes mellitus, unspecified",
+      "category": "Endocrine",
+      "nepal_context": "Major NCD"
+    },
+    {
+      "code": "5A00",
+      "title": "Hypothyroidism",
+      "category": "Endocrine",
+      "nepal_context": "High - iodine deficiency history"
+    },
+    {
+      "code": "5A00.1",
+      "title": "Iodine-deficiency-related thyroid disorders or allied conditions",
+      "category": "Endocrine",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "5A01",
+      "title": "Nontoxic goitre",
+      "category": "Endocrine",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "5A80",
+      "title": "Ovarian dysfunction",
+      "category": "Endocrine",
+      "nepal_context": "High prevalence"
+    },
+    {
+      "code": "6A70",
+      "title": "Single episode depressive disorder",
+      "category": "Mental Health",
+      "nepal_context": "High burden post-earthquake"
+    },
+    {
+      "code": "6A70.Z",
+      "title": "Single episode depressive disorder, unspecified",
+      "category": "Mental Health",
+      "nepal_context": "High burden"
+    },
+    {
+      "code": "6A71",
+      "title": "Recurrent depressive disorder",
+      "category": "Mental Health",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "6B00",
+      "title": "Generalised anxiety disorder",
+      "category": "Mental Health",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "6A20",
+      "title": "Schizophrenia",
+      "category": "Mental Health",
+      "nepal_context": "Significant"
+    },
+    {
+      "code": "6C40",
+      "title": "Disorders due to use of alcohol",
+      "category": "Mental Health",
+      "nepal_context": "High burden - male population"
+    },
+    {
+      "code": "6C4H",
+      "title": "Disorders due to use of non-psychoactive substances",
+      "category": "Mental Health",
+      "nepal_context": "Significant - border region"
+    },
+    {
+      "code": "6A00",
+      "title": "Disorders of intellectual development",
+      "category": "Mental Health",
+      "nepal_context": "Post-earthquake 2015"
+    },
+    {
+      "code": "6A01",
+      "title": "Developmental speech or language disorders",
+      "category": "Mental Health",
+      "nepal_context": "Post-earthquake 2015"
+    },
+    {
+      "code": "6A05",
+      "title": "Attention deficit hyperactivity disorder",
+      "category": "Mental Health",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "FA00",
+      "title": "Osteoarthritis of hip",
+      "category": "Musculoskeletal",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "FA01",
+      "title": "Osteoarthritis of knee",
+      "category": "Musculoskeletal",
+      "nepal_context": "Very common - older population"
+    },
+    {
+      "code": "FA01.Z",
+      "title": "Osteoarthritis of knee, unspecified",
+      "category": "Musculoskeletal",
+      "nepal_context": "Very common"
+    },
+    {
+      "code": "FA30",
+      "title": "Acquired deformities of fingers or toes",
+      "category": "Musculoskeletal",
+      "nepal_context": "Leading cause disability"
+    },
+    {
+      "code": "FA80",
+      "title": "Intervertebral disc degeneration",
+      "category": "Musculoskeletal",
+      "nepal_context": "Common - elderly women"
+    },
+    {
+      "code": "DA91",
+      "title": "Obstruction of small intestine",
+      "category": "Digestive",
+      "nepal_context": "Very common OPD"
+    },
+    {
+      "code": "DA91.Z",
+      "title": "Obstruction of small intestine, unspecified",
+      "category": "Digestive",
+      "nepal_context": "Very common"
+    },
+    {
+      "code": "DA20",
+      "title": "Acquired anatomical alterations of the oesophagus",
+      "category": "Digestive",
+      "nepal_context": "H. pylori endemic"
+    },
+    {
+      "code": "DA20.Z",
+      "title": "Acquired anatomical alterations of the oesophagus, unspecified",
+      "category": "Digestive",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "DB92",
+      "title": "Non-alcoholic fatty liver disease",
+      "category": "Digestive",
+      "nepal_context": "Emerging NCD"
+    },
+    {
+      "code": "DB90",
+      "title": "Infectious liver disease",
+      "category": "Digestive",
+      "nepal_context": "Significant"
+    },
+    {
+      "code": "DB91",
+      "title": "Acute or subacute hepatic failure",
+      "category": "Digestive",
+      "nepal_context": "Significant - alcohol + hepatitis"
+    },
+    {
+      "code": "DB91.Z",
+      "title": "Acute or subacute hepatic failure, unspecified",
+      "category": "Digestive",
+      "nepal_context": "Significant"
+    },
+    {
+      "code": "DA40",
+      "title": "Acquired anatomical alterations of the stomach",
+      "category": "Digestive",
+      "nepal_context": "Common surgical emergency"
+    },
+    {
+      "code": "DA40.Z",
+      "title": "Acquired anatomical alterations of the stomach, unspecified",
+      "category": "Digestive",
+      "nepal_context": "Common surgical"
+    },
+    {
+      "code": "DE20",
+      "title": "Cholelithiasis",
+      "category": "Digestive",
+      "nepal_context": "High prevalence"
+    },
+    {
+      "code": "DE21",
+      "title": "Cholecystitis",
+      "category": "Digestive",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "GB70",
+      "title": "Calculus of upper urinary tract",
+      "category": "Urinary",
+      "nepal_context": "Very common - all ages"
+    },
+    {
+      "code": "GB70.Z",
+      "title": "Calculus of upper urinary tract, unspecified",
+      "category": "Urinary",
+      "nepal_context": "Very common"
+    },
+    {
+      "code": "GB61",
+      "title": "Chronic kidney disease",
+      "category": "Urinary",
+      "nepal_context": "Growing burden"
+    },
+    {
+      "code": "GB61.Z",
+      "title": "Chronic kidney disease, stage unspecified",
+      "category": "Urinary",
+      "nepal_context": "Growing burden"
+    },
+    {
+      "code": "GC00",
+      "title": "Cystitis",
+      "category": "Urinary",
+      "nepal_context": "High prevalence hill region"
+    },
+    {
+      "code": "EA90",
+      "title": "Psoriasis",
+      "category": "Dermatology",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "EA80",
+      "title": "Atopic eczema",
+      "category": "Dermatology",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "1B70",
+      "title": "Bacterial cellulitis, erysipelas or lymphangitis",
+      "category": "Dermatology",
+      "nepal_context": "Very common"
+    },
+    {
+      "code": "1B70.Z",
+      "title": "Bacterial cellulitis or lymphangitis due to unspecified bacterium",
+      "category": "Dermatology",
+      "nepal_context": "Very common"
+    },
+    {
+      "code": "EK90",
+      "title": "Actinic keratosis and other discrete epidermal dysplasias",
+      "category": "Dermatology",
+      "nepal_context": "High prevalence - crowded settings"
+    },
+    {
+      "code": "9A00",
+      "title": "Congenital malposition of eyelids",
+      "category": "Eye",
+      "nepal_context": "Very common"
+    },
+    {
+      "code": "9A00.Z",
+      "title": "Congenital malposition of eyelids, unspecified",
+      "category": "Eye",
+      "nepal_context": "Very common"
+    },
+    {
+      "code": "9B10",
+      "title": "Cataract",
+      "category": "Eye",
+      "nepal_context": "Leading cause blindness"
+    },
+    {
+      "code": "9B10.Z",
+      "title": "Cataract, unspecified",
+      "category": "Eye",
+      "nepal_context": "Leading cause blindness - Tilganga"
+    },
+    {
+      "code": "9C80",
+      "title": "Non paralytic strabismus",
+      "category": "Eye",
+      "nepal_context": "Significant cause blindness"
+    },
+    {
+      "code": "NF01",
+      "title": "Effects of heat",
+      "category": "Injury",
+      "nepal_context": "Major cause death/disability"
+    },
+    {
+      "code": "NF0Z",
+      "title": "Unspecified effects of external causes",
+      "category": "Injury",
+      "nepal_context": "Common"
+    },
+    {
+      "code": "NB91",
+      "title": "Injury of intra-abdominal organs",
+      "category": "Injury",
+      "nepal_context": "Very common"
+    },
+    {
+      "code": "NB91.Z",
+      "title": "Injury of intra-abdominal organs, unspecified",
+      "category": "Injury",
+      "nepal_context": "Very common"
+    },
+    {
+      "code": "ND50",
+      "title": "Fracture of spine, level unspecified",
+      "category": "Injury",
+      "nepal_context": "Significant - cooking fires"
+    },
+    {
+      "code": "ND50.Z",
+      "title": "Burns, unspecified",
+      "category": "Injury",
+      "nepal_context": "Significant"
+    },
+    {
+      "code": "PF30",
+      "title": "Drowning",
+      "category": "Injury",
+      "nepal_context": "Significant cause child death"
+    },
+    {
+      "code": "NA00",
+      "title": "Superficial injury of head",
+      "category": "Injury",
+      "nepal_context": "Trauma"
+    },
+    {
+      "code": "ND20",
+      "title": "Poisoning",
+      "category": "Injury",
+      "nepal_context": "Pesticide poisoning significant"
+    },
+    {
+      "code": "ND20.Z",
+      "title": "Poisoning, unspecified",
+      "category": "Injury",
+      "nepal_context": "Significant"
+    },
+    {
+      "code": "PD70",
+      "title": "Assault by air or space transport injury event with aircraft or spacecraft damaged, disabled or destroyed",
+      "category": "Injury",
+      "nepal_context": "High rate - organophosphate"
+    },
+    {
+      "code": "2C25",
+      "title": "Malignant neoplasms of bronchus or lung",
+      "category": "Oncology",
+      "nepal_context": "Leading female cancer Nepal"
+    },
+    {
+      "code": "2C25.Z",
+      "title": "Malignant neoplasms of bronchus or lung, unspecified",
+      "category": "Oncology",
+      "nepal_context": "Leading female cancer"
+    },
+    {
+      "code": "2C61",
+      "title": "Invasive carcinoma of breast",
+      "category": "Oncology",
+      "nepal_context": "Leading cancer - smoking + biomass"
+    },
+    {
+      "code": "2C61.Z",
+      "title": "Invasive carcinoma of breast, unspecified",
+      "category": "Oncology",
+      "nepal_context": "Leading cancer"
+    },
+    {
+      "code": "2C18",
+      "title": "Malignant neoplasms of perihilar bile duct",
+      "category": "Oncology",
+      "nepal_context": "Common - H. pylori + diet"
+    },
+    {
+      "code": "2C80",
+      "title": "Malignant neoplasms of testis",
+      "category": "Oncology",
+      "nepal_context": "Second female cancer"
+    },
+    {
+      "code": "2C80.Z",
+      "title": "Malignant neoplasms of testis, unspecified",
+      "category": "Oncology",
+      "nepal_context": "Second female cancer"
+    },
+    {
+      "code": "2B30",
+      "title": "Hodgkin lymphoma",
+      "category": "Oncology",
+      "nepal_context": "Common haematologic"
+    },
+    {
+      "code": "2C90",
+      "title": "Malignant neoplasms of kidney, except renal pelvis",
+      "category": "Oncology",
+      "nepal_context": "Growing burden"
+    },
+    {
+      "code": "2C10",
+      "title": "Malignant neoplasm of pancreas",
+      "category": "Oncology",
+      "nepal_context": "High - tobacco/betel nut use"
+    },
+    {
+      "code": "2C12",
+      "title": "Malignant neoplasms of liver or intrahepatic bile ducts",
+      "category": "Oncology",
+      "nepal_context": "Significant"
+    },
+    {
+      "code": "2C60",
+      "title": "Carcinoma of breast, specialised type",
+      "category": "Oncology",
+      "nepal_context": "Hepatitis B/C related"
+    },
+    {
+      "code": "2C70",
+      "title": "Malignant neoplasms of vulva",
+      "category": "Oncology",
+      "nepal_context": "Growing burden - male"
+    },
+    {
+      "code": "NF0G",
+      "title": "Venomous animal bite or sting",
+      "category": "Injury",
+      "nepal_context": "High burden - rural Nepal"
+    },
+    {
+      "code": "NF0G.0",
+      "title": "Snakebite with venom",
+      "category": "Injury",
+      "nepal_context": "Terai and hills - significant mortality"
+    }
+  ]
+}

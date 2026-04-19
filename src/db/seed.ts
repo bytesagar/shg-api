@@ -1,8 +1,10 @@
 import "dotenv/config";
+import { readFileSync } from "fs";
+import { join } from "path";
 import { db } from "./index";
-import { users, health_facilities, user_roles } from "./schema";
+import { icd11_codes, users, health_facilities, user_roles } from "./schema";
 import * as bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 /** Canonical roles for `user_roles`; idempotent by `name`. */
 const DEFAULT_USER_ROLES: { name: string; description: string }[] = [
@@ -42,8 +44,48 @@ async function seedUserRoles() {
   console.log("✅ User roles seeded");
 }
 
+async function seedIcd11Codes() {
+  console.log("🌱 Seeding ICD-11 codes...");
+  const filePath = join(__dirname, "../../data/icd11-nepal-common.json");
+  const raw = readFileSync(filePath, "utf-8");
+  const parsed = JSON.parse(raw) as {
+    metadata?: { source?: string; generated?: string };
+    codes: { code: string; title: string; category: string }[];
+  };
+
+  if (parsed.metadata?.source) {
+    console.log(
+      `  ↳ ICD-11 metadata: source=${parsed.metadata.source}, generated=${parsed.metadata?.generated ?? "n/a"}`,
+    );
+  }
+
+  const rows = parsed.codes.map((c) => ({
+    code: c.code,
+    title: c.title,
+    category: c.category,
+  }));
+
+  const batchSize = 50;
+  for (let i = 0; i < rows.length; i += batchSize) {
+    const chunk = rows.slice(i, i + batchSize);
+    await db
+      .insert(icd11_codes)
+      .values(chunk)
+      .onConflictDoUpdate({
+        target: icd11_codes.code,
+        set: {
+          title: sql`excluded.title`,
+          category: sql`excluded.category`,
+        },
+      });
+  }
+
+  console.log(`✅ ICD-11 codes seeded (${rows.length} rows)`);
+}
+
 async function seed() {
   await seedUserRoles();
+  await seedIcd11Codes();
 
   console.log("🌱 Seeding health facilities...");
 

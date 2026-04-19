@@ -66,14 +66,20 @@ export class RosterService {
   public async listRosters(query: {
     page: number;
     pageSize: number;
-    fromDate: string;
-    toDate: string;
+    fromDate?: string;
+    toDate?: string;
     userId?: string;
     service?: string;
   }) {
-    const fromUtc = utcMidnightForCalendarDay(query.fromDate);
-    const toUtcEnd = utcMidnightForCalendarDay(query.toDate);
-    const toUtc = new Date(toUtcEnd.getTime() + 24 * 60 * 60 * 1000 - 1);
+    let fromUtc: Date | undefined;
+    let toUtc: Date | undefined;
+    if (query.fromDate) {
+      fromUtc = utcMidnightForCalendarDay(query.fromDate);
+    }
+    if (query.toDate) {
+      const toUtcEnd = utcMidnightForCalendarDay(query.toDate);
+      toUtc = new Date(toUtcEnd.getTime() + 24 * 60 * 60 * 1000 - 1);
+    }
 
     return this.rosterRepository.findMany({
       fromUtc,

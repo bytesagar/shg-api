@@ -19,18 +19,20 @@ export class RosterRepository extends FacilityRepository {
   }
 
   public async findMany(params: {
-    fromUtc: Date;
-    toUtc: Date;
+    fromUtc?: Date;
+    toUtc?: Date;
     userId?: string;
     service?: string;
     limit: number;
     offset: number;
   }) {
-    const clauses: SQL[] = [
-      gte(rosters.date, params.fromUtc),
-      lte(rosters.date, params.toUtc),
-      isNull(rosters.deletedAt),
-    ];
+    const clauses: SQL[] = [isNull(rosters.deletedAt)];
+    if (params.fromUtc !== undefined) {
+      clauses.push(gte(rosters.date, params.fromUtc));
+    }
+    if (params.toUtc !== undefined) {
+      clauses.push(lte(rosters.date, params.toUtc));
+    }
     if (params.userId) {
       clauses.push(eq(rosters.userId, params.userId));
     }

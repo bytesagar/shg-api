@@ -9,6 +9,7 @@ import telehealthRoutes from "./telehealth.routes";
 import familyPlanningRoutes from "./family-planning.routes";
 import rosterRoutes from "./roster.routes";
 import attachmentRoutes from "./attachment.routes";
+import icd11CodeRoutes from "./icd11-code.routes";
 
 const router = Router();
 
@@ -39,5 +40,6 @@ router.use("/telehealth", telehealthRoutes);
 router.use("/family-plannings", familyPlanningRoutes);
 router.use("/rosters", rosterRoutes);
 router.use("/attachments", attachmentRoutes);
+router.use("/icd11-codes", icd11CodeRoutes);
 
 export default router;

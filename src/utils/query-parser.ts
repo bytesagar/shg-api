@@ -75,9 +75,10 @@ const isoDateParam = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, "Expected YYYY-MM-DD");
 
+/** When both omitted, roster list returns all rows (still paginated). */
 export const rosterListQuerySchema = createListQuerySchema({
-  fromDate: isoDateParam,
-  toDate: isoDateParam,
+  fromDate: isoDateParam.optional(),
+  toDate: isoDateParam.optional(),
   userId: z.uuid().optional(),
   service: optionalQueryString,
 });
@@ -92,3 +93,16 @@ export const rosterAvailableUsersQuerySchema = z
 
 /** Pagination only — users eligible for the roster "User" dropdown (facility staff, excludes admins). */
 export const rosterAssignableUsersQuerySchema = paginationQuerySchema;
+
+/** Optional search string for ICD-11 list; trimmed, max 100 chars; empty/absent = list all. */
+const icd11CodesSearchQ = z.preprocess((v) => {
+  if (typeof v !== "string") return undefined;
+  const t = v.trim();
+  if (t.length === 0) return undefined;
+  return t.slice(0, 100);
+}, z.string().max(100).optional());
+
+export const icd11CodesListQuerySchema = createListQuerySchema({
+  q: icd11CodesSearchQ,
+  category: optionalQueryString,
+});
