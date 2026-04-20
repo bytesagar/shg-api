@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
-import { AttachmentController } from "../controllers/attachment.controller";
+import { AttachmentController } from "../modules/attachments/attachment.controller";
 
 const router = Router();
 const attachmentController = new AttachmentController();

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
-import { HealthFacilityController } from "../controllers/health-facility.controller";
+import { HealthFacilityController } from "../modules/health-facility/health-facility.controller";
 
 const router = Router();
 const healthFacilityController = new HealthFacilityController();

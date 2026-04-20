@@ -1,0 +1,51 @@
+import { Response } from "express";
+import { BaseController } from "../../core/base.controller";
+import { UserService } from "./user.service";
+import { catchAsync } from "../../utils/catch-async";
+import { AuthRequest } from "../../middlewares/auth.middleware";
+import { AppError } from "../../utils/app-error";
+import { HTTP_STATUS } from "../../config/constants";
+import { userCreateSchema } from "./user.validation";
+import { requireFacilityContext } from "../../utils/request-context";
+import { parseListQuery, usersListQuerySchema } from "../../utils/query-parser";
+
+export class UserController extends BaseController {
+  constructor() {
+    super();
+  }
+
+  public getUsers = catchAsync(async (req: AuthRequest, res: Response) => {
+    const context = requireFacilityContext(req);
+
+    const query = parseListQuery(req.query, usersListQuerySchema);
+    const userService = new UserService(context);
+    const result = await userService.getAllUsers(query);
+    return this.ok(res, result, "Users retrieved successfully");
+  });
+
+  public createUser = catchAsync(async (req: AuthRequest, res: Response) => {
+    const context = requireFacilityContext(req);
+
+    const validatedData = userCreateSchema.safeParse(req.body);
+    if (!validatedData.success) {
+      const errorMessages = validatedData.error.issues
+        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+        .join(", ");
+      throw new AppError(
+        `Validation failed: ${errorMessages}`,
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    const userService = new UserService(context);
+    try {
+      const user = await userService.createUser(validatedData.data);
+      return this.created(res, user, "User created successfully");
+    } catch (err: any) {
+      if (err?.code === "EMAIL_EXISTS") {
+        throw new AppError("Email already exists", HTTP_STATUS.BAD_REQUEST);
+      }
+      throw err;
+    }
+  });
+}

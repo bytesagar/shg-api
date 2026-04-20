@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
-import { VisitController } from "../controllers/visit.controller";
+import { VisitController } from "../modules/clinical-visits/visit.controller";
 
 const router = Router();
 const visitController = new VisitController();
@@ -522,45 +522,5 @@ router.post("/:visitId/treatments", authMiddleware, visitController.addTreatment
  *         description: Visit not found
  */
 router.post("/:visitId/medications", authMiddleware, visitController.addMedication);
-
-/**
- * @openapi
- * /visits/{visitId}/documents:
- *   post:
- *     tags:
- *       - Visits
- *     summary: Deprecated — use POST /attachments (S3 presigned flow)
- *     operationId: addDocument
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - name: visitId
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               path:
- *                 type: string
- *     responses:
- *       201:
- *         description: Document recorded
- *       400:
- *         description: Validation failed
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: Visit not found
- */
-router.post("/:visitId/documents", authMiddleware, visitController.addDocument);
 
 export default router;

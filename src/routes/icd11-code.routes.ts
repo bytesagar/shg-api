@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Icd11CodeController } from "../controllers/icd11-code.controller";
+import { Icd11CodeController } from "../modules/icd-11/icd11-code.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 
 const router = Router();

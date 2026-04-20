@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { jaasWebhookAuthMiddleware } from "../middlewares/jaas-webhook-auth.middleware";
-import { JaasWebhookController } from "../controllers/jaas-webhook.controller";
+import { JaasWebhookController } from "../modules/webhooks/jitsi-jass/jaas-webhook.controller";
 
 const router = Router();
 const controller = new JaasWebhookController();

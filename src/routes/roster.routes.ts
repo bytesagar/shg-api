@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorize } from "../middlewares/authorize.middleware";
-import { RosterController } from "../controllers/roster.controller";
+import { RosterController } from "../modules/rosters/roster.controller";
 
 const router = Router();
 const rosterController = new RosterController();

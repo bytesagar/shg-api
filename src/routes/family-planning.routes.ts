@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
-import { FamilyPlanningController } from "../controllers/family-planning.controller";
+import { FamilyPlanningController } from "../modules/clinical-visits/family-planning.controller";
 
 const router = Router();
 const familyPlanningController = new FamilyPlanningController();

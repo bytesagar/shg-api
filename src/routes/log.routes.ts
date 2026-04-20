@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { LogController } from "../controllers/log.controller";
+import { LogController } from "../modules/logs/log.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorize } from "../middlewares/authorize.middleware";
 
