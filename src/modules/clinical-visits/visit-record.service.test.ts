@@ -3,13 +3,13 @@ import { FacilityContext } from "../../context/facility-context";
 import { db } from "../../db";
 import { VisitRepository } from "./visit.repository";
 
-jest.mock("../db", () => ({
+jest.mock("../../db", () => ({
   db: {
     transaction: jest.fn(),
   },
 }));
 
-jest.mock("../repositories/visit.repository");
+jest.mock("./visit.repository");
 
 describe("VisitRecordService", () => {
   const context = { facilityId: "fac-1", userId: "user-1" } as FacilityContext;
