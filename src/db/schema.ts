@@ -119,6 +119,30 @@ export const callRequestStatusEnum = pgEnum("call_request_status_enum", [
   "completed",
 ]);
 
+export const personStatusEnum = pgEnum("person_status_enum", [
+  "active",
+  "inactive",
+  "deceased",
+]);
+
+export const userAccountStatusEnum = pgEnum("user_account_status_enum", [
+  "active",
+  "inactive",
+  "locked",
+]);
+
+export const authSessionStatusEnum = pgEnum("auth_session_status_enum", [
+  "active",
+  "revoked",
+  "expired",
+]);
+
+export const consentStatusEnum = pgEnum("consent_status_enum", [
+  "granted",
+  "revoked",
+  "expired",
+]);
+
 // ============================================================
 // LOGS
 // ============================================================
@@ -226,7 +250,12 @@ export const health_facilities = pgTable("health_facilities", {
   updatedAt: timestamp("updated_at"),
   deletedBy: uuid("deleted_by"),
   deletedAt: timestamp("deleted_at"),
-});
+},
+  (t) => [
+    index("health_facility_hf_code_idx").on(t.hfCode),
+    index("health_facility_name_idx").on(t.name),
+  ],
+);
 
 export const health_facility_registries = pgTable(
   "health_facility_registries",
@@ -268,9 +297,18 @@ export const users = pgTable(
       .default(sql`gen_random_uuid()`),
     email: varchar("email", { length: 255 }).notNull(),
     username: varchar("username", { length: 255 }),
+    personId: uuid("person_id")
+      .notNull()
+      .references(() => persons.id),
     firstName: varchar("first_name", { length: 255 }).notNull(),
     lastName: varchar("last_name", { length: 255 }).notNull(),
-    password: varchar("password", { length: 255 }).notNull(),
+    passwordHash: varchar("password_hash", { length: 255 }).notNull(),
+    accountStatus: userAccountStatusEnum("account_status")
+      .default("active")
+      .notNull(),
+    failedLoginAttempts: integer("failed_login_attempts").default(0).notNull(),
+    lockedUntil: timestamp("locked_until"),
+    lastLoginAt: timestamp("last_login_at"),
     userType: userRoleEnum("user_type").notNull(),
     phoneNumber: varchar("phone_number", { length: 50 }).notNull(),
     designation: varchar("designation", { length: 255 }),
@@ -292,6 +330,54 @@ export const users = pgTable(
     uniqueIndex("user_email_unique").on(t.email),
     uniqueIndex("user_username_unique").on(t.username),
     index("user_facility_id_idx").on(t.facilityId),
+    index("user_person_id_idx").on(t.personId),
+  ],
+);
+
+export const user_profiles = pgTable(
+  "user_profiles",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
+    designation: varchar("designation", { length: 255 }),
+    specialization: varchar("specialization", { length: 255 }),
+    signatureUrl: varchar("signature_url", { length: 500 }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+  },
+  (t) => [
+    uniqueIndex("user_profile_user_id_unique").on(t.userId),
+  ],
+);
+
+export const user_role_assignments = pgTable(
+  "user_role_assignments",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
+    roleId: uuid("role_id")
+      .notNull()
+      .references(() => user_roles.id),
+    facilityId: uuid("facility_id").references(() => health_facilities.id),
+    municipalityId: uuid("municipality_id").references(() => municipalities.id),
+    isPrimary: boolean("is_primary").default(false).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+  },
+  (t) => [
+    index("user_role_assignment_user_id_idx").on(t.userId),
+    index("user_role_assignment_role_id_idx").on(t.roleId),
+    uniqueIndex("user_role_assignment_unique").on(t.userId, t.roleId, t.facilityId),
   ],
 );
 
@@ -309,9 +395,157 @@ export const password_resets = pgTable("password_resets", {
   deletedAt: timestamp("deleted_at"),
 });
 
+export const auth_sessions = pgTable(
+  "auth_sessions",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
+    refreshTokenHash: varchar("refresh_token_hash", { length: 255 }).notNull(),
+    status: authSessionStatusEnum("status").default("active").notNull(),
+    issuedAt: timestamp("issued_at").defaultNow().notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
+    revokedAt: timestamp("revoked_at"),
+    revokedReason: varchar("revoked_reason", { length: 255 }),
+    lastUsedAt: timestamp("last_used_at"),
+    ipAddress: varchar("ip_address", { length: 50 }),
+    userAgent: varchar("user_agent", { length: 255 }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+  },
+  (t) => [
+    index("auth_session_user_id_idx").on(t.userId),
+    index("auth_session_status_idx").on(t.status),
+    uniqueIndex("auth_session_refresh_token_hash_unique").on(t.refreshTokenHash),
+  ],
+);
+
 // ============================================================
 // PATIENT
 // ============================================================
+
+export const persons = pgTable(
+  "persons",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    gender: genderEnum("gender"),
+    birthDate: timestamp("birth_date"),
+    deceasedAt: timestamp("deceased_at"),
+    status: personStatusEnum("status").default("active").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedBy: uuid("deleted_by"),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [index("person_status_idx").on(t.status)],
+);
+
+export const person_identifiers = pgTable(
+  "person_identifiers",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    personId: uuid("person_id")
+      .notNull()
+      .references(() => persons.id),
+    system: varchar("system", { length: 255 }).notNull(),
+    value: varchar("value", { length: 255 }).notNull(),
+    use: varchar("use", { length: 50 }),
+    isPrimary: boolean("is_primary").default(false).notNull(),
+    periodStart: timestamp("period_start"),
+    periodEnd: timestamp("period_end"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+  },
+  (t) => [
+    index("person_identifier_person_id_idx").on(t.personId),
+    uniqueIndex("person_identifier_system_value_unique").on(t.system, t.value),
+  ],
+);
+
+export const person_names = pgTable(
+  "person_names",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    personId: uuid("person_id")
+      .notNull()
+      .references(() => persons.id),
+    use: varchar("use", { length: 50 }),
+    family: varchar("family", { length: 255 }),
+    given: varchar("given", { length: 255 }),
+    middle: varchar("middle", { length: 255 }),
+    prefix: varchar("prefix", { length: 50 }),
+    isPrimary: boolean("is_primary").default(false).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+  },
+  (t) => [
+    index("person_name_person_id_idx").on(t.personId),
+    index("person_name_primary_idx").on(t.personId, t.isPrimary),
+  ],
+);
+
+export const person_contacts = pgTable(
+  "person_contacts",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    personId: uuid("person_id")
+      .notNull()
+      .references(() => persons.id),
+    system: varchar("system", { length: 20 }).notNull(),
+    use: varchar("use", { length: 50 }),
+    rank: integer("rank"),
+    value: varchar("value", { length: 255 }).notNull(),
+    isPrimary: boolean("is_primary").default(false).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+  },
+  (t) => [
+    index("person_contact_person_id_idx").on(t.personId),
+    index("person_contact_system_value_idx").on(t.system, t.value),
+    index("person_contact_primary_idx").on(t.personId, t.system, t.isPrimary),
+  ],
+);
+
+export const person_addresses = pgTable(
+  "person_addresses",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    personId: uuid("person_id")
+      .notNull()
+      .references(() => persons.id),
+    use: varchar("use", { length: 50 }),
+    line1: varchar("line1", { length: 255 }),
+    line2: varchar("line2", { length: 255 }),
+    municipality: varchar("municipality", { length: 255 }),
+    district: varchar("district", { length: 255 }),
+    province: varchar("province", { length: 255 }),
+    ward: integer("ward"),
+    postalCode: varchar("postal_code", { length: 20 }),
+    isPrimary: boolean("is_primary").default(false).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+  },
+  (t) => [index("person_address_person_id_idx").on(t.personId)],
+);
 
 export const patients = pgTable(
   "patients",
@@ -320,24 +554,10 @@ export const patients = pgTable(
       .primaryKey()
       .notNull()
       .default(sql`gen_random_uuid()`),
+    personId: uuid("person_id")
+      .notNull()
+      .references(() => persons.id),
     patientId: varchar("patient_id", { length: 100 }).notNull(),
-    name: varchar("name", { length: 255 }),
-    firstName: varchar("first_name", { length: 255 }),
-    lastName: varchar("last_name", { length: 255 }),
-    middleName: varchar("middle_name", { length: 255 }),
-    caste: casteEnum("caste").notNull(),
-    age: integer("age").notNull(),
-    ageUnit: ageUnitEnum("age_unit").default("years").notNull(),
-    dob: timestamp("dob"),
-    gender: genderEnum("gender").notNull(),
-    province: varchar("province", { length: 255 }).notNull(),
-    district: varchar("district", { length: 255 }).notNull(),
-    palika: varchar("palika", { length: 255 }).notNull(),
-    provinceId: uuid("province_id"),
-    districtId: uuid("district_id"),
-    municipalityId: uuid("municipality_id").references(() => municipalities.id),
-    ward: integer("ward").notNull(),
-    phoneNumber: varchar("phone_number", { length: 50 }).notNull(),
     service: varchar("service", { length: 255 }).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at"),
@@ -345,24 +565,137 @@ export const patients = pgTable(
     updatedBy: uuid("updated_by"),
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
-    nationalId: varchar("national_id", { length: 100 }),
-    nhisNumber: varchar("nhis_number", { length: 100 }),
     facilityId: uuid("facility_id").references(() => health_facilities.id),
     assignedUserId: uuid("assigned_user_id").references(() => users.id),
     status: patientStatusEnum("status").default("active").notNull(),
-    education: varchar("education", { length: 255 }),
-    occupation: varchar("occupation", { length: 255 }),
-    otherOccupation: varchar("other_occupation", { length: 255 }),
-    spouseName: varchar("spouse_name", { length: 255 }),
-    childrenMale: integer("children_male"),
-    childrenFemale: integer("children_female"),
   },
   (t) => [
     uniqueIndex("patient_patient_id_unique").on(
       t.patientId,
     ),
     index("patient_facility_id_idx").on(t.facilityId),
-    index("patient_municipality_id_idx").on(t.municipalityId),
+    index("patient_person_id_idx").on(t.personId),
+  ],
+);
+
+export const patient_identifiers = pgTable(
+  "patient_identifiers",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    patientId: uuid("patient_id")
+      .notNull()
+      .references(() => patients.id),
+    system: varchar("system", { length: 255 }).notNull(),
+    value: varchar("value", { length: 255 }).notNull(),
+    use: varchar("use", { length: 50 }),
+    isPrimary: boolean("is_primary").default(false).notNull(),
+    periodStart: timestamp("period_start"),
+    periodEnd: timestamp("period_end"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+  },
+  (t) => [
+    index("patient_identifier_patient_id_idx").on(t.patientId),
+    uniqueIndex("patient_identifier_system_value_unique").on(t.system, t.value),
+  ],
+);
+
+export const consents = pgTable(
+  "consents",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    patientId: uuid("patient_id")
+      .notNull()
+      .references(() => patients.id),
+    personId: uuid("person_id").references(() => persons.id),
+    purpose: varchar("purpose", { length: 100 }).notNull(),
+    scope: varchar("scope", { length: 100 }).notNull(),
+    status: consentStatusEnum("status").default("granted").notNull(),
+    grantedAt: timestamp("granted_at").defaultNow().notNull(),
+    revokedAt: timestamp("revoked_at"),
+    expiresAt: timestamp("expires_at"),
+    grantedByUserId: uuid("granted_by_user_id").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+  },
+  (t) => [
+    index("consent_patient_id_idx").on(t.patientId),
+    index("consent_purpose_status_idx").on(t.purpose, t.status),
+  ],
+);
+
+export const practitioners = pgTable(
+  "practitioners",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    personId: uuid("person_id")
+      .notNull()
+      .references(() => persons.id),
+    userId: uuid("user_id").references(() => users.id),
+    active: boolean("active").default(true).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+  },
+  (t) => [index("practitioner_person_id_idx").on(t.personId)],
+);
+
+export const practitioner_role_assignments = pgTable(
+  "practitioner_role_assignments",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    practitionerId: uuid("practitioner_id")
+      .notNull()
+      .references(() => practitioners.id),
+    facilityId: uuid("facility_id").references(() => health_facilities.id),
+    municipalityId: uuid("municipality_id").references(() => municipalities.id),
+    roleCode: varchar("role_code", { length: 100 }).notNull(),
+    specialty: varchar("specialty", { length: 255 }),
+    active: boolean("active").default(true).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+  },
+  (t) => [
+    index("practitioner_role_assignment_practitioner_id_idx").on(t.practitionerId),
+    index("practitioner_role_assignment_facility_id_idx").on(t.facilityId),
+    index("practitioner_role_assignment_role_active_idx").on(t.roleCode, t.active),
+  ],
+);
+
+export const audit_events = pgTable(
+  "audit_events",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    actorUserId: uuid("actor_user_id").references(() => users.id),
+    actorPersonId: uuid("actor_person_id").references(() => persons.id),
+    patientId: uuid("patient_id").references(() => patients.id),
+    action: varchar("action", { length: 100 }).notNull(),
+    resourceType: varchar("resource_type", { length: 100 }),
+    resourceId: uuid("resource_id"),
+    outcome: varchar("outcome", { length: 50 }),
+    facilityId: uuid("facility_id").references(() => health_facilities.id),
+    ipAddress: varchar("ip_address", { length: 50 }),
+    userAgent: varchar("user_agent", { length: 255 }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => [
+    index("audit_event_actor_user_id_idx").on(t.actorUserId),
+    index("audit_event_patient_id_idx").on(t.patientId),
+    index("audit_event_created_at_idx").on(t.createdAt),
   ],
 );
 
@@ -433,6 +766,11 @@ export const encounters = pgTable(
     index("encounter_doctor_id_idx").on(t.doctorId),
     index("encounter_facility_id_idx").on(t.facilityId),
     index("encounter_at_idx").on(t.encounterAt),
+    index("encounter_facility_patient_at_idx").on(
+      t.facilityId,
+      t.patientId,
+      t.encounterAt,
+    ),
   ],
 );
 
@@ -469,6 +807,7 @@ export const vitals = pgTable(
   (t) => [
     index("vital_visit_id_idx").on(t.visitId),
     index("vital_encounter_id_idx").on(t.encounterId),
+    index("vital_encounter_created_idx").on(t.encounterId, t.createdAt),
   ],
 );
 
@@ -596,6 +935,7 @@ export const provisional_diagnoses = pgTable(
     index("provisional_diagnosis_patient_id_idx").on(t.patientId),
     index("provisional_diagnosis_visit_id_idx").on(t.visitId),
     index("provisional_diagnosis_encounter_id_idx").on(t.encounterId),
+    index("provisional_diagnosis_patient_created_idx").on(t.patientId, t.createdAt),
   ],
 );
 
@@ -626,6 +966,7 @@ export const confirm_diagnoses = pgTable(
     index("confirm_diagnosis_patient_id_idx").on(t.patientId),
     index("confirm_diagnosis_visit_id_idx").on(t.visitId),
     index("confirm_diagnosis_encounter_id_idx").on(t.encounterId),
+    index("confirm_diagnosis_patient_created_idx").on(t.patientId, t.createdAt),
   ],
 );
 
@@ -671,6 +1012,7 @@ export const tests = pgTable(
   (t) => [
     index("test_visit_id_idx").on(t.visitId),
     index("test_encounter_id_idx").on(t.encounterId),
+    index("test_encounter_created_idx").on(t.encounterId, t.createdAt),
   ],
 );
 
@@ -740,6 +1082,7 @@ export const medications = pgTable(
     index("medication_patient_id_idx").on(t.patientId),
     index("medication_visit_id_idx").on(t.visitId),
     index("medication_encounter_id_idx").on(t.encounterId),
+    index("medication_patient_created_idx").on(t.patientId, t.createdAt),
   ],
 );
 
@@ -795,6 +1138,11 @@ export const attachments = pgTable(
   (t) => [
     index("attachment_facility_id_idx").on(t.facilityId),
     index("attachment_source_idx").on(t.sourceType, t.sourceId),
+    index("attachment_facility_source_created_idx").on(
+      t.facilityId,
+      t.sourceType,
+      t.createdAt,
+    ),
   ],
 );
 
@@ -841,6 +1189,11 @@ export const pregnancies = pgTable(
   },
   (t) => [
     index("pregnancy_patient_id_idx").on(t.patientId),
+    index("pregnancy_facility_patient_first_visit_idx").on(
+      t.facilityId,
+      t.patientId,
+      t.firstVisit,
+    ),
   ],
 );
 
@@ -1030,6 +1383,7 @@ export const postnatal_cares = pgTable(
   (t) => [
     index("postnatal_care_patient_id_idx").on(t.patientId),
     index("postnatal_care_pregnancy_id_idx").on(t.pregnancyId),
+    index("postnatal_care_patient_visit_date_idx").on(t.patientId, t.visitDate),
   ],
 );
 
@@ -1142,6 +1496,7 @@ export const child_immunizations = pgTable(
   },
   (t) => [
     index("child_immunization_patient_id_idx").on(t.patientId),
+    index("child_immunization_facility_patient_idx").on(t.facilityId, t.patientId),
   ],
 );
 
@@ -1175,6 +1530,7 @@ export const immunization_histories = pgTable(
     index("immunization_history_child_immunization_id_idx").on(
       t.childImmunizationId,
     ),
+    index("immunization_history_patient_date_idx").on(t.patientId, t.date),
   ],
 );
 
@@ -1390,6 +1746,11 @@ export const family_plannings = pgTable(
   (t) => [
     index("family_planning_patient_id_idx").on(t.patientId),
     index("family_planning_facility_id_idx").on(t.facilityId),
+    index("family_planning_facility_patient_service_date_idx").on(
+      t.facilityId,
+      t.patientId,
+      t.serviceDate,
+    ),
   ],
 );
 
@@ -1622,9 +1983,14 @@ export const healthFacilityRegistriesRelations = relations(
 
 export const userRolesRelations = relations(user_roles, ({ many }) => ({
   users: many(users),
+  assignments: many(user_role_assignments),
 }));
 
 export const usersRelations = relations(users, ({ one, many }) => ({
+  person: one(persons, {
+    fields: [users.personId],
+    references: [persons.id],
+  }),
   facility: one(health_facilities, {
     fields: [users.facilityId],
     references: [health_facilities.id],
@@ -1645,6 +2011,11 @@ export const usersRelations = relations(users, ({ one, many }) => ({
     relationName: "appointmentDoctor",
   }),
   passwordResets: many(password_resets),
+  profile: many(user_profiles),
+  roleAssignments: many(user_role_assignments),
+  sessions: many(auth_sessions),
+  practitioner: many(practitioners),
+  auditEvents: many(audit_events),
   notifications: many(notifications),
   rosters: many(rosters, { relationName: "rosterUser" }),
   pregnanciesAsFchv: many(pregnancies, { relationName: "assignedFchv" }),
@@ -1663,9 +2034,9 @@ export const passwordResetsRelations = relations(
 );
 
 export const patientsRelations = relations(patients, ({ many, one }) => ({
-  municipality: one(municipalities, {
-    fields: [patients.municipalityId],
-    references: [municipalities.id],
+  person: one(persons, {
+    fields: [patients.personId],
+    references: [persons.id],
   }),
   facility: one(health_facilities, {
     fields: [patients.facilityId],
@@ -1679,10 +2050,168 @@ export const patientsRelations = relations(patients, ({ many, one }) => ({
   visits: many(visits),
   encounters: many(encounters),
   appointments: many(appointments),
+  consents: many(consents),
+  patientIdentifiers: many(patient_identifiers),
   smsLogs: many(sms_logs),
   pregnancies: many(pregnancies),
   childImmunizations: many(child_immunizations),
   familyPlannings: many(family_plannings),
+}));
+
+export const personsRelations = relations(persons, ({ many }) => ({
+  names: many(person_names),
+  identifiers: many(person_identifiers),
+  contacts: many(person_contacts),
+  addresses: many(person_addresses),
+  patients: many(patients),
+  users: many(users),
+  practitioners: many(practitioners),
+  consents: many(consents),
+  auditEvents: many(audit_events),
+}));
+
+export const personNamesRelations = relations(person_names, ({ one }) => ({
+  person: one(persons, {
+    fields: [person_names.personId],
+    references: [persons.id],
+  }),
+}));
+
+export const personIdentifiersRelations = relations(
+  person_identifiers,
+  ({ one }) => ({
+    person: one(persons, {
+      fields: [person_identifiers.personId],
+      references: [persons.id],
+    }),
+  }),
+);
+
+export const personContactsRelations = relations(person_contacts, ({ one }) => ({
+  person: one(persons, {
+    fields: [person_contacts.personId],
+    references: [persons.id],
+  }),
+}));
+
+export const personAddressesRelations = relations(
+  person_addresses,
+  ({ one }) => ({
+    person: one(persons, {
+      fields: [person_addresses.personId],
+      references: [persons.id],
+    }),
+  }),
+);
+
+export const userProfilesRelations = relations(user_profiles, ({ one }) => ({
+  user: one(users, {
+    fields: [user_profiles.userId],
+    references: [users.id],
+  }),
+}));
+
+export const userRoleAssignmentsRelations = relations(
+  user_role_assignments,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [user_role_assignments.userId],
+      references: [users.id],
+    }),
+    role: one(user_roles, {
+      fields: [user_role_assignments.roleId],
+      references: [user_roles.id],
+    }),
+    facility: one(health_facilities, {
+      fields: [user_role_assignments.facilityId],
+      references: [health_facilities.id],
+    }),
+    municipality: one(municipalities, {
+      fields: [user_role_assignments.municipalityId],
+      references: [municipalities.id],
+    }),
+  }),
+);
+
+export const authSessionsRelations = relations(auth_sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [auth_sessions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const patientIdentifiersRelations = relations(
+  patient_identifiers,
+  ({ one }) => ({
+    patient: one(patients, {
+      fields: [patient_identifiers.patientId],
+      references: [patients.id],
+    }),
+  }),
+);
+
+export const consentsRelations = relations(consents, ({ one }) => ({
+  patient: one(patients, {
+    fields: [consents.patientId],
+    references: [patients.id],
+  }),
+  person: one(persons, {
+    fields: [consents.personId],
+    references: [persons.id],
+  }),
+  grantedByUser: one(users, {
+    fields: [consents.grantedByUserId],
+    references: [users.id],
+  }),
+}));
+
+export const practitionersRelations = relations(practitioners, ({ one, many }) => ({
+  person: one(persons, {
+    fields: [practitioners.personId],
+    references: [persons.id],
+  }),
+  user: one(users, {
+    fields: [practitioners.userId],
+    references: [users.id],
+  }),
+  roleAssignments: many(practitioner_role_assignments),
+}));
+
+export const practitionerRoleAssignmentsRelations = relations(
+  practitioner_role_assignments,
+  ({ one }) => ({
+    practitioner: one(practitioners, {
+      fields: [practitioner_role_assignments.practitionerId],
+      references: [practitioners.id],
+    }),
+    facility: one(health_facilities, {
+      fields: [practitioner_role_assignments.facilityId],
+      references: [health_facilities.id],
+    }),
+    municipality: one(municipalities, {
+      fields: [practitioner_role_assignments.municipalityId],
+      references: [municipalities.id],
+    }),
+  }),
+);
+
+export const auditEventsRelations = relations(audit_events, ({ one }) => ({
+  actorUser: one(users, {
+    fields: [audit_events.actorUserId],
+    references: [users.id],
+  }),
+  actorPerson: one(persons, {
+    fields: [audit_events.actorPersonId],
+    references: [persons.id],
+  }),
+  patient: one(patients, {
+    fields: [audit_events.patientId],
+    references: [patients.id],
+  }),
+  facility: one(health_facilities, {
+    fields: [audit_events.facilityId],
+    references: [health_facilities.id],
+  }),
 }));
 
 export const visitsRelations = relations(visits, ({ one, many }) => ({

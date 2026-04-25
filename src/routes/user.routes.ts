@@ -2,6 +2,7 @@ import { Router } from "express";
 import { UserController } from "../modules/users/user.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorize } from "../middlewares/authorize.middleware";
+import { ADMIN_ONLY_ROLES, FACILITY_MANAGEMENT_ROLES } from "../constants/rbac";
 
 const router = Router();
 const userController = new UserController();
@@ -39,7 +40,12 @@ const userController = new UserController();
  *       401:
  *         description: Unauthorized
  */
-router.get("/", authMiddleware, userController.getUsers);
+router.get(
+  "/",
+  authMiddleware,
+  authorize([...FACILITY_MANAGEMENT_ROLES]),
+  userController.getUsers,
+);
 
 /**
  * @openapi
@@ -107,6 +113,11 @@ router.get("/", authMiddleware, userController.getUsers);
  *       403:
  *         description: Forbidden
  */
-router.post("/", authMiddleware, authorize(["admin"]), userController.createUser);
+router.post(
+  "/",
+  authMiddleware,
+  authorize([...ADMIN_ONLY_ROLES]),
+  userController.createUser,
+);
 
 export default router;

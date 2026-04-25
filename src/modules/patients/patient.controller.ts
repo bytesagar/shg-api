@@ -11,8 +11,12 @@ import {
   parseListQuery,
   patientsListQuerySchema,
 } from "../../utils/query-parser";
+import { db } from "@/db";
+import { visits } from "@/db/schema";
+import { and, desc, eq, inArray } from "drizzle-orm";
 
 export class PatientController extends BaseController {
+
   constructor() {
     super();
   }
@@ -56,6 +60,30 @@ export class PatientController extends BaseController {
     if (!patient) {
       throw new AppError("Patient not found", HTTP_STATUS.NOT_FOUND);
     }
-    return this.ok(res, patient, "Patient retrieved successfully");
+
+    const [activeVisit] = await db
+      .select({
+        id: visits.id,
+        date: visits.date,
+        reason: visits.reason,
+        service: visits.service,
+        status: visits.status,
+        doctorId: visits.doctorId,
+      })
+      .from(visits)
+      .where(
+        and(
+          eq(visits.patientId, patient.id),
+          inArray(visits.status, ["planned", "arrived", "in_progress"])
+        )
+      )
+      .orderBy(desc(visits.date))
+      .limit(1);
+
+    const responseData = {
+      ...patient,
+      activeVisit: activeVisit || null
+    };
+    return this.ok(res, responseData, "Patient retrieved successfully");
   });
 }

@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
+import { authorize } from "../middlewares/authorize.middleware";
 import { TelehealthController } from "../modules/telehealth/telehealth.controller";
+import { CLINICAL_WRITE_ROLES } from "../constants/rbac";
 
 const router = Router();
 const telehealthController = new TelehealthController();
@@ -50,6 +52,7 @@ const telehealthController = new TelehealthController();
 router.post(
   "/appointments",
   authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
   telehealthController.bookAppointment,
 );
 
@@ -89,6 +92,7 @@ router.post(
 router.post(
   "/appointments/:id/join",
   authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
   telehealthController.getJoinLink,
 );
 

@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import router from "./routes";
 import { APP_CONFIG, HTTP_STATUS } from "./config/constants";
@@ -10,8 +11,18 @@ import { LogService } from "./modules/logs/log.service";
 
 export const createApp = () => {
   const app = express();
+  const corsOrigins = (process.env.CORS_ORIGINS ?? "http://localhost:3001")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
 
-  app.use(cors());
+  app.use(
+    cors({
+      origin: corsOrigins,
+      credentials: true,
+    }),
+  );
+  app.use(cookieParser());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(loggerMiddleware);

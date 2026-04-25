@@ -1,6 +1,11 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
+import { authorize } from "../middlewares/authorize.middleware";
 import { AttachmentController } from "../modules/attachments/attachment.controller";
+import {
+  CLINICAL_READ_ROLES,
+  CLINICAL_WRITE_ROLES,
+} from "../constants/rbac";
 
 const router = Router();
 const attachmentController = new AttachmentController();
@@ -19,6 +24,7 @@ const attachmentController = new AttachmentController();
 router.post(
   "/generate-upload-url",
   authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
   attachmentController.generateUploadUrl,
 );
 
@@ -33,7 +39,12 @@ router.post(
  *     security:
  *       - bearerAuth: []
  */
-router.get("/", authMiddleware, attachmentController.listAttachments);
+router.get(
+  "/",
+  authMiddleware,
+  authorize([...CLINICAL_READ_ROLES]),
+  attachmentController.listAttachments,
+);
 
 /**
  * @openapi
@@ -49,6 +60,7 @@ router.get("/", authMiddleware, attachmentController.listAttachments);
 router.get(
   "/:attachmentId/download-url",
   authMiddleware,
+  authorize([...CLINICAL_READ_ROLES]),
   attachmentController.getDownloadUrl,
 );
 
@@ -63,6 +75,11 @@ router.get(
  *     security:
  *       - bearerAuth: []
  */
-router.post("/", authMiddleware, attachmentController.createAttachment);
+router.post(
+  "/",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  attachmentController.createAttachment,
+);
 
 export default router;

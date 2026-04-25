@@ -37,13 +37,7 @@ export class PatientService {
     const searchString = params.searchString?.trim();
     if (searchString) {
       clauses.push(
-        orFilter(
-          { ilike: { column: patients.patientId, value: searchString } },
-          { ilike: { column: patients.phoneNumber, value: searchString } },
-          { ilike: { column: patients.firstName, value: searchString } },
-          { ilike: { column: patients.lastName, value: searchString } },
-          { ilike: { column: patients.name, value: searchString } },
-        ),
+        orFilter({ ilike: { column: patients.patientId, value: searchString } }),
       );
     }
 

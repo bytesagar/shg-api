@@ -2,6 +2,10 @@ import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorize } from "../middlewares/authorize.middleware";
 import { RosterController } from "../modules/rosters/roster.controller";
+import {
+  CLINICAL_READ_ROLES,
+  FACILITY_MANAGEMENT_ROLES,
+} from "../constants/rbac";
 
 const router = Router();
 const rosterController = new RosterController();
@@ -42,6 +46,7 @@ const rosterController = new RosterController();
 router.get(
   "/available-users",
   authMiddleware,
+  authorize([...CLINICAL_READ_ROLES]),
   rosterController.getAvailableUsers,
 );
 
@@ -59,7 +64,7 @@ router.get(
 router.get(
   "/assignable-users",
   authMiddleware,
-  authorize(["admin", "facility"]),
+  authorize([...FACILITY_MANAGEMENT_ROLES]),
   rosterController.listAssignableUsers,
 );
 
@@ -109,7 +114,12 @@ router.get(
  *         schema:
  *           type: string
  */
-router.get("/", authMiddleware, rosterController.listRosters);
+router.get(
+  "/",
+  authMiddleware,
+  authorize([...CLINICAL_READ_ROLES]),
+  rosterController.listRosters,
+);
 
 /**
  * @openapi
@@ -125,7 +135,7 @@ router.get("/", authMiddleware, rosterController.listRosters);
 router.post(
   "/",
   authMiddleware,
-  authorize(["admin", "facility"]),
+  authorize([...FACILITY_MANAGEMENT_ROLES]),
   rosterController.createRoster,
 );
 
@@ -143,7 +153,7 @@ router.post(
 router.post(
   "/batch",
   authMiddleware,
-  authorize(["admin", "facility"]),
+  authorize([...FACILITY_MANAGEMENT_ROLES]),
   rosterController.createRosterBatch,
 );
 
@@ -158,7 +168,12 @@ router.post(
  *     security:
  *       - bearerAuth: []
  */
-router.get("/:id", authMiddleware, rosterController.getRoster);
+router.get(
+  "/:id",
+  authMiddleware,
+  authorize([...CLINICAL_READ_ROLES]),
+  rosterController.getRoster,
+);
 
 /**
  * @openapi
@@ -174,7 +189,7 @@ router.get("/:id", authMiddleware, rosterController.getRoster);
 router.patch(
   "/:id",
   authMiddleware,
-  authorize(["admin", "facility"]),
+  authorize([...FACILITY_MANAGEMENT_ROLES]),
   rosterController.updateRoster,
 );
 
@@ -192,7 +207,7 @@ router.patch(
 router.delete(
   "/:id",
   authMiddleware,
-  authorize(["admin", "facility"]),
+  authorize([...FACILITY_MANAGEMENT_ROLES]),
   rosterController.deleteRoster,
 );
 

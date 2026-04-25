@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
+import { authorize } from "../middlewares/authorize.middleware";
 import { FamilyPlanningController } from "../modules/clinical-visits/family-planning.controller";
+import { COMMUNITY_WRITE_ROLES } from "../constants/rbac";
 
 const router = Router();
 const familyPlanningController = new FamilyPlanningController();
@@ -158,6 +160,11 @@ const familyPlanningController = new FamilyPlanningController();
  *       404:
  *         description: Patient not found
  */
-router.post("/", authMiddleware, familyPlanningController.createFamilyPlanning);
+router.post(
+  "/",
+  authMiddleware,
+  authorize([...COMMUNITY_WRITE_ROLES]),
+  familyPlanningController.createFamilyPlanning,
+);
 
 export default router;

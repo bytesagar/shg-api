@@ -1,6 +1,11 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
+import { authorize } from "../middlewares/authorize.middleware";
 import { HealthFacilityController } from "../modules/health-facility/health-facility.controller";
+import {
+  CLINICAL_READ_ROLES,
+  FACILITY_MANAGEMENT_ROLES,
+} from "../constants/rbac";
 
 const router = Router();
 const healthFacilityController = new HealthFacilityController();
@@ -47,7 +52,12 @@ const healthFacilityController = new HealthFacilityController();
  *       401:
  *         description: Unauthorized
  */
-router.get("/", authMiddleware, healthFacilityController.getHealthFacilities);
+router.get(
+  "/",
+  authMiddleware,
+  authorize([...CLINICAL_READ_ROLES]),
+  healthFacilityController.getHealthFacilities,
+);
 
 /**
  * @openapi
@@ -122,6 +132,11 @@ router.get("/", authMiddleware, healthFacilityController.getHealthFacilities);
  *       401:
  *         description: Unauthorized
  */
-router.post("/", authMiddleware, healthFacilityController.createHealthFacility);
+router.post(
+  "/",
+  authMiddleware,
+  authorize([...FACILITY_MANAGEMENT_ROLES]),
+  healthFacilityController.createHealthFacility,
+);
 
 export default router;

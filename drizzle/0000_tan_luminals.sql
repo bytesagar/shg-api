@@ -1,14 +1,22 @@
 CREATE TYPE "public"."age_unit_enum" AS ENUM('years', 'months', 'days');--> statement-breakpoint
+CREATE TYPE "public"."appointment_status_enum" AS ENUM('scheduled', 'confirmed', 'cancelled', 'completed', 'no_show');--> statement-breakpoint
+CREATE TYPE "public"."auth_session_status_enum" AS ENUM('active', 'revoked', 'expired');--> statement-breakpoint
+CREATE TYPE "public"."call_request_status_enum" AS ENUM('pending', 'accepted', 'declined', 'completed');--> statement-breakpoint
 CREATE TYPE "public"."caste_enum" AS ENUM('dalit', 'janajati', 'madhesi', 'muslim', 'brahmin_chhetri', 'other');--> statement-breakpoint
+CREATE TYPE "public"."consent_status_enum" AS ENUM('granted', 'revoked', 'expired');--> statement-breakpoint
 CREATE TYPE "public"."duration_unit_enum" AS ENUM('hours', 'days', 'weeks', 'months', 'years');--> statement-breakpoint
 CREATE TYPE "public"."family_planning_device_enum" AS ENUM('condom', 'pills', 'depo', 'iucd', 'implant', 'vasectomy', 'minilap', 'none');--> statement-breakpoint
 CREATE TYPE "public"."family_planning_service_type_enum" AS ENUM('new', 'follow_up', 'removal');--> statement-breakpoint
 CREATE TYPE "public"."fp_usage_time_period_enum" AS ENUM('within_45_days', 'after_45_days');--> statement-breakpoint
 CREATE TYPE "public"."gender_enum" AS ENUM('male', 'female', 'other');--> statement-breakpoint
 CREATE TYPE "public"."log_level_enum" AS ENUM('info', 'warn', 'error', 'debug');--> statement-breakpoint
+CREATE TYPE "public"."patient_status_enum" AS ENUM('active', 'inactive', 'deceased', 'discharged', 'referred');--> statement-breakpoint
+CREATE TYPE "public"."person_status_enum" AS ENUM('active', 'inactive', 'deceased');--> statement-breakpoint
 CREATE TYPE "public"."severity_enum" AS ENUM('low', 'medium', 'high', 'critical');--> statement-breakpoint
 CREATE TYPE "public"."test_category_enum" AS ENUM('lab', 'imaging', 'other');--> statement-breakpoint
-CREATE TYPE "public"."user_role_enum" AS ENUM('admin', 'user', 'facility');--> statement-breakpoint
+CREATE TYPE "public"."user_account_status_enum" AS ENUM('active', 'inactive', 'locked');--> statement-breakpoint
+CREATE TYPE "public"."user_role_enum" AS ENUM('admin', 'user', 'facility', 'doctor');--> statement-breakpoint
+CREATE TYPE "public"."visit_status_enum" AS ENUM('planned', 'arrived', 'in_progress', 'finished', 'cancelled');--> statement-breakpoint
 CREATE TABLE "antenatal_cares" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"anc_visit_date" timestamp,
@@ -56,17 +64,11 @@ CREATE TABLE "appointments" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"doctor_id" uuid NOT NULL,
 	"patient_id" uuid NOT NULL,
-	"encounter_id" uuid,
-	"pregnancy_id" uuid,
-	"child_immunization_id" uuid,
-	"family_planning_id" uuid,
-	"status" varchar(100) NOT NULL,
-	"date" timestamp,
 	"facility_id" uuid,
+	"date" timestamp NOT NULL,
+	"status" "appointment_status_enum" DEFAULT 'scheduled' NOT NULL,
 	"service" varchar(255),
-	"call_duration" integer DEFAULT 0,
 	"consent" integer DEFAULT 1,
-	"consultation_started" timestamp,
 	"created_by" uuid,
 	"updated_by" uuid,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -75,12 +77,60 @@ CREATE TABLE "appointments" (
 	"deleted_at" timestamp
 );
 --> statement-breakpoint
+CREATE TABLE "attachments" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"source_type" varchar(50) NOT NULL,
+	"source_id" uuid NOT NULL,
+	"facility_id" uuid NOT NULL,
+	"name" varchar(500) NOT NULL,
+	"file_url" text NOT NULL,
+	"file_size" integer,
+	"file_type" varchar(255),
+	"created_by" uuid,
+	"updated_by" uuid,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp,
+	"deleted_by" uuid,
+	"deleted_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "audit_events" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"actor_user_id" uuid,
+	"actor_person_id" uuid,
+	"patient_id" uuid,
+	"action" varchar(100) NOT NULL,
+	"resource_type" varchar(100),
+	"resource_id" uuid,
+	"outcome" varchar(50),
+	"facility_id" uuid,
+	"ip_address" varchar(50),
+	"user_agent" varchar(255),
+	"created_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "auth_sessions" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	"refresh_token_hash" varchar(255) NOT NULL,
+	"status" "auth_session_status_enum" DEFAULT 'active' NOT NULL,
+	"issued_at" timestamp DEFAULT now() NOT NULL,
+	"expires_at" timestamp NOT NULL,
+	"revoked_at" timestamp,
+	"revoked_reason" varchar(255),
+	"last_used_at" timestamp,
+	"ip_address" varchar(50),
+	"user_agent" varchar(255),
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp
+);
+--> statement-breakpoint
 CREATE TABLE "call_requests" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"from_user_id" uuid,
 	"to_user_id" uuid,
 	"patient_id" uuid,
-	"status" varchar(100),
+	"status" "call_request_status_enum" DEFAULT 'pending',
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp,
 	"deleted_by" uuid,
@@ -108,7 +158,8 @@ CREATE TABLE "complaints" (
 	"severity" "severity_enum" NOT NULL,
 	"description" text NOT NULL,
 	"patient_id" uuid NOT NULL,
-	"encounter_id" uuid NOT NULL,
+	"visit_id" uuid NOT NULL,
+	"encounter_id" uuid,
 	"created_by" uuid,
 	"updated_by" uuid,
 	"deleted_by" uuid,
@@ -122,13 +173,29 @@ CREATE TABLE "confirm_diagnoses" (
 	"icd_code" varchar(50),
 	"description" text NOT NULL,
 	"patient_id" uuid NOT NULL,
-	"encounter_id" uuid NOT NULL,
+	"visit_id" uuid NOT NULL,
+	"encounter_id" uuid,
 	"created_by" uuid,
 	"updated_by" uuid,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp,
 	"deleted_by" uuid,
 	"deleted_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "consents" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"patient_id" uuid NOT NULL,
+	"person_id" uuid,
+	"purpose" varchar(100) NOT NULL,
+	"scope" varchar(100) NOT NULL,
+	"status" "consent_status_enum" DEFAULT 'granted' NOT NULL,
+	"granted_at" timestamp DEFAULT now() NOT NULL,
+	"revoked_at" timestamp,
+	"expires_at" timestamp,
+	"granted_by_user_id" uuid,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp
 );
 --> statement-breakpoint
 CREATE TABLE "deliveries" (
@@ -198,7 +265,7 @@ CREATE TABLE "documents" (
 	"name" varchar(500),
 	"path" text,
 	"patient_id" uuid NOT NULL,
-	"encounter_id" uuid,
+	"visit_id" uuid,
 	"created_by" uuid,
 	"updated_by" uuid,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -209,14 +276,18 @@ CREATE TABLE "documents" (
 --> statement-breakpoint
 CREATE TABLE "encounters" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"date" timestamp NOT NULL,
+	"encounter_at" timestamp DEFAULT now() NOT NULL,
 	"reason" text NOT NULL,
 	"service" varchar(255),
-	"status" varchar(100),
+	"status" "visit_status_enum" DEFAULT 'planned',
+	"encounter_type" varchar(100) NOT NULL,
 	"patient_id" uuid NOT NULL,
+	"visit_id" uuid NOT NULL,
 	"facility_id" uuid,
 	"follow_up_id" uuid,
 	"doctor_id" uuid,
+	"created_by" uuid,
+	"updated_by" uuid,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp,
 	"deleted_by" uuid,
@@ -384,7 +455,8 @@ CREATE TABLE "histories" (
 	"family_history" text NOT NULL,
 	"social" text NOT NULL,
 	"other" text,
-	"encounter_id" uuid NOT NULL,
+	"visit_id" uuid NOT NULL,
+	"encounter_id" uuid,
 	"created_by" uuid,
 	"updated_by" uuid,
 	"deleted_by" uuid,
@@ -447,6 +519,13 @@ CREATE TABLE "home_mother_postnatal_cares" (
 	"deleted_at" timestamp
 );
 --> statement-breakpoint
+CREATE TABLE "icd11_codes" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"code" varchar(50) NOT NULL,
+	"title" text NOT NULL,
+	"category" varchar(255) NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "immunization_histories" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"vaccine_name" varchar(255) NOT NULL,
@@ -464,6 +543,11 @@ CREATE TABLE "immunization_histories" (
 	"deleted_at" timestamp
 );
 --> statement-breakpoint
+CREATE TABLE "jaas_webhook_idempotency" (
+	"idempotency_key" text PRIMARY KEY NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "medications" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"type" varchar(100),
@@ -475,7 +559,8 @@ CREATE TABLE "medications" (
 	"duration" varchar(100),
 	"special_notes" text,
 	"patient_id" uuid NOT NULL,
-	"encounter_id" uuid NOT NULL,
+	"visit_id" uuid NOT NULL,
+	"encounter_id" uuid,
 	"created_by" uuid,
 	"updated_by" uuid,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -525,26 +610,23 @@ CREATE TABLE "password_resets" (
 	"deleted_at" timestamp
 );
 --> statement-breakpoint
+CREATE TABLE "patient_identifiers" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"patient_id" uuid NOT NULL,
+	"system" varchar(255) NOT NULL,
+	"value" varchar(255) NOT NULL,
+	"use" varchar(50),
+	"is_primary" boolean DEFAULT false NOT NULL,
+	"period_start" timestamp,
+	"period_end" timestamp,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp
+);
+--> statement-breakpoint
 CREATE TABLE "patients" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"person_id" uuid NOT NULL,
 	"patient_id" varchar(100) NOT NULL,
-	"name" varchar(255),
-	"first_name" varchar(255),
-	"last_name" varchar(255),
-	"middle_name" varchar(255),
-	"caste" "caste_enum" NOT NULL,
-	"age" integer NOT NULL,
-	"age_unit" "age_unit_enum" DEFAULT 'years' NOT NULL,
-	"dob" timestamp,
-	"gender" "gender_enum" NOT NULL,
-	"province" varchar(255) NOT NULL,
-	"district" varchar(255) NOT NULL,
-	"palika" varchar(255) NOT NULL,
-	"province_id" uuid,
-	"district_id" uuid,
-	"municipality_id" uuid,
-	"ward" integer NOT NULL,
-	"phone_number" varchar(50) NOT NULL,
 	"service" varchar(255) NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp,
@@ -552,17 +634,75 @@ CREATE TABLE "patients" (
 	"updated_by" uuid,
 	"deleted_by" uuid,
 	"deleted_at" timestamp,
-	"national_id" varchar(100),
-	"nhis_number" varchar(100),
 	"facility_id" uuid,
 	"assigned_user_id" uuid,
-	"status" varchar(100),
-	"education" varchar(255),
-	"occupation" varchar(255),
-	"other_occupation" varchar(255),
-	"spouse_name" varchar(255),
-	"children_male" integer,
-	"children_female" integer
+	"status" "patient_status_enum" DEFAULT 'active' NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "person_addresses" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"person_id" uuid NOT NULL,
+	"use" varchar(50),
+	"line1" varchar(255),
+	"line2" varchar(255),
+	"municipality" varchar(255),
+	"district" varchar(255),
+	"province" varchar(255),
+	"ward" integer,
+	"postal_code" varchar(20),
+	"is_primary" boolean DEFAULT false NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "person_contacts" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"person_id" uuid NOT NULL,
+	"system" varchar(20) NOT NULL,
+	"use" varchar(50),
+	"rank" integer,
+	"value" varchar(255) NOT NULL,
+	"is_primary" boolean DEFAULT false NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "person_identifiers" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"person_id" uuid NOT NULL,
+	"system" varchar(255) NOT NULL,
+	"value" varchar(255) NOT NULL,
+	"use" varchar(50),
+	"is_primary" boolean DEFAULT false NOT NULL,
+	"period_start" timestamp,
+	"period_end" timestamp,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "person_names" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"person_id" uuid NOT NULL,
+	"use" varchar(50),
+	"family" varchar(255),
+	"given" varchar(255),
+	"middle" varchar(255),
+	"prefix" varchar(50),
+	"is_primary" boolean DEFAULT false NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "persons" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"gender" "gender_enum",
+	"birth_date" timestamp,
+	"deceased_at" timestamp,
+	"status" "person_status_enum" DEFAULT 'active' NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp,
+	"deleted_by" uuid,
+	"deleted_at" timestamp
 );
 --> statement-breakpoint
 CREATE TABLE "physical_examinations" (
@@ -574,7 +714,8 @@ CREATE TABLE "physical_examinations" (
 	"perabdominal" text NOT NULL,
 	"local_examination" text NOT NULL,
 	"patient_id" uuid NOT NULL,
-	"encounter_id" uuid NOT NULL,
+	"visit_id" uuid NOT NULL,
+	"encounter_id" uuid,
 	"created_by" uuid,
 	"updated_by" uuid,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -616,6 +757,27 @@ CREATE TABLE "postnatal_cares" (
 	"deleted_at" timestamp
 );
 --> statement-breakpoint
+CREATE TABLE "practitioner_role_assignments" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"practitioner_id" uuid NOT NULL,
+	"facility_id" uuid,
+	"municipality_id" uuid,
+	"role_code" varchar(100) NOT NULL,
+	"specialty" varchar(255),
+	"active" boolean DEFAULT true NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "practitioners" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"person_id" uuid NOT NULL,
+	"user_id" uuid,
+	"active" boolean DEFAULT true NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp
+);
+--> statement-breakpoint
 CREATE TABLE "pregnancies" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"first_visit" timestamp NOT NULL,
@@ -647,7 +809,8 @@ CREATE TABLE "provisional_diagnoses" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"description" text NOT NULL,
 	"patient_id" uuid NOT NULL,
-	"encounter_id" uuid NOT NULL,
+	"visit_id" uuid NOT NULL,
+	"encounter_id" uuid,
 	"created_by" uuid,
 	"updated_by" uuid,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -704,12 +867,25 @@ CREATE TABLE "system_logs" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "telehealth_sessions" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"appointment_id" uuid NOT NULL,
+	"provider" varchar(50),
+	"room_name" varchar(255),
+	"started_at" timestamp,
+	"ended_at" timestamp,
+	"duration_seconds" integer DEFAULT 0,
+	"jaas_session_id" varchar(255),
+	CONSTRAINT "telehealth_sessions_appointment_id_unique" UNIQUE("appointment_id")
+);
+--> statement-breakpoint
 CREATE TABLE "tests" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"test_name" varchar(255) NOT NULL,
 	"test_result" text,
 	"test_category" "test_category_enum" NOT NULL,
-	"encounter_id" uuid NOT NULL,
+	"visit_id" uuid NOT NULL,
+	"encounter_id" uuid,
 	"created_by" uuid,
 	"updated_by" uuid,
 	"deleted_by" uuid,
@@ -726,13 +902,35 @@ CREATE TABLE "treatments" (
 	"refer" varchar(255),
 	"refer_reason" text,
 	"patient_id" uuid NOT NULL,
-	"encounter_id" uuid NOT NULL,
+	"visit_id" uuid NOT NULL,
+	"encounter_id" uuid,
 	"created_by" uuid,
 	"updated_by" uuid,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp,
 	"deleted_by" uuid,
 	"deleted_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "user_profiles" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	"designation" varchar(255),
+	"specialization" varchar(255),
+	"signature_url" varchar(500),
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "user_role_assignments" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	"role_id" uuid NOT NULL,
+	"facility_id" uuid,
+	"municipality_id" uuid,
+	"is_primary" boolean DEFAULT false NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp
 );
 --> statement-breakpoint
 CREATE TABLE "user_roles" (
@@ -749,9 +947,14 @@ CREATE TABLE "users" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"email" varchar(255) NOT NULL,
 	"username" varchar(255),
+	"person_id" uuid NOT NULL,
 	"first_name" varchar(255) NOT NULL,
 	"last_name" varchar(255) NOT NULL,
-	"password" varchar(255) NOT NULL,
+	"password_hash" varchar(255) NOT NULL,
+	"account_status" "user_account_status_enum" DEFAULT 'active' NOT NULL,
+	"failed_login_attempts" integer DEFAULT 0 NOT NULL,
+	"locked_until" timestamp,
+	"last_login_at" timestamp,
 	"user_type" "user_role_enum" NOT NULL,
 	"phone_number" varchar(50) NOT NULL,
 	"designation" varchar(255),
@@ -768,6 +971,22 @@ CREATE TABLE "users" (
 	"deleted_at" timestamp
 );
 --> statement-breakpoint
+CREATE TABLE "visits" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"date" timestamp NOT NULL,
+	"reason" text NOT NULL,
+	"service" varchar(255),
+	"status" "visit_status_enum" DEFAULT 'planned',
+	"patient_id" uuid NOT NULL,
+	"facility_id" uuid,
+	"follow_up_id" uuid,
+	"doctor_id" uuid,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp,
+	"deleted_by" uuid,
+	"deleted_at" timestamp
+);
+--> statement-breakpoint
 CREATE TABLE "vitals" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"diastolic" integer,
@@ -778,7 +997,8 @@ CREATE TABLE "vitals" (
 	"spo2" integer NOT NULL,
 	"weight" real,
 	"height" real,
-	"encounter_id" uuid NOT NULL,
+	"visit_id" uuid NOT NULL,
+	"encounter_id" uuid,
 	"created_by" uuid,
 	"updated_by" uuid,
 	"deleted_by" uuid,
@@ -794,27 +1014,36 @@ ALTER TABLE "antenatal_cares" ADD CONSTRAINT "antenatal_cares_created_by_users_i
 ALTER TABLE "antenatal_cares" ADD CONSTRAINT "antenatal_cares_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "appointments" ADD CONSTRAINT "appointments_doctor_id_users_id_fk" FOREIGN KEY ("doctor_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "appointments" ADD CONSTRAINT "appointments_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "appointments" ADD CONSTRAINT "appointments_encounter_id_encounters_id_fk" FOREIGN KEY ("encounter_id") REFERENCES "public"."encounters"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "appointments" ADD CONSTRAINT "appointments_pregnancy_id_pregnancies_id_fk" FOREIGN KEY ("pregnancy_id") REFERENCES "public"."pregnancies"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "appointments" ADD CONSTRAINT "appointments_child_immunization_id_child_immunizations_id_fk" FOREIGN KEY ("child_immunization_id") REFERENCES "public"."child_immunizations"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "appointments" ADD CONSTRAINT "appointments_family_planning_id_family_plannings_id_fk" FOREIGN KEY ("family_planning_id") REFERENCES "public"."family_plannings"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "appointments" ADD CONSTRAINT "appointments_facility_id_health_facilities_id_fk" FOREIGN KEY ("facility_id") REFERENCES "public"."health_facilities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "appointments" ADD CONSTRAINT "appointments_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "appointments" ADD CONSTRAINT "appointments_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "attachments" ADD CONSTRAINT "attachments_facility_id_health_facilities_id_fk" FOREIGN KEY ("facility_id") REFERENCES "public"."health_facilities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "attachments" ADD CONSTRAINT "attachments_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "attachments" ADD CONSTRAINT "attachments_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "audit_events" ADD CONSTRAINT "audit_events_actor_user_id_users_id_fk" FOREIGN KEY ("actor_user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "audit_events" ADD CONSTRAINT "audit_events_actor_person_id_persons_id_fk" FOREIGN KEY ("actor_person_id") REFERENCES "public"."persons"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "audit_events" ADD CONSTRAINT "audit_events_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "audit_events" ADD CONSTRAINT "audit_events_facility_id_health_facilities_id_fk" FOREIGN KEY ("facility_id") REFERENCES "public"."health_facilities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "auth_sessions" ADD CONSTRAINT "auth_sessions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "call_requests" ADD CONSTRAINT "call_requests_from_user_id_users_id_fk" FOREIGN KEY ("from_user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "call_requests" ADD CONSTRAINT "call_requests_to_user_id_users_id_fk" FOREIGN KEY ("to_user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "call_requests" ADD CONSTRAINT "call_requests_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "child_immunizations" ADD CONSTRAINT "child_immunizations_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "child_immunizations" ADD CONSTRAINT "child_immunizations_facility_id_health_facilities_id_fk" FOREIGN KEY ("facility_id") REFERENCES "public"."health_facilities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "complaints" ADD CONSTRAINT "complaints_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "complaints" ADD CONSTRAINT "complaints_visit_id_visits_id_fk" FOREIGN KEY ("visit_id") REFERENCES "public"."visits"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "complaints" ADD CONSTRAINT "complaints_encounter_id_encounters_id_fk" FOREIGN KEY ("encounter_id") REFERENCES "public"."encounters"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "complaints" ADD CONSTRAINT "complaints_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "complaints" ADD CONSTRAINT "complaints_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "complaints" ADD CONSTRAINT "complaints_deleted_by_users_id_fk" FOREIGN KEY ("deleted_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "confirm_diagnoses" ADD CONSTRAINT "confirm_diagnoses_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "confirm_diagnoses" ADD CONSTRAINT "confirm_diagnoses_visit_id_visits_id_fk" FOREIGN KEY ("visit_id") REFERENCES "public"."visits"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "confirm_diagnoses" ADD CONSTRAINT "confirm_diagnoses_encounter_id_encounters_id_fk" FOREIGN KEY ("encounter_id") REFERENCES "public"."encounters"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "confirm_diagnoses" ADD CONSTRAINT "confirm_diagnoses_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "confirm_diagnoses" ADD CONSTRAINT "confirm_diagnoses_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "consents" ADD CONSTRAINT "consents_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "consents" ADD CONSTRAINT "consents_person_id_persons_id_fk" FOREIGN KEY ("person_id") REFERENCES "public"."persons"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "consents" ADD CONSTRAINT "consents_granted_by_user_id_users_id_fk" FOREIGN KEY ("granted_by_user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "deliveries" ADD CONSTRAINT "deliveries_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "deliveries" ADD CONSTRAINT "deliveries_pregnancy_id_pregnancies_id_fk" FOREIGN KEY ("pregnancy_id") REFERENCES "public"."pregnancies"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "deliveries" ADD CONSTRAINT "deliveries_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -826,10 +1055,13 @@ ALTER TABLE "delivery_children" ADD CONSTRAINT "delivery_children_created_by_use
 ALTER TABLE "delivery_children" ADD CONSTRAINT "delivery_children_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "districts" ADD CONSTRAINT "districts_province_id_provinces_id_fk" FOREIGN KEY ("province_id") REFERENCES "public"."provinces"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "documents" ADD CONSTRAINT "documents_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "documents" ADD CONSTRAINT "documents_encounter_id_encounters_id_fk" FOREIGN KEY ("encounter_id") REFERENCES "public"."encounters"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "documents" ADD CONSTRAINT "documents_visit_id_visits_id_fk" FOREIGN KEY ("visit_id") REFERENCES "public"."visits"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "encounters" ADD CONSTRAINT "encounters_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "encounters" ADD CONSTRAINT "encounters_visit_id_visits_id_fk" FOREIGN KEY ("visit_id") REFERENCES "public"."visits"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "encounters" ADD CONSTRAINT "encounters_facility_id_health_facilities_id_fk" FOREIGN KEY ("facility_id") REFERENCES "public"."health_facilities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "encounters" ADD CONSTRAINT "encounters_doctor_id_users_id_fk" FOREIGN KEY ("doctor_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "encounters" ADD CONSTRAINT "encounters_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "encounters" ADD CONSTRAINT "encounters_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "family_planning_news" ADD CONSTRAINT "family_planning_news_family_planning_id_family_plannings_id_fk" FOREIGN KEY ("family_planning_id") REFERENCES "public"."family_plannings"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "family_planning_news" ADD CONSTRAINT "family_planning_news_previous_device_id_family_planning_olds_id_fk" FOREIGN KEY ("previous_device_id") REFERENCES "public"."family_planning_olds"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "family_planning_news" ADD CONSTRAINT "family_planning_news_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -857,6 +1089,7 @@ ALTER TABLE "growths" ADD CONSTRAINT "growths_created_by_users_id_fk" FOREIGN KE
 ALTER TABLE "growths" ADD CONSTRAINT "growths_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "health_facilities" ADD CONSTRAINT "health_facilities_municipality_id_municipalities_id_fk" FOREIGN KEY ("municipality_id") REFERENCES "public"."municipalities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "health_facility_registries" ADD CONSTRAINT "health_facility_registries_municipality_id_municipalities_id_fk" FOREIGN KEY ("municipality_id") REFERENCES "public"."municipalities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "histories" ADD CONSTRAINT "histories_visit_id_visits_id_fk" FOREIGN KEY ("visit_id") REFERENCES "public"."visits"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "histories" ADD CONSTRAINT "histories_encounter_id_encounters_id_fk" FOREIGN KEY ("encounter_id") REFERENCES "public"."encounters"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "histories" ADD CONSTRAINT "histories_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "histories" ADD CONSTRAINT "histories_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -874,16 +1107,23 @@ ALTER TABLE "immunization_histories" ADD CONSTRAINT "immunization_histories_chil
 ALTER TABLE "immunization_histories" ADD CONSTRAINT "immunization_histories_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "immunization_histories" ADD CONSTRAINT "immunization_histories_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "medications" ADD CONSTRAINT "medications_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "medications" ADD CONSTRAINT "medications_visit_id_visits_id_fk" FOREIGN KEY ("visit_id") REFERENCES "public"."visits"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "medications" ADD CONSTRAINT "medications_encounter_id_encounters_id_fk" FOREIGN KEY ("encounter_id") REFERENCES "public"."encounters"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "medications" ADD CONSTRAINT "medications_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "medications" ADD CONSTRAINT "medications_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "municipalities" ADD CONSTRAINT "municipalities_district_id_districts_id_fk" FOREIGN KEY ("district_id") REFERENCES "public"."districts"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "notifications" ADD CONSTRAINT "notifications_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "password_resets" ADD CONSTRAINT "password_resets_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "patients" ADD CONSTRAINT "patients_municipality_id_municipalities_id_fk" FOREIGN KEY ("municipality_id") REFERENCES "public"."municipalities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "patient_identifiers" ADD CONSTRAINT "patient_identifiers_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "patients" ADD CONSTRAINT "patients_person_id_persons_id_fk" FOREIGN KEY ("person_id") REFERENCES "public"."persons"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "patients" ADD CONSTRAINT "patients_facility_id_health_facilities_id_fk" FOREIGN KEY ("facility_id") REFERENCES "public"."health_facilities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "patients" ADD CONSTRAINT "patients_assigned_user_id_users_id_fk" FOREIGN KEY ("assigned_user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "person_addresses" ADD CONSTRAINT "person_addresses_person_id_persons_id_fk" FOREIGN KEY ("person_id") REFERENCES "public"."persons"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "person_contacts" ADD CONSTRAINT "person_contacts_person_id_persons_id_fk" FOREIGN KEY ("person_id") REFERENCES "public"."persons"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "person_identifiers" ADD CONSTRAINT "person_identifiers_person_id_persons_id_fk" FOREIGN KEY ("person_id") REFERENCES "public"."persons"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "person_names" ADD CONSTRAINT "person_names_person_id_persons_id_fk" FOREIGN KEY ("person_id") REFERENCES "public"."persons"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "physical_examinations" ADD CONSTRAINT "physical_examinations_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "physical_examinations" ADD CONSTRAINT "physical_examinations_visit_id_visits_id_fk" FOREIGN KEY ("visit_id") REFERENCES "public"."visits"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "physical_examinations" ADD CONSTRAINT "physical_examinations_encounter_id_encounters_id_fk" FOREIGN KEY ("encounter_id") REFERENCES "public"."encounters"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "physical_examinations" ADD CONSTRAINT "physical_examinations_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "physical_examinations" ADD CONSTRAINT "physical_examinations_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -892,10 +1132,16 @@ ALTER TABLE "postnatal_cares" ADD CONSTRAINT "postnatal_cares_pregnancy_id_pregn
 ALTER TABLE "postnatal_cares" ADD CONSTRAINT "postnatal_cares_service_provided_by_users_id_fk" FOREIGN KEY ("service_provided_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "postnatal_cares" ADD CONSTRAINT "postnatal_cares_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "postnatal_cares" ADD CONSTRAINT "postnatal_cares_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "practitioner_role_assignments" ADD CONSTRAINT "practitioner_role_assignments_practitioner_id_practitioners_id_fk" FOREIGN KEY ("practitioner_id") REFERENCES "public"."practitioners"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "practitioner_role_assignments" ADD CONSTRAINT "practitioner_role_assignments_facility_id_health_facilities_id_fk" FOREIGN KEY ("facility_id") REFERENCES "public"."health_facilities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "practitioner_role_assignments" ADD CONSTRAINT "practitioner_role_assignments_municipality_id_municipalities_id_fk" FOREIGN KEY ("municipality_id") REFERENCES "public"."municipalities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "practitioners" ADD CONSTRAINT "practitioners_person_id_persons_id_fk" FOREIGN KEY ("person_id") REFERENCES "public"."persons"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "practitioners" ADD CONSTRAINT "practitioners_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "pregnancies" ADD CONSTRAINT "pregnancies_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "pregnancies" ADD CONSTRAINT "pregnancies_facility_id_health_facilities_id_fk" FOREIGN KEY ("facility_id") REFERENCES "public"."health_facilities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "pregnancies" ADD CONSTRAINT "pregnancies_assigned_fchv_id_users_id_fk" FOREIGN KEY ("assigned_fchv_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "provisional_diagnoses" ADD CONSTRAINT "provisional_diagnoses_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "provisional_diagnoses" ADD CONSTRAINT "provisional_diagnoses_visit_id_visits_id_fk" FOREIGN KEY ("visit_id") REFERENCES "public"."visits"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "provisional_diagnoses" ADD CONSTRAINT "provisional_diagnoses_encounter_id_encounters_id_fk" FOREIGN KEY ("encounter_id") REFERENCES "public"."encounters"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "provisional_diagnoses" ADD CONSTRAINT "provisional_diagnoses_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "provisional_diagnoses" ADD CONSTRAINT "provisional_diagnoses_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -906,17 +1152,30 @@ ALTER TABLE "rosters" ADD CONSTRAINT "rosters_updated_by_users_id_fk" FOREIGN KE
 ALTER TABLE "sms_logs" ADD CONSTRAINT "sms_logs_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "sms_logs" ADD CONSTRAINT "sms_logs_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "sms_logs" ADD CONSTRAINT "sms_logs_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "telehealth_sessions" ADD CONSTRAINT "telehealth_sessions_appointment_id_appointments_id_fk" FOREIGN KEY ("appointment_id") REFERENCES "public"."appointments"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "tests" ADD CONSTRAINT "tests_visit_id_visits_id_fk" FOREIGN KEY ("visit_id") REFERENCES "public"."visits"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "tests" ADD CONSTRAINT "tests_encounter_id_encounters_id_fk" FOREIGN KEY ("encounter_id") REFERENCES "public"."encounters"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "tests" ADD CONSTRAINT "tests_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "tests" ADD CONSTRAINT "tests_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "tests" ADD CONSTRAINT "tests_deleted_by_users_id_fk" FOREIGN KEY ("deleted_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "treatments" ADD CONSTRAINT "treatments_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "treatments" ADD CONSTRAINT "treatments_visit_id_visits_id_fk" FOREIGN KEY ("visit_id") REFERENCES "public"."visits"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "treatments" ADD CONSTRAINT "treatments_encounter_id_encounters_id_fk" FOREIGN KEY ("encounter_id") REFERENCES "public"."encounters"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "treatments" ADD CONSTRAINT "treatments_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "treatments" ADD CONSTRAINT "treatments_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "user_profiles" ADD CONSTRAINT "user_profiles_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "user_role_assignments" ADD CONSTRAINT "user_role_assignments_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "user_role_assignments" ADD CONSTRAINT "user_role_assignments_role_id_user_roles_id_fk" FOREIGN KEY ("role_id") REFERENCES "public"."user_roles"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "user_role_assignments" ADD CONSTRAINT "user_role_assignments_facility_id_health_facilities_id_fk" FOREIGN KEY ("facility_id") REFERENCES "public"."health_facilities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "user_role_assignments" ADD CONSTRAINT "user_role_assignments_municipality_id_municipalities_id_fk" FOREIGN KEY ("municipality_id") REFERENCES "public"."municipalities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "users" ADD CONSTRAINT "users_person_id_persons_id_fk" FOREIGN KEY ("person_id") REFERENCES "public"."persons"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "users" ADD CONSTRAINT "users_facility_id_health_facilities_id_fk" FOREIGN KEY ("facility_id") REFERENCES "public"."health_facilities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "users" ADD CONSTRAINT "users_municipality_id_municipalities_id_fk" FOREIGN KEY ("municipality_id") REFERENCES "public"."municipalities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "users" ADD CONSTRAINT "users_user_role_id_user_roles_id_fk" FOREIGN KEY ("user_role_id") REFERENCES "public"."user_roles"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "visits" ADD CONSTRAINT "visits_patient_id_patients_id_fk" FOREIGN KEY ("patient_id") REFERENCES "public"."patients"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "visits" ADD CONSTRAINT "visits_facility_id_health_facilities_id_fk" FOREIGN KEY ("facility_id") REFERENCES "public"."health_facilities"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "visits" ADD CONSTRAINT "visits_doctor_id_users_id_fk" FOREIGN KEY ("doctor_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "vitals" ADD CONSTRAINT "vitals_visit_id_visits_id_fk" FOREIGN KEY ("visit_id") REFERENCES "public"."visits"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "vitals" ADD CONSTRAINT "vitals_encounter_id_encounters_id_fk" FOREIGN KEY ("encounter_id") REFERENCES "public"."encounters"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "vitals" ADD CONSTRAINT "vitals_created_by_users_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "vitals" ADD CONSTRAINT "vitals_updated_by_users_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -926,19 +1185,33 @@ CREATE INDEX "antenatal_care_pregnancy_id_idx" ON "antenatal_cares" USING btree 
 CREATE INDEX "appointment_doctor_id_idx" ON "appointments" USING btree ("doctor_id");--> statement-breakpoint
 CREATE INDEX "appointment_patient_id_idx" ON "appointments" USING btree ("patient_id");--> statement-breakpoint
 CREATE INDEX "appointment_date_idx" ON "appointments" USING btree ("date");--> statement-breakpoint
+CREATE INDEX "attachment_facility_id_idx" ON "attachments" USING btree ("facility_id");--> statement-breakpoint
+CREATE INDEX "attachment_source_idx" ON "attachments" USING btree ("source_type","source_id");--> statement-breakpoint
+CREATE INDEX "audit_event_actor_user_id_idx" ON "audit_events" USING btree ("actor_user_id");--> statement-breakpoint
+CREATE INDEX "audit_event_patient_id_idx" ON "audit_events" USING btree ("patient_id");--> statement-breakpoint
+CREATE INDEX "audit_event_created_at_idx" ON "audit_events" USING btree ("created_at");--> statement-breakpoint
+CREATE INDEX "auth_session_user_id_idx" ON "auth_sessions" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "auth_session_status_idx" ON "auth_sessions" USING btree ("status");--> statement-breakpoint
+CREATE UNIQUE INDEX "auth_session_refresh_token_hash_unique" ON "auth_sessions" USING btree ("refresh_token_hash");--> statement-breakpoint
 CREATE INDEX "child_immunization_patient_id_idx" ON "child_immunizations" USING btree ("patient_id");--> statement-breakpoint
 CREATE INDEX "complaint_patient_id_idx" ON "complaints" USING btree ("patient_id");--> statement-breakpoint
+CREATE INDEX "complaint_visit_id_idx" ON "complaints" USING btree ("visit_id");--> statement-breakpoint
 CREATE INDEX "complaint_encounter_id_idx" ON "complaints" USING btree ("encounter_id");--> statement-breakpoint
 CREATE INDEX "confirm_diagnosis_patient_id_idx" ON "confirm_diagnoses" USING btree ("patient_id");--> statement-breakpoint
+CREATE INDEX "confirm_diagnosis_visit_id_idx" ON "confirm_diagnoses" USING btree ("visit_id");--> statement-breakpoint
 CREATE INDEX "confirm_diagnosis_encounter_id_idx" ON "confirm_diagnoses" USING btree ("encounter_id");--> statement-breakpoint
+CREATE INDEX "consent_patient_id_idx" ON "consents" USING btree ("patient_id");--> statement-breakpoint
+CREATE INDEX "consent_purpose_status_idx" ON "consents" USING btree ("purpose","status");--> statement-breakpoint
 CREATE INDEX "delivery_patient_id_idx" ON "deliveries" USING btree ("patient_id");--> statement-breakpoint
 CREATE INDEX "delivery_pregnancy_id_idx" ON "deliveries" USING btree ("pregnancy_id");--> statement-breakpoint
 CREATE INDEX "delivery_children_delivery_id_idx" ON "delivery_children" USING btree ("delivery_id");--> statement-breakpoint
 CREATE INDEX "delivery_children_patient_id_idx" ON "delivery_children" USING btree ("patient_id");--> statement-breakpoint
 CREATE INDEX "document_patient_id_idx" ON "documents" USING btree ("patient_id");--> statement-breakpoint
 CREATE INDEX "encounter_patient_id_idx" ON "encounters" USING btree ("patient_id");--> statement-breakpoint
+CREATE INDEX "encounter_visit_id_idx" ON "encounters" USING btree ("visit_id");--> statement-breakpoint
 CREATE INDEX "encounter_doctor_id_idx" ON "encounters" USING btree ("doctor_id");--> statement-breakpoint
 CREATE INDEX "encounter_facility_id_idx" ON "encounters" USING btree ("facility_id");--> statement-breakpoint
+CREATE INDEX "encounter_at_idx" ON "encounters" USING btree ("encounter_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "fpn_family_planning_id_unique" ON "family_planning_news" USING btree ("family_planning_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "fpn_previous_device_id_unique" ON "family_planning_news" USING btree ("previous_device_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "fpr_family_planning_id_unique" ON "family_planning_removals" USING btree ("family_planning_id");--> statement-breakpoint
@@ -948,34 +1221,62 @@ CREATE INDEX "family_planning_facility_id_idx" ON "family_plannings" USING btree
 CREATE UNIQUE INDEX "fph_new_fp_id_unique" ON "fp_hormonal_details" USING btree ("new_fp_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "fpi_new_fp_id_unique" ON "fp_iucd_details" USING btree ("new_fp_id");--> statement-breakpoint
 CREATE INDEX "growth_patient_id_idx" ON "growths" USING btree ("patient_id");--> statement-breakpoint
+CREATE INDEX "history_visit_id_idx" ON "histories" USING btree ("visit_id");--> statement-breakpoint
 CREATE INDEX "history_encounter_id_idx" ON "histories" USING btree ("encounter_id");--> statement-breakpoint
 CREATE INDEX "home_baby_pnc_patient_id_idx" ON "home_baby_postnatal_cares" USING btree ("patient_id");--> statement-breakpoint
 CREATE INDEX "home_baby_pnc_pregnancy_id_idx" ON "home_baby_postnatal_cares" USING btree ("pregnancy_id");--> statement-breakpoint
 CREATE INDEX "home_mother_pnc_patient_id_idx" ON "home_mother_postnatal_cares" USING btree ("patient_id");--> statement-breakpoint
 CREATE INDEX "home_mother_pnc_pregnancy_id_idx" ON "home_mother_postnatal_cares" USING btree ("pregnancy_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "icd11_codes_code_uidx" ON "icd11_codes" USING btree ("code");--> statement-breakpoint
+CREATE INDEX "icd11_codes_category_idx" ON "icd11_codes" USING btree ("category");--> statement-breakpoint
 CREATE INDEX "immunization_history_patient_id_idx" ON "immunization_histories" USING btree ("patient_id");--> statement-breakpoint
 CREATE INDEX "immunization_history_child_immunization_id_idx" ON "immunization_histories" USING btree ("child_immunization_id");--> statement-breakpoint
 CREATE INDEX "medication_patient_id_idx" ON "medications" USING btree ("patient_id");--> statement-breakpoint
+CREATE INDEX "medication_visit_id_idx" ON "medications" USING btree ("visit_id");--> statement-breakpoint
 CREATE INDEX "medication_encounter_id_idx" ON "medications" USING btree ("encounter_id");--> statement-breakpoint
 CREATE INDEX "notification_user_id_idx" ON "notifications" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "patient_identifier_patient_id_idx" ON "patient_identifiers" USING btree ("patient_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "patient_identifier_system_value_unique" ON "patient_identifiers" USING btree ("system","value");--> statement-breakpoint
 CREATE UNIQUE INDEX "patient_patient_id_unique" ON "patients" USING btree ("patient_id");--> statement-breakpoint
 CREATE INDEX "patient_facility_id_idx" ON "patients" USING btree ("facility_id");--> statement-breakpoint
-CREATE INDEX "patient_municipality_id_idx" ON "patients" USING btree ("municipality_id");--> statement-breakpoint
+CREATE INDEX "patient_person_id_idx" ON "patients" USING btree ("person_id");--> statement-breakpoint
+CREATE INDEX "person_address_person_id_idx" ON "person_addresses" USING btree ("person_id");--> statement-breakpoint
+CREATE INDEX "person_contact_person_id_idx" ON "person_contacts" USING btree ("person_id");--> statement-breakpoint
+CREATE INDEX "person_contact_system_value_idx" ON "person_contacts" USING btree ("system","value");--> statement-breakpoint
+CREATE INDEX "person_identifier_person_id_idx" ON "person_identifiers" USING btree ("person_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "person_identifier_system_value_unique" ON "person_identifiers" USING btree ("system","value");--> statement-breakpoint
+CREATE INDEX "person_name_person_id_idx" ON "person_names" USING btree ("person_id");--> statement-breakpoint
+CREATE INDEX "person_status_idx" ON "persons" USING btree ("status");--> statement-breakpoint
 CREATE INDEX "physical_examination_patient_id_idx" ON "physical_examinations" USING btree ("patient_id");--> statement-breakpoint
+CREATE INDEX "physical_examination_visit_id_idx" ON "physical_examinations" USING btree ("visit_id");--> statement-breakpoint
 CREATE INDEX "physical_examination_encounter_id_idx" ON "physical_examinations" USING btree ("encounter_id");--> statement-breakpoint
 CREATE INDEX "postnatal_care_patient_id_idx" ON "postnatal_cares" USING btree ("patient_id");--> statement-breakpoint
 CREATE INDEX "postnatal_care_pregnancy_id_idx" ON "postnatal_cares" USING btree ("pregnancy_id");--> statement-breakpoint
+CREATE INDEX "practitioner_role_assignment_practitioner_id_idx" ON "practitioner_role_assignments" USING btree ("practitioner_id");--> statement-breakpoint
+CREATE INDEX "practitioner_person_id_idx" ON "practitioners" USING btree ("person_id");--> statement-breakpoint
 CREATE INDEX "pregnancy_patient_id_idx" ON "pregnancies" USING btree ("patient_id");--> statement-breakpoint
 CREATE INDEX "provisional_diagnosis_patient_id_idx" ON "provisional_diagnoses" USING btree ("patient_id");--> statement-breakpoint
+CREATE INDEX "provisional_diagnosis_visit_id_idx" ON "provisional_diagnoses" USING btree ("visit_id");--> statement-breakpoint
 CREATE INDEX "provisional_diagnosis_encounter_id_idx" ON "provisional_diagnoses" USING btree ("encounter_id");--> statement-breakpoint
 CREATE INDEX "roster_user_id_idx" ON "rosters" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "roster_facility_id_idx" ON "rosters" USING btree ("facility_id");--> statement-breakpoint
 CREATE INDEX "roster_date_idx" ON "rosters" USING btree ("date");--> statement-breakpoint
 CREATE INDEX "sms_log_patient_id_idx" ON "sms_logs" USING btree ("patient_id");--> statement-breakpoint
+CREATE INDEX "test_visit_id_idx" ON "tests" USING btree ("visit_id");--> statement-breakpoint
 CREATE INDEX "test_encounter_id_idx" ON "tests" USING btree ("encounter_id");--> statement-breakpoint
 CREATE INDEX "treatment_patient_id_idx" ON "treatments" USING btree ("patient_id");--> statement-breakpoint
+CREATE INDEX "treatment_visit_id_idx" ON "treatments" USING btree ("visit_id");--> statement-breakpoint
 CREATE INDEX "treatment_encounter_id_idx" ON "treatments" USING btree ("encounter_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "user_profile_user_id_unique" ON "user_profiles" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "user_role_assignment_user_id_idx" ON "user_role_assignments" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "user_role_assignment_role_id_idx" ON "user_role_assignments" USING btree ("role_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "user_role_assignment_unique" ON "user_role_assignments" USING btree ("user_id","role_id","facility_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "user_email_unique" ON "users" USING btree ("email");--> statement-breakpoint
 CREATE UNIQUE INDEX "user_username_unique" ON "users" USING btree ("username");--> statement-breakpoint
 CREATE INDEX "user_facility_id_idx" ON "users" USING btree ("facility_id");--> statement-breakpoint
+CREATE INDEX "user_person_id_idx" ON "users" USING btree ("person_id");--> statement-breakpoint
+CREATE INDEX "visit_patient_id_idx" ON "visits" USING btree ("patient_id");--> statement-breakpoint
+CREATE INDEX "visit_doctor_id_idx" ON "visits" USING btree ("doctor_id");--> statement-breakpoint
+CREATE INDEX "visit_facility_id_idx" ON "visits" USING btree ("facility_id");--> statement-breakpoint
+CREATE INDEX "vital_visit_id_idx" ON "vitals" USING btree ("visit_id");--> statement-breakpoint
 CREATE INDEX "vital_encounter_id_idx" ON "vitals" USING btree ("encounter_id");

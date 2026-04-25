@@ -2,6 +2,8 @@
 
 An open-source, multi-tenant healthcare API for facilities to register patients, manage clinical workflows, and run telehealth consultations. The system is built with Node.js + Express, Drizzle ORM + PostgreSQL, and Zod for request validation.
 
+For a full architecture guide (what/why/how + flow diagrams), see `docs/ARCHITECTURE.md`.
+
 ## Purpose
 
 - Provide a secure, multi-tenant backend where users belong to a specific facility and can only access their facility’s data.
@@ -138,8 +140,15 @@ Create a `.env` file and set:
 ### Database
 
 ```bash
+npm run db:up       # starts postgres container
 npm run db:migrate
 npm run db:seed   # optional: seeds demo facilities and users
+```
+
+To stop containerized Postgres:
+
+```bash
+npm run db:down
 ```
 
 ### Run

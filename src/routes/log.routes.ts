@@ -2,6 +2,7 @@ import { Router } from "express";
 import { LogController } from "../modules/logs/log.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorize } from "../middlewares/authorize.middleware";
+import { ADMIN_ONLY_ROLES } from "../constants/rbac";
 
 const router = Router();
 const logController = new LogController();
@@ -40,6 +41,11 @@ const logController = new LogController();
  *       403:
  *         description: Forbidden.
  */
-router.get("/", authMiddleware, authorize(["admin"]), logController.getLogs);
+router.get(
+  "/",
+  authMiddleware,
+  authorize([...ADMIN_ONLY_ROLES]),
+  logController.getLogs,
+);
 
 export default router;

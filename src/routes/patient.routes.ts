@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { PatientController } from "../modules/patients/patient.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
+import { authorize } from "../middlewares/authorize.middleware";
+import { CLINICAL_READ_ROLES, CLINICAL_WRITE_ROLES } from "../constants/rbac";
 
 const router = Router();
 const patientController = new PatientController();
@@ -72,7 +74,12 @@ const patientController = new PatientController();
  *       400:
  *         description: Validation failed
  */
-router.post("/", authMiddleware, patientController.createPatient);
+router.post(
+  "/",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  patientController.createPatient,
+);
 
 /**
  * @openapi
@@ -116,7 +123,12 @@ router.post("/", authMiddleware, patientController.createPatient);
  *       200:
  *         description: List of patients
  */
-router.get("/", authMiddleware, patientController.getPatients);
+router.get(
+  "/",
+  authMiddleware,
+  authorize([...CLINICAL_READ_ROLES]),
+  patientController.getPatients,
+);
 
 /**
  * @openapi
@@ -141,6 +153,11 @@ router.get("/", authMiddleware, patientController.getPatients);
  *       404:
  *         description: Patient not found
  */
-router.get("/:id", authMiddleware, patientController.getPatient);
+router.get(
+  "/:id",
+  authMiddleware,
+  authorize([...CLINICAL_READ_ROLES]),
+  patientController.getPatient,
+);
 
 export default router;

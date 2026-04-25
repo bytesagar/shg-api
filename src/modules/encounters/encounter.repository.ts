@@ -46,6 +46,6 @@ export class EncounterRepository extends FacilityRepository {
       .limit(pageSize)
       .offset(offset);
 
-    return items;
+    return { items };
   }
 }

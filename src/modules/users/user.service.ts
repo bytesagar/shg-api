@@ -39,7 +39,7 @@ export class UserService {
     const hashedPassword = await bcrypt.hash(input.password, 10);
     return this.userRepository.create({
       ...input,
-      password: hashedPassword,
+      passwordHash: hashedPassword,
     });
   }
 }

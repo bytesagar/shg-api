@@ -5,85 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1774865763923,
-      "tag": "0000_smooth_power_pack",
+      "when": 1776846192631,
+      "tag": "0000_tan_luminals",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1774907826312,
-      "tag": "0001_status_enums",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1774915048508,
-      "tag": "0002_add_doctor_role",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1774918993720,
-      "tag": "0003_telehealth_appointments",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1774920888208,
-      "tag": "0004_appointment_context",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1774921808748,
-      "tag": "0005_refactor_appointments",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1775000000000,
-      "tag": "0006_visits_rename",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1775100000000,
-      "tag": "0007_drop_telehealth_meeting_url",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1776558137232,
-      "tag": "0008_attachments",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1776579237014,
-      "tag": "0009_icd11_codes",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1776582921435,
-      "tag": "0010_jaas_webhook_telehealth_session",
-      "breakpoints": true
-    },
-    {
-      "idx": 11,
-      "version": "7",
-      "when": 1776685927893,
-      "tag": "0011_brief_spitfire",
+      "when": 1776850744129,
+      "tag": "0001_volatile_chronomancer",
       "breakpoints": true
     }
   ]

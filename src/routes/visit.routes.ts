@@ -1,9 +1,40 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
+import { authorize } from "../middlewares/authorize.middleware";
 import { VisitController } from "../modules/clinical-visits/visit.controller";
+import {
+  CLINICAL_READ_ROLES,
+  CLINICAL_WRITE_ROLES,
+} from "../constants/rbac";
 
 const router = Router();
 const visitController = new VisitController();
+
+
+/**
+ * @openapi
+ * /visits:
+ *   get:
+ *     tags:
+ *       - Visits
+ *     summary: List visits
+ *     operationId: listVisits
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Visits retrieved
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Visits not found
+ */
+router.get(
+  "/",
+  authMiddleware,
+  authorize([...CLINICAL_READ_ROLES]),
+  visitController.listVisits,
+);
 
 /**
  * @openapi
@@ -51,7 +82,12 @@ const visitController = new VisitController();
  *       404:
  *         description: Patient not found
  */
-router.post("/", authMiddleware, visitController.createVisit);
+router.post(
+  "/",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  visitController.createVisit,
+);
 
 /**
  * @openapi
@@ -78,7 +114,12 @@ router.post("/", authMiddleware, visitController.createVisit);
  *       404:
  *         description: Visit not found
  */
-router.get("/:visitId", authMiddleware, visitController.getVisit);
+router.get(
+  "/:visitId",
+  authMiddleware,
+  authorize([...CLINICAL_READ_ROLES]),
+  visitController.getVisit,
+);
 
 /**
  * @openapi
@@ -131,7 +172,12 @@ router.get("/:visitId", authMiddleware, visitController.getVisit);
  *       404:
  *         description: Visit not found
  */
-router.post("/:visitId/vitals", authMiddleware, visitController.addVitals);
+router.post(
+  "/:visitId/vitals",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  visitController.addVitals,
+);
 
 /**
  * @openapi
@@ -182,7 +228,12 @@ router.post("/:visitId/vitals", authMiddleware, visitController.addVitals);
  *       404:
  *         description: Visit not found
  */
-router.post("/:visitId/histories", authMiddleware, visitController.addHistory);
+router.post(
+  "/:visitId/histories",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  visitController.addHistory,
+);
 
 /**
  * @openapi
@@ -231,7 +282,12 @@ router.post("/:visitId/histories", authMiddleware, visitController.addHistory);
  *       404:
  *         description: Visit not found
  */
-router.post("/:visitId/complaints", authMiddleware, visitController.addComplaint);
+router.post(
+  "/:visitId/complaints",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  visitController.addComplaint,
+);
 
 /**
  * @openapi
@@ -289,6 +345,7 @@ router.post("/:visitId/complaints", authMiddleware, visitController.addComplaint
 router.post(
   "/:visitId/physical-examinations",
   authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
   visitController.addPhysicalExamination,
 );
 
@@ -332,6 +389,7 @@ router.post(
 router.post(
   "/:visitId/provisional-diagnoses",
   authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
   visitController.addProvisionalDiagnosis,
 );
 
@@ -377,6 +435,7 @@ router.post(
 router.post(
   "/:visitId/confirm-diagnoses",
   authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
   visitController.addConfirmDiagnosis,
 );
 
@@ -422,7 +481,12 @@ router.post(
  *       404:
  *         description: Visit not found
  */
-router.post("/:visitId/tests", authMiddleware, visitController.addTest);
+router.post(
+  "/:visitId/tests",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  visitController.addTest,
+);
 
 /**
  * @openapi
@@ -469,7 +533,12 @@ router.post("/:visitId/tests", authMiddleware, visitController.addTest);
  *       404:
  *         description: Visit not found
  */
-router.post("/:visitId/treatments", authMiddleware, visitController.addTreatment);
+router.post(
+  "/:visitId/treatments",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  visitController.addTreatment,
+);
 
 /**
  * @openapi
@@ -521,6 +590,11 @@ router.post("/:visitId/treatments", authMiddleware, visitController.addTreatment
  *       404:
  *         description: Visit not found
  */
-router.post("/:visitId/medications", authMiddleware, visitController.addMedication);
+router.post(
+  "/:visitId/medications",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  visitController.addMedication,
+);
 
 export default router;

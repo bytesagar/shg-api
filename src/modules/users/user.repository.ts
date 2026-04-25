@@ -1,5 +1,12 @@
 import { db } from "../../db";
-import { users } from "../../db/schema";
+import {
+  person_contacts,
+  person_names,
+  persons,
+  user_profiles,
+  user_role_assignments,
+  users,
+} from "../../db/schema";
 import { FacilityContext } from "../../context/facility-context";
 import { FacilityRepository } from "../../core/facility-repository";
 import { SQL, count, desc, eq, inArray } from "drizzle-orm";
@@ -104,7 +111,7 @@ export class UserRepository extends FacilityRepository {
     username?: string | null;
     firstName: string;
     lastName: string;
-    password: string;
+    passwordHash: string;
     userType: "admin" | "user" | "facility" | "doctor";
     phoneNumber: string;
     designation?: string | null;
@@ -114,14 +121,60 @@ export class UserRepository extends FacilityRepository {
     nmcRegistrationNumber?: string | null;
     signatureUrl?: string | null;
   }) {
-    const inserted = await db
-      .insert(users)
-      .values({
-        ...data,
-        facilityId: this.context.facilityId,
-      })
-      .returning(this.userSelect);
+    return db.transaction(async (tx) => {
+      const insertedPerson = await tx
+        .insert(persons)
+        .values({
+          status: "active",
+        })
+        .returning();
+      const person = insertedPerson[0];
 
-    return inserted[0];
+      await tx.insert(person_names).values({
+        personId: person.id,
+        use: "official",
+        given: data.firstName,
+        family: data.lastName,
+        isPrimary: true,
+      });
+
+      await tx.insert(person_contacts).values({
+        personId: person.id,
+        system: "phone",
+        use: "mobile",
+        value: data.phoneNumber,
+        isPrimary: true,
+      });
+
+      const insertedUsers = await tx
+        .insert(users)
+        .values({
+          ...data,
+          passwordHash: data.passwordHash,
+          personId: person.id,
+          facilityId: this.context.facilityId,
+        })
+        .returning(this.userSelect);
+      const createdUser = insertedUsers[0];
+
+      await tx.insert(user_profiles).values({
+        userId: createdUser.id,
+        designation: data.designation,
+        specialization: data.specialization,
+        signatureUrl: data.signatureUrl,
+      });
+
+      if (data.userRoleId) {
+        await tx.insert(user_role_assignments).values({
+          userId: createdUser.id,
+          roleId: data.userRoleId,
+          facilityId: this.context.facilityId,
+          municipalityId: data.municipalityId ?? null,
+          isPrimary: true,
+        });
+      }
+
+      return createdUser;
+    });
   }
 }

@@ -21,6 +21,17 @@ import { VisitRecordService } from "./visit-record.service";
 import { requireFacilityContext } from "../../utils/request-context";
 
 export class VisitController extends BaseController {
+
+  public listVisits = catchAsync(async (req: AuthRequest, res: Response) => {
+    const context = requireFacilityContext(req);
+    const { patientId } = req.query;
+
+
+    const visitService = new VisitService(context);
+    const visits = await visitService.listVisits(patientId as string);
+    return this.ok(res, visits, "Visits retrieved successfully");
+  });
+
   public createVisit = catchAsync(async (req: AuthRequest, res: Response) => {
     const context = requireFacilityContext(req);
 

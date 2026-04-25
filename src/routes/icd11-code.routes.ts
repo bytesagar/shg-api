@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { Icd11CodeController } from "../modules/icd-11/icd11-code.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
+import { authorize } from "../middlewares/authorize.middleware";
+import { CLINICAL_READ_ROLES } from "../constants/rbac";
 
 const router = Router();
 const controller = new Icd11CodeController();
@@ -46,6 +48,11 @@ const controller = new Icd11CodeController();
  *       401:
  *         description: Unauthorized
  */
-router.get("/", authMiddleware, controller.listIcd11Codes);
+router.get(
+  "/",
+  authMiddleware,
+  authorize([...CLINICAL_READ_ROLES]),
+  controller.listIcd11Codes,
+);
 
 export default router;

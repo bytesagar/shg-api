@@ -3,6 +3,7 @@ import { AppError } from "../utils/app-error";
 import { HTTP_STATUS } from "../config/constants";
 import { FacilityContext } from "../context/facility-context";
 import { verifyJwt } from "../utils/jwt";
+import { getPermissionsForRole, normalizeRole } from "../constants/rbac";
 
 // Extend Express Request type to include user payload
 export interface AuthRequest extends Request {
@@ -12,18 +13,45 @@ export interface AuthRequest extends Request {
     role: string;
     facilityId: string;
     userType: string;
+    sessionId?: string;
+    patientId?: string;
+    serviceArea?: {
+      district: string;
+      municipality?: string;
+      ward?: number;
+    };
+    securityLabels?: Array<{ system: string; code: string; display: string }>;
+    permissions: string[];
   };
   context?: FacilityContext;
 }
 
-function isUserJwtPayload(payload: any): payload is AuthRequest["user"] {
+interface UserJwtPayload {
+  id: string;
+  email: string;
+  role: string;
+  facilityId: string;
+  userType: string;
+  sessionId?: string;
+  patientId?: string;
+  serviceArea?: {
+    district: string;
+    municipality?: string;
+    ward?: number;
+  };
+  securityLabels?: Array<{ system: string; code: string; display: string }>;
+  permissions?: string[];
+}
+
+function isUserJwtPayload(payload: any): payload is UserJwtPayload {
   return (
     payload &&
     typeof payload === "object" &&
     typeof payload.id === "string" &&
     typeof payload.email === "string" &&
     typeof payload.role === "string" &&
-    typeof payload.facilityId === "string"
+    typeof payload.facilityId === "string" &&
+    (payload.sessionId === undefined || typeof payload.sessionId === "string")
   );
 }
 
@@ -42,12 +70,13 @@ export const authMiddleware = (
   }
 
   try {
-    const decoded = verifyJwt(token);
-    if (!isUserJwtPayload(decoded)) {
+    const decodedRaw = verifyJwt(token);
+    if (!isUserJwtPayload(decodedRaw)) {
       return next(
         new AppError("Unauthorized: Invalid token", HTTP_STATUS.UNAUTHORIZED),
       );
     }
+    const decoded = decodedRaw as UserJwtPayload;
 
     if (!decoded.facilityId) {
       return next(
@@ -58,11 +87,16 @@ export const authMiddleware = (
       );
     }
 
-    req.user = decoded;
+    const normalizedRole = normalizeRole(decoded.role) ?? decoded.role;
+    req.user = {
+      ...decoded,
+      role: normalizedRole,
+      permissions: decoded.permissions ?? getPermissionsForRole(normalizedRole),
+    };
     req.context = {
       facilityId: decoded.facilityId,
       userId: decoded.id,
-      role: decoded.role,
+      role: normalizedRole,
       userType: decoded.userType,
     };
     next();

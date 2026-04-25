@@ -12,6 +12,7 @@ import rosterRoutes from "./roster.routes";
 import attachmentRoutes from "./attachment.routes";
 import icd11CodeRoutes from "./icd11-code.routes";
 import jaasWebhookRoutes from "./jaas-webhook.routes";
+import fhirRoutes from "./fhir.routes";
 
 const router = Router();
 
@@ -45,5 +46,6 @@ router.use("/rosters", rosterRoutes);
 router.use("/attachments", attachmentRoutes);
 router.use("/icd11-codes", icd11CodeRoutes);
 router.use("/webhooks/jaas", jaasWebhookRoutes);
+router.use("/fhir", fhirRoutes);
 
 export default router;
