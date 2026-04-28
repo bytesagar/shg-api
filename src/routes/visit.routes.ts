@@ -121,6 +121,13 @@ router.get(
   visitController.getVisit,
 );
 
+router.patch(
+  "/:visitId",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  visitController.updateVisitStatus,
+);
+
 /**
  * @openapi
  * /visits/{visitId}/vitals:

@@ -14,6 +14,7 @@ import {
   testCreateSchema,
   treatmentCreateSchema,
   visitCreateSchema,
+  visitStatusUpdateSchema,
   vitalsCreateSchema,
 } from "./visit.validation";
 import { VisitService } from "./visit.service";
@@ -21,11 +22,9 @@ import { VisitRecordService } from "./visit-record.service";
 import { requireFacilityContext } from "../../utils/request-context";
 
 export class VisitController extends BaseController {
-
   public listVisits = catchAsync(async (req: AuthRequest, res: Response) => {
     const context = requireFacilityContext(req);
     const { patientId } = req.query;
-
 
     const visitService = new VisitService(context);
     const visits = await visitService.listVisits(patientId as string);
@@ -66,6 +65,35 @@ export class VisitController extends BaseController {
     }
     return this.ok(res, visit, "Visit retrieved successfully");
   });
+
+  public updateVisitStatus = catchAsync(
+    async (req: AuthRequest, res: Response) => {
+      const context = requireFacilityContext(req);
+
+      const validatedData = visitStatusUpdateSchema.safeParse(req.body);
+      if (!validatedData.success) {
+        const errorMessages = validatedData.error.issues
+          .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+          .join(", ");
+        throw new AppError(
+          `Validation failed: ${errorMessages}`,
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+
+      const { visitId } = req.params;
+      const visitService = new VisitService(context);
+      const updated = await visitService.updateVisitStatus({
+        visitId: visitId as string,
+        status: validatedData.data.status,
+      });
+      if (!updated) {
+        throw new AppError("Visit not found", HTTP_STATUS.NOT_FOUND);
+      }
+
+      return this.ok(res, updated, "Visit status updated successfully");
+    },
+  );
 
   public addVitals = catchAsync(async (req: AuthRequest, res: Response) => {
     const context = requireFacilityContext(req);

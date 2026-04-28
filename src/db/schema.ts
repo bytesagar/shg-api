@@ -1177,10 +1177,14 @@ export const pregnancies = pgTable(
     para: varchar("para", { length: 50 }),
     lastMenstruationPeriod: timestamp("last_menstruation_period"),
     expectedDeliveryDate: timestamp("expected_delivery_date"),
+    visitId: uuid("visit_id").references(() => visits.id),
+    encounterId: uuid("encounter_id").references(() => encounters.id),
     patientId: uuid("patient_id")
       .notNull()
       .references(() => patients.id),
     facilityId: uuid("facility_id").references(() => health_facilities.id),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at"),
     deletedBy: uuid("deleted_by"),
@@ -1189,6 +1193,8 @@ export const pregnancies = pgTable(
   },
   (t) => [
     index("pregnancy_patient_id_idx").on(t.patientId),
+    index("pregnancy_visit_id_idx").on(t.visitId),
+    index("pregnancy_encounter_id_idx").on(t.encounterId),
     index("pregnancy_facility_patient_first_visit_idx").on(
       t.facilityId,
       t.patientId,
@@ -1227,6 +1233,8 @@ export const antenatal_cares = pgTable(
     obstructiveComplicationsOther: text("obstructive_complications_other"),
     dangerSign: text("danger_sign"),
     dangerSignOther: text("danger_sign_other"),
+    visitId: uuid("visit_id").references(() => visits.id),
+    encounterId: uuid("encounter_id").references(() => encounters.id),
     patientId: uuid("patient_id")
       .notNull()
       .references(() => patients.id),
@@ -1251,6 +1259,8 @@ export const antenatal_cares = pgTable(
   (t) => [
     index("antenatal_care_patient_id_idx").on(t.patientId),
     index("antenatal_care_pregnancy_id_idx").on(t.pregnancyId),
+    index("antenatal_care_visit_id_idx").on(t.visitId),
+    index("antenatal_care_encounter_id_idx").on(t.encounterId),
   ],
 );
 
@@ -1283,6 +1293,8 @@ export const deliveries = pgTable(
     referReason: text("refer_reason"),
     vitaminK: integer("vitamin_k"),
     umbilicalCream: integer("umbilical_cream"),
+    visitId: uuid("visit_id").references(() => visits.id),
+    encounterId: uuid("encounter_id").references(() => encounters.id),
     patientId: uuid("patient_id")
       .notNull()
       .references(() => patients.id),
@@ -1299,6 +1311,8 @@ export const deliveries = pgTable(
   (t) => [
     index("delivery_patient_id_idx").on(t.patientId),
     index("delivery_pregnancy_id_idx").on(t.pregnancyId),
+    index("delivery_visit_id_idx").on(t.visitId),
+    index("delivery_encounter_id_idx").on(t.encounterId),
   ],
 );
 
@@ -1366,6 +1380,8 @@ export const postnatal_cares = pgTable(
     doctorFeedback: text("doctor_feedback"),
     ironTablet: integer("iron_tablet"),
     calcium: integer("calcium"),
+    visitId: uuid("visit_id").references(() => visits.id),
+    encounterId: uuid("encounter_id").references(() => encounters.id),
     patientId: uuid("patient_id")
       .notNull()
       .references(() => patients.id),
@@ -1384,6 +1400,8 @@ export const postnatal_cares = pgTable(
     index("postnatal_care_patient_id_idx").on(t.patientId),
     index("postnatal_care_pregnancy_id_idx").on(t.pregnancyId),
     index("postnatal_care_patient_visit_date_idx").on(t.patientId, t.visitDate),
+    index("postnatal_care_visit_id_idx").on(t.visitId),
+    index("postnatal_care_encounter_id_idx").on(t.encounterId),
   ],
 );
 
@@ -2326,6 +2344,14 @@ export const pregnanciesRelations = relations(pregnancies, ({ one, many }) => ({
     fields: [pregnancies.patientId],
     references: [patients.id],
   }),
+  visit: one(visits, {
+    fields: [pregnancies.visitId],
+    references: [visits.id],
+  }),
+  encounter: one(encounters, {
+    fields: [pregnancies.encounterId],
+    references: [encounters.id],
+  }),
   facility: one(health_facilities, {
     fields: [pregnancies.facilityId],
     references: [health_facilities.id],
@@ -2335,6 +2361,16 @@ export const pregnanciesRelations = relations(pregnancies, ({ one, many }) => ({
     references: [users.id],
     relationName: "assignedFchv",
   }),
+  creator: one(users, {
+    fields: [pregnancies.createdBy],
+    references: [users.id],
+    relationName: "pregnancyCreator",
+  }),
+  updater: one(users, {
+    fields: [pregnancies.updatedBy],
+    references: [users.id],
+    relationName: "pregnancyUpdater",
+  }),
   antenatalCares: many(antenatal_cares),
   deliveries: many(deliveries),
   postnatalCares: many(postnatal_cares),
@@ -2342,19 +2378,24 @@ export const pregnanciesRelations = relations(pregnancies, ({ one, many }) => ({
   homeBabyPnc: many(home_baby_postnatal_cares),
 }));
 
-export const antenatalCaresRelations = relations(
-  antenatal_cares,
-  ({ one }) => ({
-    patient: one(patients, {
-      fields: [antenatal_cares.patientId],
-      references: [patients.id],
-    }),
-    pregnancy: one(pregnancies, {
-      fields: [antenatal_cares.pregnancyId],
-      references: [pregnancies.id],
-    }),
+export const antenatalCaresRelations = relations(antenatal_cares, ({ one }) => ({
+  patient: one(patients, {
+    fields: [antenatal_cares.patientId],
+    references: [patients.id],
   }),
-);
+  pregnancy: one(pregnancies, {
+    fields: [antenatal_cares.pregnancyId],
+    references: [pregnancies.id],
+  }),
+  visit: one(visits, {
+    fields: [antenatal_cares.visitId],
+    references: [visits.id],
+  }),
+  encounter: one(encounters, {
+    fields: [antenatal_cares.encounterId],
+    references: [encounters.id],
+  }),
+}));
 
 export const appointmentsRelations = relations(appointments, ({ one }) => ({
   doctor: one(users, {

@@ -17,6 +17,12 @@ export const visitCreateSchema = z.object({
 
 export type VisitCreateInput = z.infer<typeof visitCreateSchema>;
 
+export const visitStatusUpdateSchema = z.object({
+  status: z.enum(["finished", "cancelled"]),
+});
+
+export type VisitStatusUpdateInput = z.infer<typeof visitStatusUpdateSchema>;
+
 export const vitalsCreateSchema = z.object({
   diastolic: z.number().int().optional().nullable(),
   systolic: z.number().int().optional().nullable(),

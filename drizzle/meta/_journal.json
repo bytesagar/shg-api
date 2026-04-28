@@ -15,6 +15,13 @@
       "when": 1776850744129,
       "tag": "0001_volatile_chronomancer",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777349298331,
+      "tag": "0002_red_felicia_hardy",
+      "breakpoints": true
     }
   ]
 }

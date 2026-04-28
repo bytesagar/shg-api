@@ -16,8 +16,6 @@ export class VisitService {
   }
 
   public async listVisits(patientId: string) {
-
-
     return { items: await this.visitRepository.findAllByPatientId(patientId) };
   }
 
@@ -26,7 +24,9 @@ export class VisitService {
     if (!patient) {
       return null;
     }
-    const activeVisit = await this.visitRepository.findByPatientId(patient.id);
+    const activeVisit = await this.visitRepository.findActiveByPatientId(
+      patient.id,
+    );
     if (activeVisit) {
       throw new AppError(
         "Cannot create a new visit while another visit is active",
@@ -40,12 +40,31 @@ export class VisitService {
       date: input.date ?? new Date(),
       reason: input.reason,
       service: input.service ?? null,
-      status: input.status ?? null,
+      status: input.status ?? "planned",
       doctorId: input.doctorId ?? null,
     });
   }
 
   public async getVisitById(id: string) {
     return this.visitRepository.findById(id);
+  }
+
+  public async updateVisitStatus(params: {
+    visitId: string;
+    status: "finished" | "cancelled";
+  }) {
+    const visit = await this.visitRepository.findById(params.visitId);
+    if (!visit) return null;
+
+    if (visit.status === params.status) return visit;
+
+    if (visit.status === "finished" || visit.status === "cancelled") {
+      throw new AppError("Visit is already ended", HTTP_STATUS.CONFLICT);
+    }
+
+    return this.visitRepository.updateStatus({
+      id: params.visitId,
+      status: params.status,
+    });
   }
 }
