@@ -10,15 +10,21 @@ import {
 import { FacilityContext } from "../../context/facility-context";
 import { PatientRepository } from "../patients/patient.repository";
 import { UserRepository } from "../users/user.repository";
-import { FamilyPlanningCreateInput } from "./family-planning.validation";
+import {
+  FamilyPlanningCreateInput,
+  FamilyPlanningsListQuery,
+} from "./family-planning.validation";
+import { FamilyPlanningRepository } from "./family-planning.repository";
 
 export class FamilyPlanningService {
   private patientRepository: PatientRepository;
   private userRepository: UserRepository;
+  private familyPlanningRepository: FamilyPlanningRepository;
 
   constructor(private readonly context: FacilityContext) {
     this.patientRepository = new PatientRepository(context);
     this.userRepository = new UserRepository(context);
+    this.familyPlanningRepository = new FamilyPlanningRepository(context);
   }
 
   public async createFamilyPlanning(input: FamilyPlanningCreateInput) {
@@ -197,6 +203,18 @@ export class FamilyPlanningService {
       }
 
       return { familyPlanning, details: newFp };
+    });
+  }
+
+  public async getFamilyPlanningById(id: string) {
+    return this.familyPlanningRepository.findByIdWithDetails(id);
+  }
+
+  public async listFamilyPlannings(params: FamilyPlanningsListQuery) {
+    return this.familyPlanningRepository.list({
+      patientId: params.patientId,
+      page: params.page,
+      pageSize: params.pageSize,
     });
   }
 }

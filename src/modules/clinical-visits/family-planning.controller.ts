@@ -5,8 +5,12 @@ import { AppError } from "../../utils/app-error";
 import { HTTP_STATUS } from "../../config/constants";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { requireFacilityContext } from "../../utils/request-context";
-import { familyPlanningCreateSchema } from "./family-planning.validation";
+import {
+  familyPlanningCreateSchema,
+  familyPlanningsListQuerySchema,
+} from "./family-planning.validation";
 import { FamilyPlanningService } from "./family-planning.service";
+import { parseListQuery } from "../../utils/query-parser";
 
 export class FamilyPlanningController extends BaseController {
   public createFamilyPlanning = catchAsync(
@@ -38,6 +42,43 @@ export class FamilyPlanningController extends BaseController {
       }
 
       return this.created(res, result, "Family planning created successfully");
+    },
+  );
+
+  public getFamilyPlanning = catchAsync(
+    async (req: AuthRequest, res: Response) => {
+      const context = requireFacilityContext(req);
+      const { id } = req.params as { id: string };
+
+      const service = new FamilyPlanningService(context);
+      const result = await service.getFamilyPlanningById(id);
+      if (!result) {
+        throw new AppError("Family planning not found", HTTP_STATUS.NOT_FOUND);
+      }
+      return this.ok(res, result, "Family planning retrieved successfully");
+    },
+  );
+
+  public listFamilyPlannings = catchAsync(
+    async (req: AuthRequest, res: Response) => {
+      const context = requireFacilityContext(req);
+      const query = parseListQuery(
+        req.query as Record<string, unknown>,
+        familyPlanningsListQuerySchema,
+      );
+
+      const service = new FamilyPlanningService(context);
+      const result = await service.listFamilyPlannings(query);
+      return this.ok(
+        res,
+        {
+          items: result.items,
+          total: result.total,
+          page: query.page,
+          pageSize: query.pageSize,
+        },
+        "Family plannings retrieved successfully",
+      );
     },
   );
 }

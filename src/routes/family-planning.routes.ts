@@ -2,10 +2,24 @@ import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorize } from "../middlewares/authorize.middleware";
 import { FamilyPlanningController } from "../modules/clinical-visits/family-planning.controller";
-import { COMMUNITY_WRITE_ROLES } from "../constants/rbac";
+import { CLINICAL_READ_ROLES, COMMUNITY_WRITE_ROLES } from "../constants/rbac";
 
 const router = Router();
 const familyPlanningController = new FamilyPlanningController();
+
+router.get(
+  "/",
+  authMiddleware,
+  authorize([...CLINICAL_READ_ROLES]),
+  familyPlanningController.listFamilyPlannings,
+);
+
+router.get(
+  "/:id",
+  authMiddleware,
+  authorize([...CLINICAL_READ_ROLES]),
+  familyPlanningController.getFamilyPlanning,
+);
 
 /**
  * @openapi

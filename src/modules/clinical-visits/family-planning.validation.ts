@@ -3,6 +3,7 @@ import {
   isoDateString,
   optionalIsoDateString,
 } from "../../validations/common.validation";
+import { createListQuerySchema } from "../../utils/query-parser";
 
 const fpDeviceSchema = z.enum([
   "condom",
@@ -111,4 +112,12 @@ export const familyPlanningCreateSchema = z.discriminatedUnion("serviceType", [
 
 export type FamilyPlanningCreateInput = z.infer<
   typeof familyPlanningCreateSchema
+>;
+
+export const familyPlanningsListQuerySchema = createListQuerySchema({
+  patientId: z.uuid().optional(),
+});
+
+export type FamilyPlanningsListQuery = z.infer<
+  typeof familyPlanningsListQuerySchema
 >;
