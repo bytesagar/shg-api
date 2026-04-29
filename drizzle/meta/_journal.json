@@ -36,6 +36,20 @@
       "when": 1777374132321,
       "tag": "0004_lonely_wolfpack",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1777465385246,
+      "tag": "0005_boring_hobgoblin",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1777502253131,
+      "tag": "0006_aromatic_dormammu",
+      "breakpoints": true
     }
   ]
 }

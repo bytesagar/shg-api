@@ -566,6 +566,12 @@ export const patients = pgTable(
       .references(() => persons.id),
     patientId: varchar("patient_id", { length: 100 }).notNull(),
     service: varchar("service", { length: 255 }).notNull(),
+    education: varchar("education", { length: 255 }),
+    occupation: varchar("occupation", { length: 255 }),
+    occupationOther: varchar("occupation_other", { length: 255 }),
+    spouseName: varchar("spouse_name", { length: 255 }),
+    childrenMale: integer("children_male"),
+    childrenFemale: integer("children_female"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at"),
     createdBy: uuid("created_by"),
@@ -1749,6 +1755,12 @@ export const family_plannings = pgTable(
       .notNull()
       .default(sql`gen_random_uuid()`),
     serviceDate: date("service_date", { mode: "string" }).notNull(),
+    visitId: uuid("visit_id")
+      .notNull()
+      .references(() => visits.id),
+    encounterId: uuid("encounter_id")
+      .notNull()
+      .references(() => encounters.id),
     patientId: uuid("patient_id")
       .notNull()
       .references(() => patients.id),
@@ -1774,6 +1786,8 @@ export const family_plannings = pgTable(
   },
   (t) => [
     index("family_planning_patient_id_idx").on(t.patientId),
+    index("family_planning_visit_id_idx").on(t.visitId),
+    index("family_planning_encounter_id_idx").on(t.encounterId),
     index("family_planning_facility_id_idx").on(t.facilityId),
     index("family_planning_facility_patient_service_date_idx").on(
       t.facilityId,
@@ -2452,6 +2466,14 @@ export const familyPlanningsRelations = relations(
     facility: one(health_facilities, {
       fields: [family_plannings.facilityId],
       references: [health_facilities.id],
+    }),
+    visit: one(visits, {
+      fields: [family_plannings.visitId],
+      references: [visits.id],
+    }),
+    encounter: one(encounters, {
+      fields: [family_plannings.encounterId],
+      references: [encounters.id],
     }),
     news: many(family_planning_news),
     removals: many(family_planning_removals),

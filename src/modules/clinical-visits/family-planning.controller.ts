@@ -35,6 +35,12 @@ export class FamilyPlanningController extends BaseController {
         if (result.error === "PATIENT_NOT_FOUND") {
           throw new AppError("Patient not found", HTTP_STATUS.NOT_FOUND);
         }
+        if (result.error === "VISIT_NOT_ACTIVE") {
+          throw new AppError(
+            "Cannot create family planning without an active visit",
+            HTTP_STATUS.CONFLICT,
+          );
+        }
         throw new AppError(
           "Unable to create family planning",
           HTTP_STATUS.BAD_REQUEST,

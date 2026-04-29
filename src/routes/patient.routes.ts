@@ -2,7 +2,11 @@ import { Router } from "express";
 import { PatientController } from "../modules/patients/patient.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorize } from "../middlewares/authorize.middleware";
-import { CLINICAL_READ_ROLES, CLINICAL_WRITE_ROLES } from "../constants/rbac";
+import {
+  CLINICAL_READ_ROLES,
+  CLINICAL_WRITE_ROLES,
+  COMMUNITY_WRITE_ROLES,
+} from "../constants/rbac";
 
 const router = Router();
 const patientController = new PatientController();
@@ -158,6 +162,13 @@ router.get(
   authMiddleware,
   authorize([...CLINICAL_READ_ROLES]),
   patientController.getPatient,
+);
+
+router.patch(
+  "/:id/family-planning-profile",
+  authMiddleware,
+  authorize([...COMMUNITY_WRITE_ROLES]),
+  patientController.updateFamilyPlanningProfile,
 );
 
 export default router;

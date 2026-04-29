@@ -38,6 +38,37 @@ export const patientCreateSchema = z.object({
   status: z
     .enum(["active", "inactive", "deceased", "discharged", "referred"])
     .default("active"),
+  education: z.string().min(1).max(255).optional().nullable(),
+  occupation: z.string().min(1).max(255).optional().nullable(),
+  occupationOther: z.string().max(255).optional().nullable(),
+  spouseName: z.string().max(255).optional().nullable(),
+  childrenMale: z.number().int().min(0).max(10).optional().nullable(),
+  childrenFemale: z.number().int().min(0).max(10).optional().nullable(),
 });
 
 export type PatientCreateInput = z.infer<typeof patientCreateSchema>;
+
+export const patientFamilyPlanningProfileSchema = z
+  .object({
+    education: z.string().min(1, "Education is required").max(255),
+    occupation: z.string().min(1, "Occupation is required").max(255),
+    occupationOther: z.string().max(255).optional().nullable(),
+    spouseName: z.string().max(255).optional().nullable(),
+    childrenMale: z.number().int().min(0).max(10).optional().nullable(),
+    childrenFemale: z.number().int().min(0).max(10).optional().nullable(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.occupation.trim().toLowerCase() === "other") {
+      if (!data.occupationOther || data.occupationOther.trim().length === 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["occupationOther"],
+          message: "Please specify other occupation",
+        });
+      }
+    }
+  });
+
+export type PatientFamilyPlanningProfileInput = z.infer<
+  typeof patientFamilyPlanningProfileSchema
+>;

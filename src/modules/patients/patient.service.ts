@@ -1,5 +1,8 @@
 import { generatePatientId } from "../../utils/id-generator";
-import { PatientCreateInput } from "../../validations/patient.validation";
+import {
+  PatientCreateInput,
+  PatientFamilyPlanningProfileInput,
+} from "../../validations/patient.validation";
 import { FacilityContext } from "../../context/facility-context";
 import { PatientRepository } from "./patient.repository";
 import { patients } from "../../db/schema";
@@ -24,6 +27,13 @@ export class PatientService {
 
   public async getPatientById(id: string) {
     return this.patientRepository.findById(id);
+  }
+
+  public async updateFamilyPlanningProfile(
+    id: string,
+    data: PatientFamilyPlanningProfileInput,
+  ) {
+    return this.patientRepository.updateFamilyPlanningProfile(id, data);
   }
 
   public async getAllPatients(params: {

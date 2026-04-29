@@ -1,5 +1,7 @@
 import { db } from "../../db";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import {
+  encounters,
   family_plannings,
   family_planning_news,
   family_planning_olds,
@@ -10,6 +12,7 @@ import {
 import { FacilityContext } from "../../context/facility-context";
 import { PatientRepository } from "../patients/patient.repository";
 import { UserRepository } from "../users/user.repository";
+import { VisitRepository } from "./visit.repository";
 import {
   FamilyPlanningCreateInput,
   FamilyPlanningsListQuery,
@@ -20,25 +23,51 @@ export class FamilyPlanningService {
   private patientRepository: PatientRepository;
   private userRepository: UserRepository;
   private familyPlanningRepository: FamilyPlanningRepository;
+  private visitRepository: VisitRepository;
 
   constructor(private readonly context: FacilityContext) {
     this.patientRepository = new PatientRepository(context);
     this.userRepository = new UserRepository(context);
     this.familyPlanningRepository = new FamilyPlanningRepository(context);
+    this.visitRepository = new VisitRepository(context);
   }
 
   public async createFamilyPlanning(input: FamilyPlanningCreateInput) {
     const patient = await this.patientRepository.findById(input.patientId);
     if (!patient) return { error: "PATIENT_NOT_FOUND" as const };
 
+    const activeVisit = await this.visitRepository.findActiveByPatientId(
+      patient.id,
+    );
+    if (!activeVisit) return { error: "VISIT_NOT_ACTIVE" as const };
+
     const serviceProviderId = input.serviceProviderId ?? this.context.userId;
     const provider = await this.userRepository.findById(serviceProviderId);
 
     return db.transaction(async (tx) => {
+      const [encounter] = await tx
+        .insert(encounters)
+        .values({
+          visitId: activeVisit.id,
+          patientId: patient.id,
+          facilityId: this.context.facilityId,
+          encounterAt: new Date(),
+          reason: "FAMILY_PLANNING",
+          service: activeVisit.service ?? null,
+          status: "finished",
+          encounterType: "FAMILY_PLANNING",
+          doctorId: this.context.userId,
+          createdBy: this.context.userId,
+          updatedBy: this.context.userId,
+        })
+        .returning();
+
       const fp = await tx
         .insert(family_plannings)
         .values({
           serviceDate: input.serviceDate,
+          visitId: activeVisit.id,
+          encounterId: encounter.id,
           patientId: input.patientId,
           facilityId: this.context.facilityId,
           serviceType: input.serviceType,
@@ -51,6 +80,63 @@ export class FamilyPlanningService {
         .returning();
 
       const familyPlanning = fp[0];
+
+      const previousActiveNewFp = await tx
+        .select({
+          id: family_planning_news.id,
+          deviceUsed: family_planning_news.deviceUsed,
+        })
+        .from(family_planning_news)
+        .innerJoin(
+          family_plannings,
+          eq(family_plannings.id, family_planning_news.familyPlanningId),
+        )
+        .where(
+          and(
+            eq(family_plannings.facilityId, this.context.facilityId),
+            eq(family_plannings.patientId, patient.id),
+            inArray(family_plannings.serviceType, ["new", "follow_up"]),
+            eq(family_planning_news.isActive, true),
+          ),
+        )
+        .orderBy(desc(family_plannings.createdAt))
+        .limit(1);
+
+      const deactivatePreviousActiveNewFp = async () => {
+        const targetId = previousActiveNewFp[0]?.id;
+        if (!targetId) return;
+        await tx
+          .update(family_planning_news)
+          .set({
+            isActive: false,
+            updatedAt: new Date(),
+            updatedBy: this.context.userId,
+          })
+          .where(eq(family_planning_news.id, targetId));
+      };
+
+      const ensureRemovalPreviousDeviceId = async () => {
+        if (input.serviceType !== "removal") return null;
+
+        const prev = previousActiveNewFp[0];
+        if (!prev?.deviceUsed) return null;
+
+        await deactivatePreviousActiveNewFp();
+
+        const inserted = await tx
+          .insert(family_planning_olds)
+          .values({
+            previousDevice: prev.deviceUsed,
+            continueSameDevice: null,
+            discontinueReason: null,
+            discontinueReasonOther: null,
+            createdBy: this.context.userId,
+            updatedBy: this.context.userId,
+          })
+          .returning({ id: family_planning_olds.id });
+
+        return inserted[0]?.id ?? null;
+      };
 
       if (input.details?.previous) {
         const oldInserted = await tx
@@ -87,6 +173,8 @@ export class FamilyPlanningService {
               deletedBy: null,
             })
             .returning();
+
+          await deactivatePreviousActiveNewFp();
 
           return { familyPlanning, details: removalInserted[0] };
         }
@@ -134,16 +222,19 @@ export class FamilyPlanningService {
           });
         }
 
-        return { familyPlanning, details: newFp };
+        return { familyPlanning, encounter, details: newFp };
       }
 
       if (input.serviceType === "removal") {
         const removalDetails = input.details;
+
+        const previousDeviceId = await ensureRemovalPreviousDeviceId();
+
         const removalInserted = await tx
           .insert(family_planning_removals)
           .values({
             familyPlanningId: familyPlanning.id,
-            previousDeviceId: null,
+            previousDeviceId,
             lastMenstrualPeriod: removalDetails.lastMenstrualPeriod ?? null,
             removalDate: removalDetails.removalDate,
             placeOfFpDeviceUsed: removalDetails.placeOfFpDeviceUsed ?? null,
@@ -156,7 +247,7 @@ export class FamilyPlanningService {
           })
           .returning();
 
-        return { familyPlanning, details: removalInserted[0] };
+        return { familyPlanning, encounter, details: removalInserted[0] };
       }
 
       const newDetails = input.details;
@@ -202,7 +293,7 @@ export class FamilyPlanningService {
         });
       }
 
-      return { familyPlanning, details: newFp };
+      return { familyPlanning, encounter, details: newFp };
     });
   }
 

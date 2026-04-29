@@ -9,7 +9,7 @@ import {
 } from "../../db/schema";
 import { FacilityContext } from "../../context/facility-context";
 import { FacilityRepository } from "../../core/facility-repository";
-import { and, count, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, or } from "drizzle-orm";
 
 export class FamilyPlanningRepository extends FacilityRepository {
   constructor(context: FacilityContext) {
@@ -46,7 +46,10 @@ export class FamilyPlanningRepository extends FacilityRepository {
       )
       .leftJoin(
         family_planning_olds,
-        eq(family_planning_olds.id, family_planning_news.previousDeviceId),
+        or(
+          eq(family_planning_olds.id, family_planning_news.previousDeviceId),
+          eq(family_planning_olds.id, family_planning_removals.previousDeviceId),
+        ),
       )
       .leftJoin(
         fp_hormonal_details,
@@ -64,6 +67,11 @@ export class FamilyPlanningRepository extends FacilityRepository {
       details:
         row.familyPlanning.serviceType === "removal"
           ? row.removalDetails
+            ? {
+                ...row.removalDetails,
+                previous: row.previous,
+              }
+            : null
           : row.newDetails
             ? {
                 ...row.newDetails,
@@ -106,7 +114,10 @@ export class FamilyPlanningRepository extends FacilityRepository {
         )
         .leftJoin(
           family_planning_olds,
-          eq(family_planning_olds.id, family_planning_news.previousDeviceId),
+          or(
+            eq(family_planning_olds.id, family_planning_news.previousDeviceId),
+            eq(family_planning_olds.id, family_planning_removals.previousDeviceId),
+          ),
         )
         .leftJoin(
           fp_hormonal_details,
@@ -117,11 +128,12 @@ export class FamilyPlanningRepository extends FacilityRepository {
           eq(fp_iucd_details.newFpId, family_planning_news.id),
         )
         .where(where)
-        .orderBy(desc(family_plannings.serviceDate))
+        .orderBy(desc(family_plannings.createdAt))
         .limit(params.pageSize)
         .offset(offset),
       db.select({ count: count() }).from(family_plannings).where(where),
     ]);
+    
 
     return {
       items: rows.map((row) => ({
@@ -129,6 +141,11 @@ export class FamilyPlanningRepository extends FacilityRepository {
         details:
           row.familyPlanning.serviceType === "removal"
             ? row.removalDetails
+              ? {
+                  ...row.removalDetails,
+                  previous: row.previous,
+                }
+              : null
             : row.newDetails
               ? {
                   ...row.newDetails,

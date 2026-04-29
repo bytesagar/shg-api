@@ -62,6 +62,38 @@ export class PatientRepository extends FacilityRepository {
     return hydrated;
   }
 
+  public async updateFamilyPlanningProfile(
+    id: string,
+    data: {
+      education: string;
+      occupation: string;
+      occupationOther?: string | null;
+      spouseName?: string | null;
+      childrenMale?: number | null;
+      childrenFemale?: number | null;
+    },
+  ) {
+    const updated = await db
+      .update(patients)
+      .set({
+        education: data.education,
+        occupation: data.occupation,
+        occupationOther: data.occupationOther ?? null,
+        spouseName: data.spouseName ?? null,
+        childrenMale: data.childrenMale ?? null,
+        childrenFemale: data.childrenFemale ?? null,
+        updatedAt: new Date(),
+        updatedBy: this.context.userId,
+      })
+      .where(this.withFacilityScope(eq(patients.id, id)))
+      .returning();
+
+    const row = updated[0];
+    if (!row) return null;
+    const [hydrated] = await this.hydratePatients([row]);
+    return hydrated;
+  }
+
   public async createWithInitialVisit(
     data: PatientCreateInput,
     patientId: string,
@@ -127,6 +159,12 @@ export class PatientRepository extends FacilityRepository {
           patientId,
           personId: person.id,
           service: data.service,
+          education: data.education ?? null,
+          occupation: data.occupation ?? null,
+          occupationOther: data.occupationOther ?? null,
+          spouseName: data.spouseName ?? null,
+          childrenMale: data.childrenMale ?? null,
+          childrenFemale: data.childrenFemale ?? null,
           facilityId: this.context.facilityId,
           assignedUserId: data.assignedUserId ?? null,
           status: data.status,
