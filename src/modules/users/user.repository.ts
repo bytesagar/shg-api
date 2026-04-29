@@ -5,11 +5,22 @@ import {
   persons,
   user_profiles,
   user_role_assignments,
+  user_roles,
   users,
 } from "../../db/schema";
 import { FacilityContext } from "../../context/facility-context";
 import { FacilityRepository } from "../../core/facility-repository";
-import { SQL, count, desc, eq, inArray } from "drizzle-orm";
+import {
+  SQL,
+  and,
+  count,
+  desc,
+  eq,
+  ilike,
+  inArray,
+  or,
+  sql,
+} from "drizzle-orm";
 
 export class UserRepository extends FacilityRepository {
   constructor(context: FacilityContext) {
@@ -44,6 +55,61 @@ export class UserRepository extends FacilityRepository {
     return Number(result[0]?.count ?? 0);
   }
 
+  public async countFiltered(params: {
+    role?: string;
+    userType?: "admin" | "user" | "facility" | "doctor" | "fchv";
+    searchString?: string;
+  }) {
+    const parts: SQL[] = [];
+
+    if (params.userType) {
+      parts.push(eq(users.userType, params.userType));
+    }
+
+    if (params.searchString) {
+      const q = params.searchString;
+      parts.push(
+        or(
+          ilike(users.firstName, `%${q}%`),
+          ilike(users.lastName, `%${q}%`),
+          ilike(users.email, `%${q}%`),
+          ilike(users.phoneNumber, `%${q}%`),
+        )!,
+      );
+    }
+
+    if (params.role) {
+      const where =
+        parts.length > 0
+          ? this.withFacilityScope(
+              and(eq(user_roles.name, params.role), ...parts),
+            )
+          : this.withFacilityScope(eq(user_roles.name, params.role));
+
+      const result = await db
+        .select({ count: sql`count(distinct ${users.id})` })
+        .from(users)
+        .innerJoin(
+          user_role_assignments,
+          and(
+            eq(user_role_assignments.userId, users.id),
+            eq(user_role_assignments.isPrimary, true),
+          ),
+        )
+        .innerJoin(user_roles, eq(user_roles.id, user_role_assignments.roleId))
+        .where(where);
+
+      return Number(result[0]?.count ?? 0);
+    }
+
+    const where =
+      parts.length > 0
+        ? this.withFacilityScope(and(...parts))
+        : this.withFacilityScope();
+    const result = await db.select({ count: count() }).from(users).where(where);
+    return Number(result[0]?.count ?? 0);
+  }
+
   public async findAll(where?: SQL, opts?: { limit: number; offset: number }) {
     const base = db
       .select(this.userSelect)
@@ -56,6 +122,107 @@ export class UserRepository extends FacilityRepository {
         .offset(opts.offset);
     }
     return base;
+  }
+
+  public async findFiltered(params: {
+    role?: string;
+    userType?: "admin" | "user" | "facility" | "doctor" | "fchv";
+    searchString?: string;
+    limit: number;
+    offset: number;
+  }) {
+    const parts: SQL[] = [];
+
+    if (params.userType) {
+      parts.push(eq(users.userType, params.userType));
+    }
+
+    if (params.searchString) {
+      const q = params.searchString;
+      parts.push(
+        or(
+          ilike(users.firstName, `%${q}%`),
+          ilike(users.lastName, `%${q}%`),
+          ilike(users.email, `%${q}%`),
+          ilike(users.phoneNumber, `%${q}%`),
+        )!,
+      );
+    }
+
+    if (params.role) {
+      const where =
+        parts.length > 0
+          ? this.withFacilityScope(
+              and(eq(user_roles.name, params.role), ...parts),
+            )
+          : this.withFacilityScope(eq(user_roles.name, params.role));
+
+      return db
+        .select(this.userSelect)
+        .from(users)
+        .innerJoin(
+          user_role_assignments,
+          and(
+            eq(user_role_assignments.userId, users.id),
+            eq(user_role_assignments.isPrimary, true),
+          ),
+        )
+        .innerJoin(user_roles, eq(user_roles.id, user_role_assignments.roleId))
+        .where(where)
+        .orderBy(desc(users.createdAt))
+        .limit(params.limit)
+        .offset(params.offset);
+    }
+
+    const where =
+      parts.length > 0
+        ? this.withFacilityScope(and(...parts))
+        : this.withFacilityScope();
+
+    return db
+      .select(this.userSelect)
+      .from(users)
+      .where(where)
+      .orderBy(desc(users.createdAt))
+      .limit(params.limit)
+      .offset(params.offset);
+  }
+
+  public async countAllByRole(role: string) {
+    const result = await db
+      .select({ count: count() })
+      .from(users)
+      .innerJoin(
+        user_role_assignments,
+        and(
+          eq(user_role_assignments.userId, users.id),
+          eq(user_role_assignments.isPrimary, true),
+        ),
+      )
+      .innerJoin(user_roles, eq(user_roles.id, user_role_assignments.roleId))
+      .where(this.withFacilityScope(eq(user_roles.name, role)));
+    return Number(result[0]?.count ?? 0);
+  }
+
+  public async findAllByRole(
+    role: string,
+    opts: { limit: number; offset: number },
+  ) {
+    return db
+      .select(this.userSelect)
+      .from(users)
+      .innerJoin(
+        user_role_assignments,
+        and(
+          eq(user_role_assignments.userId, users.id),
+          eq(user_role_assignments.isPrimary, true),
+        ),
+      )
+      .innerJoin(user_roles, eq(user_roles.id, user_role_assignments.roleId))
+      .where(this.withFacilityScope(eq(user_roles.name, role)))
+      .orderBy(desc(users.createdAt))
+      .limit(opts.limit)
+      .offset(opts.offset);
   }
 
   /** Staff types that can appear on a facility roster (excludes global admins). */
@@ -112,7 +279,7 @@ export class UserRepository extends FacilityRepository {
     firstName: string;
     lastName: string;
     passwordHash: string;
-    userType: "admin" | "user" | "facility" | "doctor";
+    userType: "admin" | "user" | "facility" | "doctor" | "fchv";
     phoneNumber: string;
     designation?: string | null;
     municipalityId?: string | null;

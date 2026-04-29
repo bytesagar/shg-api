@@ -69,7 +69,19 @@ export const healthFacilitiesListQuerySchema = createListQuerySchema({
 
 export const logsListQuerySchema = paginationQuerySchema;
 
-export const usersListQuerySchema = paginationQuerySchema;
+const usersUserTypeQuery = z.preprocess(
+  (v) => {
+    if (typeof v === "string" && v.trim().length > 0) return v.trim();
+    return undefined;
+  },
+  z.enum(["admin", "user", "facility", "doctor", "fchv"]).optional(),
+);
+
+export const usersListQuerySchema = createListQuerySchema({
+  role: optionalQueryString,
+  userType: usersUserTypeQuery,
+  searchString: optionalQueryString,
+});
 
 const isoDateParam = z
   .string()

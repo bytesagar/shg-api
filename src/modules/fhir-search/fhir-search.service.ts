@@ -638,6 +638,11 @@ export class FhirSearchService {
     const dateFilter = query.filters.date?.[0]
       ? parseDateFilterToken(query.filters.date[0])
       : undefined;
+    const dateFilterDateOnly = dateFilter
+      ? dateFilter.value instanceof Date
+        ? dateFilter.value.toISOString().slice(0, 10)
+        : String(dateFilter.value)
+      : undefined;
     const encounterConditions: SQL[] = [eq(encounters.facilityId, this.context.facilityId)];
     if (patientIdsFilter?.length) {
       encounterConditions.push(inArray(encounters.patientId, patientIdsFilter));
@@ -744,7 +749,10 @@ export class FhirSearchService {
             heartRate: antenatal_cares.heartRate,
           })
           .from(antenatal_cares)
-          .innerJoin(pregnancies, eq(pregnancies.id, antenatal_cares.pregnancyId))
+          .innerJoin(
+            pregnancies,
+            eq(pregnancies.id, antenatal_cares.pregnancyId),
+          )
           .where(
             and(
               eq(pregnancies.facilityId, this.context.facilityId),
@@ -753,10 +761,10 @@ export class FhirSearchService {
                 : undefined,
               dateFilter
                 ? dateFilter.op === "eq"
-                  ? eq(antenatal_cares.ancVisitDate, dateFilter.value)
+                  ? eq(antenatal_cares.ancVisitDate, dateFilterDateOnly!)
                   : dateFilter.op === "ge" || dateFilter.op === "gt"
-                    ? gte(antenatal_cares.ancVisitDate, dateFilter.value)
-                    : lte(antenatal_cares.ancVisitDate, dateFilter.value)
+                    ? gte(antenatal_cares.ancVisitDate, dateFilterDateOnly!)
+                    : lte(antenatal_cares.ancVisitDate, dateFilterDateOnly!)
                 : undefined,
             ),
           )
@@ -1563,17 +1571,27 @@ export class FhirSearchService {
     const dateToken = query.filters.date?.[0];
     if (dateToken) {
       const parsed = parseDateFilterToken(dateToken);
+      const dateOnly =
+        parsed.value instanceof Date
+          ? parsed.value.toISOString().slice(0, 10)
+          : String(parsed.value);
       if (parsed.op === "eq") {
-        pregnancyConditions.push(eq(pregnancies.firstVisit, parsed.value));
-        familyPlanningConditions.push(eq(family_plannings.serviceDate, parsed.value));
+        pregnancyConditions.push(eq(pregnancies.firstVisit, dateOnly));
+        familyPlanningConditions.push(
+          eq(family_plannings.serviceDate, dateOnly),
+        );
       }
       if (parsed.op === "ge" || parsed.op === "gt") {
-        pregnancyConditions.push(gte(pregnancies.firstVisit, parsed.value));
-        familyPlanningConditions.push(gte(family_plannings.serviceDate, parsed.value));
+        pregnancyConditions.push(gte(pregnancies.firstVisit, dateOnly));
+        familyPlanningConditions.push(
+          gte(family_plannings.serviceDate, dateOnly),
+        );
       }
       if (parsed.op === "le" || parsed.op === "lt") {
-        pregnancyConditions.push(lte(pregnancies.firstVisit, parsed.value));
-        familyPlanningConditions.push(lte(family_plannings.serviceDate, parsed.value));
+        pregnancyConditions.push(lte(pregnancies.firstVisit, dateOnly));
+        familyPlanningConditions.push(
+          lte(family_plannings.serviceDate, dateOnly),
+        );
       }
     }
 
@@ -1586,18 +1604,20 @@ export class FhirSearchService {
         .limit(5000),
     ]);
 
-    const now = new Date();
+    const todayIso = new Date().toISOString().slice(0, 10);
     const episodes = [
       ...pregnancyRows.map((row) => ({
         resource: mapEpisodeOfCareResource({
           id: row.id,
           patientId: row.patientId,
           status:
-            row.expectedDeliveryDate && row.expectedDeliveryDate < now
+            row.expectedDeliveryDate && row.expectedDeliveryDate < todayIso
               ? "finished"
               : "active",
-          start: row.firstVisit,
-          end: row.expectedDeliveryDate ?? undefined,
+          start: new Date(row.firstVisit),
+          end: row.expectedDeliveryDate
+            ? new Date(row.expectedDeliveryDate)
+            : undefined,
           typeText: "Maternal Pregnancy",
         }),
       })),
@@ -1606,7 +1626,7 @@ export class FhirSearchService {
           id: row.id,
           patientId: row.patientId,
           status: row.deletedAt ? "finished" : "active",
-          start: row.serviceDate,
+          start: new Date(row.serviceDate),
           typeText: "Family Planning",
         }),
       })),
@@ -1652,23 +1672,27 @@ export class FhirSearchService {
     const dateToken = query.filters.date?.[0];
     if (dateToken) {
       const parsed = parseDateFilterToken(dateToken);
+      const dateOnly =
+        parsed.value instanceof Date
+          ? parsed.value.toISOString().slice(0, 10)
+          : String(parsed.value);
       if (parsed.op === "eq") {
-        fpConditions.push(eq(family_plannings.serviceDate, parsed.value));
-        pncConditions.push(eq(postnatal_cares.visitDate, parsed.value));
+        fpConditions.push(eq(family_plannings.serviceDate, dateOnly));
+        pncConditions.push(eq(postnatal_cares.visitDate, dateOnly));
       }
       if (parsed.op === "ge" || parsed.op === "gt") {
-        fpConditions.push(gte(family_plannings.serviceDate, parsed.value));
-        pncConditions.push(gte(postnatal_cares.visitDate, parsed.value));
-        ancConditions.push(gte(antenatal_cares.ancVisitDate, parsed.value));
-        deliveryConditions.push(gte(deliveries.deliveryDate, parsed.value));
+        fpConditions.push(gte(family_plannings.serviceDate, dateOnly));
+        pncConditions.push(gte(postnatal_cares.visitDate, dateOnly));
+        ancConditions.push(gte(antenatal_cares.ancVisitDate, dateOnly));
+        deliveryConditions.push(gte(deliveries.deliveryDate, dateOnly));
         homeMotherConditions.push(gte(home_mother_postnatal_cares.visitDate, parsed.value));
         homeBabyConditions.push(gte(home_baby_postnatal_cares.visitDate, parsed.value));
       }
       if (parsed.op === "le" || parsed.op === "lt") {
-        fpConditions.push(lte(family_plannings.serviceDate, parsed.value));
-        pncConditions.push(lte(postnatal_cares.visitDate, parsed.value));
-        ancConditions.push(lte(antenatal_cares.ancVisitDate, parsed.value));
-        deliveryConditions.push(lte(deliveries.deliveryDate, parsed.value));
+        fpConditions.push(lte(family_plannings.serviceDate, dateOnly));
+        pncConditions.push(lte(postnatal_cares.visitDate, dateOnly));
+        ancConditions.push(lte(antenatal_cares.ancVisitDate, dateOnly));
+        deliveryConditions.push(lte(deliveries.deliveryDate, dateOnly));
         homeMotherConditions.push(lte(home_mother_postnatal_cares.visitDate, parsed.value));
         homeBabyConditions.push(lte(home_baby_postnatal_cares.visitDate, parsed.value));
       }
@@ -1871,4 +1895,3 @@ export class FhirSearchService {
     };
   }
 }
-

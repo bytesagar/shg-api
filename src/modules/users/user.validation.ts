@@ -9,7 +9,7 @@ export const userCreateSchema = z.object({
   username: z.string().max(255).optional().nullable(),
   firstName: z.string().min(1, "First name is required").max(255),
   lastName: z.string().min(1, "Last name is required").max(255),
-  userType: z.enum(["admin", "user", "facility", "doctor"]),
+  userType: z.enum(["admin", "user", "facility", "doctor", "fchv"]),
   phoneNumber: z.string().min(7, "Phone number is required").max(50),
   designation: z.string().max(255).optional().nullable(),
   municipalityId: z.uuid().optional().nullable(),

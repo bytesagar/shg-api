@@ -1,22 +1,13 @@
 import { z } from "zod";
 import { createListQuerySchema } from "../../utils/query-parser";
-
-const requiredDateFromString = z.preprocess(
-  (val) => (typeof val === "string" ? new Date(val) : val),
-  z.date(),
-);
-
-const optionalDateFromString = z.preprocess(
-  (val) => (typeof val === "string" ? new Date(val) : val),
-  z.date().optional().nullable(),
-);
+import { isoDateString, optionalIsoDateString } from "../../validations/common.validation";
 
 export const pregnancyCreateSchema = z.object({
-  firstVisit: optionalDateFromString,
-  gravida: z.string().min(1).max(50),
-  para: z.string().max(50).optional().nullable(),
-  lastMenstruationPeriod: optionalDateFromString,
-  expectedDeliveryDate: optionalDateFromString,
+  firstVisit: optionalIsoDateString,
+  gravida: z.number().min(1).max(50),
+  para: z.number().max(50).optional().nullable(),
+  lastMenstruationPeriod: optionalIsoDateString,
+  expectedDeliveryDate: optionalIsoDateString,
   assignedFchvId: z.uuid().optional().nullable(),
 });
 
@@ -29,8 +20,8 @@ export const pregnanciesListQuerySchema = createListQuerySchema({
 export type PregnanciesListQuery = z.infer<typeof pregnanciesListQuerySchema>;
 
 export const antenatalCareCreateSchema = z.object({
-  pregnancyId: z.uuid(),
-  ancVisitDate: optionalDateFromString,
+  visitId: z.uuid(),
+  ancVisitDate: optionalIsoDateString,
   visitingTimeWeek: z.string().max(50).optional().nullable(),
   visitingTimeMonth: z.string().max(50).optional().nullable(),
   motherWeight: z.number().optional().nullable(),
@@ -45,7 +36,7 @@ export const antenatalCareCreateSchema = z.object({
   otherProblems: z.string().optional().nullable(),
   treatment: z.string().optional().nullable(),
   medicalAdvice: z.string().optional().nullable(),
-  nextVisitSchedule: optionalDateFromString,
+  nextVisitSchedule: optionalIsoDateString,
   ironTablet: z.number().int().optional().nullable(),
   albendazole: z.number().int().optional().nullable(),
   tdVaccination: z.string().max(255).optional().nullable(),
@@ -77,8 +68,8 @@ export type AntenatalCaresListQuery = z.infer<
 >;
 
 export const deliveryCreateSchema = z.object({
-  pregnancyId: z.uuid(),
-  deliveryDate: optionalDateFromString,
+  visitId: z.uuid(),
+  deliveryDate: optionalIsoDateString,
   placeOfDelivery: z.string().max(255).optional().nullable(),
   otherPlaceOfDelivery: z.string().max(255).optional().nullable(),
   babyPresentation: z.string().max(255).optional().nullable(),
@@ -110,10 +101,10 @@ export const deliveriesListQuerySchema = createListQuerySchema({
 export type DeliveriesListQuery = z.infer<typeof deliveriesListQuerySchema>;
 
 export const postnatalCareCreateSchema = z.object({
-  pregnancyId: z.uuid(),
+  visitId: z.uuid(),
   visitingTime: z.string().min(1).max(100),
   visitTime: z.string().min(1).max(100),
-  visitDate: requiredDateFromString,
+  visitDate: isoDateString,
   conditionOfMother: z.string().min(1),
   conditionOfBaby: z.string().min(1),
   medicalAdvice: z.string().min(1),

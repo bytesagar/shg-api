@@ -50,6 +50,12 @@ export class MaternalHealthController extends BaseController {
             HTTP_STATUS.CONFLICT,
           );
         }
+        if (result.error === "ACTIVE_PREGNANCY_EXISTS") {
+          throw new AppError(
+            "An active pregnancy already exists for this patient",
+            HTTP_STATUS.CONFLICT,
+          );
+        }
       }
 
       return this.created(res, result, "Pregnancy created successfully");
@@ -94,7 +100,7 @@ export class MaternalHealthController extends BaseController {
 
       const service = new MaternalHealthService(context);
       const result = await service.createAntenatalCare({
-        visitId: req.params.visitId as string,
+        pregnancyId: req.params.pregnancyId as string,
         ...validatedData.data,
       });
 
@@ -151,7 +157,7 @@ export class MaternalHealthController extends BaseController {
 
       const service = new MaternalHealthService(context);
       const result = await service.createDelivery({
-        visitId: req.params.visitId as string,
+        pregnancyId: req.params.pregnancyId as string,
         ...validatedData.data,
       });
 
@@ -208,7 +214,7 @@ export class MaternalHealthController extends BaseController {
 
       const service = new MaternalHealthService(context);
       const result = await service.createPostnatalCare({
-        visitId: req.params.visitId as string,
+        pregnancyId: req.params.pregnancyId as string,
         ...validatedData.data,
       });
 

@@ -22,6 +22,20 @@
       "when": 1777349298331,
       "tag": "0002_red_felicia_hardy",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1777371397656,
+      "tag": "0003_cuddly_lady_mastermind",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1777374132321,
+      "tag": "0004_lonely_wolfpack",
+      "breakpoints": true
     }
   ]
 }

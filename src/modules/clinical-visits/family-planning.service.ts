@@ -5,6 +5,7 @@ import {
   family_planning_olds,
   family_planning_removals,
   fp_hormonal_details,
+  fp_iucd_details,
 } from "../../db/schema";
 import { FacilityContext } from "../../context/facility-context";
 import { PatientRepository } from "../patients/patient.repository";
@@ -104,10 +105,23 @@ export class FamilyPlanningService {
           .returning();
 
         const newFp = newInserted[0];
-        if (newDetails.hormonalDetails) {
+        if (
+          newDetails.deviceUsed === "pills" ||
+          newDetails.deviceUsed === "depo" ||
+          newDetails.deviceUsed === "implant"
+        ) {
           await tx.insert(fp_hormonal_details).values({
             newFpId: newFp.id,
             ...newDetails.hormonalDetails,
+            createdBy: this.context.userId,
+            updatedBy: this.context.userId,
+            deletedBy: null,
+          });
+        }
+        if (newDetails.deviceUsed === "iucd") {
+          await tx.insert(fp_iucd_details).values({
+            newFpId: newFp.id,
+            ...newDetails.iucdDetails,
             createdBy: this.context.userId,
             updatedBy: this.context.userId,
             deletedBy: null,
@@ -159,10 +173,23 @@ export class FamilyPlanningService {
         .returning();
 
       const newFp = newInserted[0];
-      if (newDetails.hormonalDetails) {
+      if (
+        newDetails.deviceUsed === "pills" ||
+        newDetails.deviceUsed === "depo" ||
+        newDetails.deviceUsed === "implant"
+      ) {
         await tx.insert(fp_hormonal_details).values({
           newFpId: newFp.id,
           ...newDetails.hormonalDetails,
+          createdBy: this.context.userId,
+          updatedBy: this.context.userId,
+          deletedBy: null,
+        });
+      }
+      if (newDetails.deviceUsed === "iucd") {
+        await tx.insert(fp_iucd_details).values({
+          newFpId: newFp.id,
+          ...newDetails.iucdDetails,
           createdBy: this.context.userId,
           updatedBy: this.context.userId,
           deletedBy: null,

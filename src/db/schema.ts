@@ -3,6 +3,7 @@ import {
   serial,
   varchar,
   integer,
+  date,
   timestamp,
   text,
   pgEnum,
@@ -24,6 +25,7 @@ export const userRoleEnum = pgEnum("user_role_enum", [
   "user",
   "facility",
   "doctor",
+  "fchv",
 ]);
 
 export const logLevelEnum = pgEnum("log_level_enum", [
@@ -102,6 +104,11 @@ export const visitStatusEnum = pgEnum("visit_status_enum", [
   "in_progress",
   "finished",
   "cancelled",
+]);
+
+export const pregnancyStatusEnum = pgEnum("pregnancy_status_enum", [
+  "active",
+  "ended",
 ]);
 
 export const appointmentStatusEnum = pgEnum("appointment_status_enum", [
@@ -1172,11 +1179,15 @@ export const pregnancies = pgTable(
       .primaryKey()
       .notNull()
       .default(sql`gen_random_uuid()`),
-    firstVisit: timestamp("first_visit").notNull(),
+    firstVisit: date("first_visit", { mode: "string" }).notNull(),
     gravida: varchar("gravida", { length: 50 }).notNull(),
     para: varchar("para", { length: 50 }),
-    lastMenstruationPeriod: timestamp("last_menstruation_period"),
-    expectedDeliveryDate: timestamp("expected_delivery_date"),
+    lastMenstruationPeriod: date("last_menstruation_period", {
+      mode: "string",
+    }),
+    expectedDeliveryDate: date("expected_delivery_date", { mode: "string" }),
+    status: pregnancyStatusEnum("status").default("active").notNull(),
+    endedAt: timestamp("ended_at"),
     visitId: uuid("visit_id").references(() => visits.id),
     encounterId: uuid("encounter_id").references(() => encounters.id),
     patientId: uuid("patient_id")
@@ -1210,7 +1221,7 @@ export const antenatal_cares = pgTable(
       .primaryKey()
       .notNull()
       .default(sql`gen_random_uuid()`),
-    ancVisitDate: timestamp("anc_visit_date"),
+    ancVisitDate: date("anc_visit_date", { mode: "string" }),
     visitingTimeWeek: varchar("visiting_time_week", { length: 50 }),
     visitingTimeMonth: varchar("visiting_time_month", { length: 50 }),
     motherWeight: real("mother_weight"),
@@ -1225,7 +1236,7 @@ export const antenatal_cares = pgTable(
     otherProblems: text("other_problems"),
     treatment: text("treatment"),
     medicalAdvice: text("medical_advice"),
-    nextVisitSchedule: timestamp("next_visit_schedule"),
+    nextVisitSchedule: date("next_visit_schedule", { mode: "string" }),
     ironTablet: integer("iron_tablet"),
     albendazole: integer("albendazole"),
     tdVaccination: varchar("td_vaccination", { length: 255 }),
@@ -1271,7 +1282,7 @@ export const deliveries = pgTable(
       .primaryKey()
       .notNull()
       .default(sql`gen_random_uuid()`),
-    deliveryDate: timestamp("delivery_date"),
+    deliveryDate: date("delivery_date", { mode: "string" }),
     placeOfDelivery: varchar("place_of_delivery", { length: 255 }),
     otherPlaceOfDelivery: varchar("other_place_of_delivery", {
       length: 255,
@@ -1358,7 +1369,7 @@ export const postnatal_cares = pgTable(
       .default(sql`gen_random_uuid()`),
     visitingTime: varchar("visiting_time", { length: 100 }).notNull(),
     visitTime: varchar("visit_time", { length: 100 }).notNull(),
-    visitDate: timestamp("visit_date").notNull(),
+    visitDate: date("visit_date", { mode: "string" }).notNull(),
     conditionOfMother: text("condition_of_mother").notNull(),
     conditionOfBaby: text("condition_of_baby").notNull(),
     medicalAdvice: text("medical_advice").notNull(),
@@ -1737,7 +1748,7 @@ export const family_plannings = pgTable(
       .primaryKey()
       .notNull()
       .default(sql`gen_random_uuid()`),
-    serviceDate: timestamp("service_date").notNull(),
+    serviceDate: date("service_date", { mode: "string" }).notNull(),
     patientId: uuid("patient_id")
       .notNull()
       .references(() => patients.id),
@@ -1801,7 +1812,7 @@ export const family_planning_news = pgTable(
     familyPlanningId: uuid("family_planning_id")
       .notNull()
       .references(() => family_plannings.id),
-    lastMenstrualPeriod: timestamp("last_menstrual_period"),
+    lastMenstrualPeriod: date("last_menstrual_period", { mode: "string" }),
     previousDeviceId: uuid("previous_device_id").references(
       () => family_planning_olds.id,
     ),
@@ -1810,8 +1821,8 @@ export const family_planning_news = pgTable(
     isActive: boolean("is_active").default(true).notNull(),
     deviceNotUsedReason: text("device_not_used_reason"),
     usageTimePeriod: fpUsageTimePeriodEnum("usage_time_period"),
-    usageDate: timestamp("usage_date"),
-    followUpDate: timestamp("follow_up_date"),
+    usageDate: date("usage_date", { mode: "string" }),
+    followUpDate: date("follow_up_date", { mode: "string" }),
     createdBy: uuid("created_by")
       .notNull()
       .references(() => users.id),
@@ -1822,12 +1833,8 @@ export const family_planning_news = pgTable(
     deletedAt: timestamp("deleted_at"),
   },
   (t) => [
-    uniqueIndex("fpn_family_planning_id_unique").on(
-      t.familyPlanningId,
-    ),
-    uniqueIndex("fpn_previous_device_id_unique").on(
-      t.previousDeviceId,
-    ),
+    uniqueIndex("fpn_family_planning_id_unique").on(t.familyPlanningId),
+    uniqueIndex("fpn_previous_device_id_unique").on(t.previousDeviceId),
   ],
 );
 
@@ -1844,8 +1851,8 @@ export const family_planning_removals = pgTable(
     previousDeviceId: uuid("previous_device_id").references(
       () => family_planning_olds.id,
     ),
-    lastMenstrualPeriod: timestamp("last_menstrual_period"),
-    removalDate: timestamp("removal_date").notNull(),
+    lastMenstrualPeriod: date("last_menstrual_period", { mode: "string" }),
+    removalDate: date("removal_date", { mode: "string" }),
     placeOfFpDeviceUsed: varchar("place_of_fp_device_used", {
       length: 255,
     }),
@@ -1861,12 +1868,8 @@ export const family_planning_removals = pgTable(
     deletedAt: timestamp("deleted_at"),
   },
   (t) => [
-    uniqueIndex("fpr_family_planning_id_unique").on(
-      t.familyPlanningId,
-    ),
-    uniqueIndex("fpr_previous_device_id_unique").on(
-      t.previousDeviceId,
-    ),
+    uniqueIndex("fpr_family_planning_id_unique").on(t.familyPlanningId),
+    uniqueIndex("fpr_previous_device_id_unique").on(t.previousDeviceId),
   ],
 );
 

@@ -45,15 +45,49 @@ export class MaternalHealthRepository extends FacilityRepository {
     return inserted[0] ?? null;
   }
 
+  public async findActivePregnancyByPatientId(tx: any, patientId: string) {
+    const result = await tx
+      .select({ id: pregnancies.id })
+      .from(pregnancies)
+      .where(
+        this.withFacilityScope(
+          and(
+            eq(pregnancies.patientId, patientId),
+            eq(pregnancies.status, "active"),
+          ),
+        ),
+      )
+      .limit(1);
+    return result[0] ?? null;
+  }
+
+  public async endPregnancy(tx: any, pregnancyId: string) {
+    const updated = await tx
+      .update(pregnancies)
+      .set({
+        status: "ended",
+        endedAt: new Date(),
+        updatedAt: new Date(),
+        updatedBy: this.context.userId,
+      })
+      .where(this.withFacilityScope(eq(pregnancies.id, pregnancyId)))
+      .returning({
+        id: pregnancies.id,
+        status: pregnancies.status,
+        endedAt: pregnancies.endedAt,
+      });
+    return updated[0] ?? null;
+  }
+
   public async createPregnancy(
     tx: any,
     data: {
       patientId: string;
-      firstVisit: Date;
+      firstVisit: string;
       gravida: string;
       para?: string | null;
-      lastMenstruationPeriod?: Date | null;
-      expectedDeliveryDate?: Date | null;
+      lastMenstruationPeriod?: string | null;
+      expectedDeliveryDate?: string | null;
       assignedFchvId?: string | null;
       visitId: string;
       encounterId: string;
@@ -65,6 +99,8 @@ export class MaternalHealthRepository extends FacilityRepository {
       .insert(pregnancies)
       .values({
         ...data,
+        status: "active",
+        endedAt: null,
         facilityId: this.context.facilityId,
       })
       .returning();
@@ -72,12 +108,42 @@ export class MaternalHealthRepository extends FacilityRepository {
   }
 
   public async findPregnancyById(id: string) {
-    const result = await db
-      .select()
+    const rows = await db
+      .select({
+        pregnancy: pregnancies,
+        delivery: deliveries,
+        postnatalCare: postnatal_cares,
+      })
       .from(pregnancies)
-      .where(this.withFacilityScope(eq(pregnancies.id, id)))
-      .limit(1);
-    return result[0] ?? null;
+      .leftJoin(deliveries, eq(deliveries.pregnancyId, pregnancies.id))
+      .leftJoin(
+        postnatal_cares,
+        eq(postnatal_cares.pregnancyId, pregnancies.id),
+      )
+      .where(this.withFacilityScope(eq(pregnancies.id, id)));
+    const pregnancy = rows[0]?.pregnancy;
+    if (!pregnancy) return null;
+
+    const deliveriesById = new Map<string, typeof deliveries.$inferSelect>();
+    const postnatalCaresById = new Map<
+      string,
+      typeof postnatal_cares.$inferSelect
+    >();
+
+    for (const row of rows) {
+      if (row.delivery?.id) {
+        deliveriesById.set(row.delivery.id, row.delivery);
+      }
+      if (row.postnatalCare?.id) {
+        postnatalCaresById.set(row.postnatalCare.id, row.postnatalCare);
+      }
+    }
+
+    return {
+      ...pregnancy,
+      deliveries: Array.from(deliveriesById.values()),
+      postnatalCares: Array.from(postnatalCaresById.values()),
+    };
   }
 
   public async countPregnancies(params: { patientId?: string }) {
@@ -128,7 +194,7 @@ export class MaternalHealthRepository extends FacilityRepository {
     data: {
       patientId: string;
       pregnancyId: string;
-      ancVisitDate?: Date | null;
+      ancVisitDate?: string | null;
       visitingTimeWeek?: string | null;
       visitingTimeMonth?: string | null;
       motherWeight?: number | null;
@@ -143,7 +209,7 @@ export class MaternalHealthRepository extends FacilityRepository {
       otherProblems?: string | null;
       treatment?: string | null;
       medicalAdvice?: string | null;
-      nextVisitSchedule?: Date | null;
+      nextVisitSchedule?: string | null;
       ironTablet?: number | null;
       albendazole?: number | null;
       tdVaccination?: string | null;
@@ -228,7 +294,7 @@ export class MaternalHealthRepository extends FacilityRepository {
     data: {
       patientId: string;
       pregnancyId: string;
-      deliveryDate?: Date | null;
+      deliveryDate?: string | null;
       placeOfDelivery?: string | null;
       otherPlaceOfDelivery?: string | null;
       babyPresentation?: string | null;
@@ -319,7 +385,7 @@ export class MaternalHealthRepository extends FacilityRepository {
       pregnancyId: string;
       visitingTime: string;
       visitTime: string;
-      visitDate: Date;
+      visitDate: string;
       conditionOfMother: string;
       conditionOfBaby: string;
       medicalAdvice: string;

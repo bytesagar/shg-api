@@ -36,6 +36,15 @@ export class MaternalHealthService {
     const { visit } = visitResult;
 
     return db.transaction(async (tx) => {
+      const existingActive =
+        await this.maternalHealthRepository.findActivePregnancyByPatientId(
+          tx,
+          visit.patientId,
+        );
+      if (existingActive) {
+        return { error: "ACTIVE_PREGNANCY_EXISTS" as const };
+      }
+
       const encounter = await this.maternalHealthRepository.createEncounter(
         tx,
         {
@@ -50,9 +59,9 @@ export class MaternalHealthService {
 
       const record = await this.maternalHealthRepository.createPregnancy(tx, {
         patientId: visit.patientId,
-        firstVisit: input.firstVisit ?? new Date(),
-        gravida: input.gravida,
-        para: input.para ?? null,
+        firstVisit: input.firstVisit ?? new Date().toISOString().slice(0, 10),
+        gravida: String(input.gravida),
+        para: input.para != null ? String(input.para) : null,
         lastMenstruationPeriod: input.lastMenstruationPeriod ?? null,
         expectedDeliveryDate: input.expectedDeliveryDate ?? null,
         assignedFchvId: input.assignedFchvId ?? null,
@@ -86,7 +95,7 @@ export class MaternalHealthService {
   }
 
   public async createAntenatalCare(
-    input: { visitId: string } & AntenatalCareCreateInput,
+    input: { pregnancyId: string } & AntenatalCareCreateInput,
   ) {
     const visitResult = await this.requireActiveVisit(input.visitId);
     if ("error" in visitResult) return visitResult;
@@ -149,7 +158,7 @@ export class MaternalHealthService {
   }
 
   public async createDelivery(
-    input: { visitId: string } & DeliveryCreateInput,
+    input: { pregnancyId: string } & DeliveryCreateInput,
   ) {
     const visitResult = await this.requireActiveVisit(input.visitId);
     if ("error" in visitResult) return visitResult;
@@ -186,6 +195,8 @@ export class MaternalHealthService {
         updatedBy: this.context.userId,
       });
 
+      await this.maternalHealthRepository.endPregnancy(tx, input.pregnancyId);
+
       return { encounter, record };
     });
   }
@@ -208,7 +219,7 @@ export class MaternalHealthService {
   }
 
   public async createPostnatalCare(
-    input: { visitId: string } & PostnatalCareCreateInput,
+    input: { pregnancyId: string } & PostnatalCareCreateInput,
   ) {
     const visitResult = await this.requireActiveVisit(input.visitId);
     if ("error" in visitResult) return visitResult;

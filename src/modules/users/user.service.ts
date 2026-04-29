@@ -10,12 +10,30 @@ export class UserService {
     this.userRepository = new UserRepository(context);
   }
 
-  public async getAllUsers(params: { page: number; pageSize: number }) {
-    const total = await this.userRepository.countAll();
-    const items = await this.userRepository.findAll(undefined, {
-      limit: params.pageSize,
-      offset: (params.page - 1) * params.pageSize,
-    });
+  public async getAllUsers(params: {
+    page: number;
+    pageSize: number;
+    role?: string;
+    userType?: "admin" | "user" | "facility" | "doctor" | "fchv";
+    searchString?: string;
+  }) {
+    const offset = (params.page - 1) * params.pageSize;
+
+    const [total, items] = await Promise.all([
+      this.userRepository.countFiltered({
+        role: params.role,
+        userType: params.userType,
+        searchString: params.searchString,
+      }),
+      this.userRepository.findFiltered({
+        role: params.role,
+        userType: params.userType,
+        searchString: params.searchString,
+        limit: params.pageSize,
+        offset,
+      }),
+    ]);
+
     return {
       items,
       total,

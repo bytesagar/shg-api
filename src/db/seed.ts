@@ -844,11 +844,11 @@ async function seed() {
         await db
           .insert(pregnancies)
           .values({
-            firstVisit: new Date("2026-03-20T09:00:00.000Z"),
+            firstVisit: "2026-03-20",
             gravida: "2",
             para: "1",
-            lastMenstruationPeriod: new Date("2025-12-20T00:00:00.000Z"),
-            expectedDeliveryDate: new Date("2026-09-25T00:00:00.000Z"),
+            lastMenstruationPeriod: "2025-12-20",
+            expectedDeliveryDate: "2026-09-25",
             patientId: primaryPatient.id,
             facilityId,
             assignedFchvId: fchvId,
@@ -863,7 +863,7 @@ async function seed() {
       .limit(1);
     if (!existingFamilyPlanning) {
       await db.insert(family_plannings).values({
-        serviceDate: new Date("2026-04-14T10:00:00.000Z"),
+        serviceDate: "2026-04-14",
         patientId: mchPatient.id,
         facilityId,
         serviceType: "follow_up",

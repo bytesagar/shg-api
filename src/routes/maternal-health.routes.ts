@@ -27,7 +27,7 @@ router.get(
 );
 
 router.post(
-  "/visits/:visitId/antenatal-cares",
+  "/pregnancies/:pregnancyId/antenatal-cares",
   authMiddleware,
   authorize([...CLINICAL_WRITE_ROLES]),
   maternalHealthController.createAntenatalCare,
@@ -40,7 +40,7 @@ router.get(
 );
 
 router.post(
-  "/visits/:visitId/deliveries",
+  "/pregnancies/:pregnancyId/deliveries",
   authMiddleware,
   authorize([...CLINICAL_WRITE_ROLES]),
   maternalHealthController.createDelivery,
@@ -53,7 +53,7 @@ router.get(
 );
 
 router.post(
-  "/visits/:visitId/postnatal-cares",
+  "/pregnancies/:pregnancyId/postnatal-cares",
   authMiddleware,
   authorize([...CLINICAL_WRITE_ROLES]),
   maternalHealthController.createPostnatalCare,
