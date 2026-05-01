@@ -3,7 +3,10 @@ import { FacilityContext } from "../../context/facility-context";
 import { AppointmentRepository } from "./appointment.repository";
 import { PatientRepository } from "../patients/patient.repository";
 import { UserRepository } from "../users/user.repository";
-import { TelehealthAppointmentCreateInput } from "../../validations/telehealth.validation";
+import {
+  TelehealthAppointmentCreateInput,
+  TelehealthAppointmentsListQuery,
+} from "../../validations/telehealth.validation";
 import { JitsiJaasService } from "../webhooks/jitsi-jass/jitsi-jaas.service";
 import { EmailService } from "../email/email.service";
 import { db } from "../../db";
@@ -27,6 +30,18 @@ export class TelehealthService {
     this.userRepository = new UserRepository(context);
     this.jitsi = new JitsiJaasService();
     this.email = new EmailService();
+  }
+
+  public async listAppointments(query: TelehealthAppointmentsListQuery) {
+    return this.appointmentRepository.findMany({
+      patientId: query.patientId,
+      doctorId: query.doctorId,
+      status: query.status,
+      fromDate: query.fromDate,
+      toDate: query.toDate,
+      limit: query.pageSize,
+      offset: (query.page - 1) * query.pageSize,
+    });
   }
 
   public async bookTelehealthAppointment(
@@ -101,7 +116,7 @@ export class TelehealthService {
       const result = await this.email.send({
         to: doctor.email,
         subject: "New telehealth appointment booked",
-        body: `A telehealth appointment has been booked.\n\nPatient: ${patientName}\nScheduled At: ${input.scheduledAt.toISOString()}\n\nTo join the video call, open this appointment in the app and use the Join button (a secure link is generated when you join).\n`,
+        body: `A telehealth appointment has been booked.\n\nPatient: ${patientName}\nScheduled At: ${input.scheduledAt}\n\nTo join the video call, open this appointment in the app and use the Join button (a secure link is generated when you join).\n`,
       });
       emailSent = result.success;
       emailError = result.error;

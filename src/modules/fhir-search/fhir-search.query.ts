@@ -53,6 +53,7 @@ export function parseDateFilterToken(token: string): {
   if (Number.isNaN(value.getTime())) {
     throw new AppError(`Invalid date filter '${token}'`, HTTP_STATUS.BAD_REQUEST);
   }
+
   return { op, value };
 }
 

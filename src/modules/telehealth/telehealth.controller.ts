@@ -5,10 +5,38 @@ import { AppError } from "../../utils/app-error";
 import { HTTP_STATUS } from "../../config/constants";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { requireFacilityContext } from "../../utils/request-context";
-import { telehealthAppointmentCreateSchema } from "../../validations/telehealth.validation";
+import {
+  telehealthAppointmentCreateSchema,
+  telehealthAppointmentsListQuerySchema,
+} from "../../validations/telehealth.validation";
 import { TelehealthService } from "./telehealth.service";
+import { parseListQuery } from "../../utils/query-parser";
 
 export class TelehealthController extends BaseController {
+  public listAppointments = catchAsync(
+    async (req: AuthRequest, res: Response) => {
+      const context = requireFacilityContext(req);
+      const query = parseListQuery(
+        req.query as Record<string, unknown>,
+        telehealthAppointmentsListQuerySchema,
+      );
+
+      const telehealthService = new TelehealthService(context);
+      const result = await telehealthService.listAppointments(query);
+
+      return this.ok(
+        res,
+        {
+          items: result.items,
+          total: result.total,
+          page: query.page,
+          pageSize: query.pageSize,
+        },
+        "Appointments retrieved successfully",
+      );
+    },
+  );
+
   public bookAppointment = catchAsync(
     async (req: AuthRequest, res: Response) => {
       const context = requireFacilityContext(req);

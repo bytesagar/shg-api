@@ -314,7 +314,7 @@ export function mapAppointmentResource(input: {
   id: string;
   status: string;
   service?: string | null;
-  start: Date;
+  start: string;
   patientId: string;
   doctorId: string;
 }) {
@@ -325,8 +325,14 @@ export function mapAppointmentResource(input: {
     serviceType: input.service ? [{ text: input.service }] : [],
     start: input.start,
     participant: [
-      { actor: { reference: `Patient/${input.patientId}` }, status: "accepted" },
-      { actor: { reference: `Practitioner/${input.doctorId}` }, status: "accepted" },
+      {
+        actor: { reference: `Patient/${input.patientId}` },
+        status: "accepted",
+      },
+      {
+        actor: { reference: `Practitioner/${input.doctorId}` },
+        status: "accepted",
+      },
     ],
   });
 }

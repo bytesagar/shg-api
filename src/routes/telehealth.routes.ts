@@ -2,7 +2,7 @@ import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorize } from "../middlewares/authorize.middleware";
 import { TelehealthController } from "../modules/telehealth/telehealth.controller";
-import { CLINICAL_WRITE_ROLES } from "../constants/rbac";
+import { CLINICAL_READ_ROLES, CLINICAL_WRITE_ROLES } from "../constants/rbac";
 
 const router = Router();
 const telehealthController = new TelehealthController();
@@ -49,6 +49,13 @@ const telehealthController = new TelehealthController();
  *       404:
  *         description: Patient or doctor not found
  */
+router.get(
+  "/appointments",
+  authMiddleware,
+  authorize([...CLINICAL_READ_ROLES]),
+  telehealthController.listAppointments,
+);
+
 router.post(
   "/appointments",
   authMiddleware,

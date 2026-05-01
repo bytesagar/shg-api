@@ -51,6 +51,7 @@ import {
   mapPractitionerResource,
   mapPractitionerRoleResource,
 } from "./fhir-resource.mappers";
+import { format } from "date-fns";
 
 export class FhirSearchService {
   constructor(private readonly context: FacilityContext) {}
@@ -1199,11 +1200,13 @@ export class FhirSearchService {
     const dateToken = query.filters.date?.[0];
     if (dateToken) {
       const parsed = parseDateFilterToken(dateToken);
-      if (parsed.op === "eq") conditions.push(eq(appointments.date, parsed.value));
+
+      const dateValue = format(parsed.value, "yyyy-MM-dd");
+      if (parsed.op === "eq") conditions.push(eq(appointments.date, dateValue));
       if (parsed.op === "ge" || parsed.op === "gt")
-        conditions.push(gte(appointments.date, parsed.value));
+        conditions.push(gte(appointments.date, dateValue));
       if (parsed.op === "le" || parsed.op === "lt")
-        conditions.push(lte(appointments.date, parsed.value));
+        conditions.push(lte(appointments.date, dateValue));
     }
 
     const rows = await db

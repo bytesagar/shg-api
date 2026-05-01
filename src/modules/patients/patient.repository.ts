@@ -45,9 +45,9 @@ export class PatientRepository extends FacilityRepository {
       .where(this.withFacilityScope(where));
     const records = opts
       ? await base
-        .orderBy(desc(patients.createdAt))
-        .limit(opts.limit)
-        .offset(opts.offset)
+          .orderBy(desc(patients.createdAt))
+          .limit(opts.limit)
+          .offset(opts.offset)
       : await base;
     return this.hydratePatients(records);
   }
@@ -200,65 +200,51 @@ export class PatientRepository extends FacilityRepository {
   ): Promise<HydratedPatient[]> {
     if (!records.length) return [];
 
-    const personIds = records
-      .map((item) => item.personId)
-      .filter((value): value is string => Boolean(value));
+    const patientIds = records.map((p) => p.id);
 
-    if (!personIds.length) {
-      return records.map((patient) => ({
-        ...patient,
-        firstName: null,
-        middleName: null,
-        lastName: null,
-        name: "",
-        phoneNumber: null,
-      }));
-    }
-
-    const [names, contacts] = await Promise.all([
-      db
-        .select()
-        .from(person_names)
-        .where(
-          and(
-            inArray(person_names.personId, personIds),
-            eq(person_names.isPrimary, true),
-          ),
+    const rows = await db
+      .select({
+        patientId: patients.id,
+        given: person_names.given,
+        middle: person_names.middle,
+        family: person_names.family,
+        phoneNumber: person_contacts.value,
+        birthDate: persons.birthDate,
+      })
+      .from(patients)
+      .where(inArray(patients.id, patientIds))
+      .leftJoin(persons, eq(patients.personId, persons.id))
+      .leftJoin(
+        person_names,
+        and(
+          eq(person_names.personId, patients.personId),
+          eq(person_names.isPrimary, true),
         ),
-      db
-        .select()
-        .from(person_contacts)
-        .where(
-          and(
-            inArray(person_contacts.personId, personIds),
-            eq(person_contacts.isPrimary, true),
-            eq(person_contacts.system, "phone"),
-          ),
+      )
+      .leftJoin(
+        person_contacts,
+        and(
+          eq(person_contacts.personId, patients.personId),
+          eq(person_contacts.isPrimary, true),
+          eq(person_contacts.system, "phone"),
         ),
-    ]);
+      );
 
-    const nameByPerson = new Map(names.map((entry) => [entry.personId, entry]));
-    const contactByPerson = new Map(
-      contacts.map((entry) => [entry.personId, entry.value]),
-    );
+    const hydratedById = new Map(rows.map((row) => [row.patientId, row]));
 
     return records.map((patient) => {
-      const personName = patient.personId
-        ? nameByPerson.get(patient.personId)
-        : undefined;
-      const phone = patient.personId
-        ? contactByPerson.get(patient.personId)
-        : undefined;
+      const hydrated = hydratedById.get(patient.id);
 
       return {
         ...patient,
-        firstName: personName?.given ?? null,
-        middleName: personName?.middle ?? null,
-        lastName: personName?.family ?? null,
-          name: [personName?.given, personName?.middle, personName?.family]
-            .filter(Boolean)
-            .join(" "),
-          phoneNumber: phone ?? null,
+        firstName: hydrated?.given ?? null,
+        middleName: hydrated?.middle ?? null,
+        lastName: hydrated?.family ?? null,
+        name: [hydrated?.given, hydrated?.middle, hydrated?.family]
+          .filter(Boolean)
+          .join(" "),
+        phoneNumber: hydrated?.phoneNumber ?? null,
+        birthDate: hydrated?.birthDate ?? null,
       };
     });
   }

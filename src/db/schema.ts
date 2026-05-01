@@ -1616,10 +1616,11 @@ export const appointments = pgTable(
       .notNull()
       .references(() => patients.id),
     facilityId: uuid("facility_id").references(() => health_facilities.id),
-    date: timestamp("date").notNull(),
+    date: date("date").notNull(),
     status: appointmentStatusEnum("status").default("scheduled").notNull(),
     service: varchar("service", { length: 255 }),
     consent: integer("consent").default(1),
+    reason: text("reason"),
     createdBy: uuid("created_by").references(() => users.id),
     updatedBy: uuid("updated_by").references(() => users.id),
     createdAt: timestamp("created_at").defaultNow().notNull(),
