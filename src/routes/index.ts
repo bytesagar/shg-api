@@ -1,5 +1,6 @@
 import { Router } from "express";
 import userRoutes from "./user.routes";
+import roleRoutes from "./roles.routes";
 import authRoutes from "./auth.routes";
 import logRoutes from "./log.routes";
 import patientRoutes from "./patient.routes";
@@ -37,6 +38,7 @@ router.get("/health", (req, res) => {
 
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
+router.use("/roles", roleRoutes);
 router.use("/logs", logRoutes);
 router.use("/patients", patientRoutes);
 router.use("/health-facilities", healthFacilityRoutes);

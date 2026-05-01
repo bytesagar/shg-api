@@ -210,6 +210,7 @@ export class PatientRepository extends FacilityRepository {
         family: person_names.family,
         phoneNumber: person_contacts.value,
         birthDate: persons.birthDate,
+        gender: persons.gender,
       })
       .from(patients)
       .where(inArray(patients.id, patientIds))
@@ -245,6 +246,7 @@ export class PatientRepository extends FacilityRepository {
           .join(" "),
         phoneNumber: hydrated?.phoneNumber ?? null,
         birthDate: hydrated?.birthDate ?? null,
+        gender: hydrated?.gender ?? null,
       };
     });
   }
