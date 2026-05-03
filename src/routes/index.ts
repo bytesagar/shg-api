@@ -16,8 +16,11 @@ import jaasWebhookRoutes from "./jaas-webhook.routes";
 import fhirRoutes from "./fhir.routes";
 import vitalsRoutes from "./vitals.routes";
 import maternalHealthRoutes from "./maternal-health.routes";
+import { authMiddleware } from "../middlewares/auth.middleware";
+import { AuthController } from "../modules/auth/auth.controller";
 
 const router = Router();
+const authController = new AuthController();
 
 /**
  * @openapi
@@ -37,11 +40,13 @@ router.get("/health", (req, res) => {
 });
 
 router.use("/auth", authRoutes);
+router.get("/me/facilities", authMiddleware, authController.myFacilities);
 router.use("/users", userRoutes);
 router.use("/roles", roleRoutes);
 router.use("/logs", logRoutes);
 router.use("/patients", patientRoutes);
 router.use("/health-facilities", healthFacilityRoutes);
+router.use("/facilities", healthFacilityRoutes);
 router.use("/visits", visitRoutes);
 router.use("/encounters", encounterRoutes);
 router.use("/telehealth", telehealthRoutes);

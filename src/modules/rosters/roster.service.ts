@@ -10,16 +10,14 @@ import {
   isTimeWithinWindow,
   minutesSinceUtcMidnight,
   rosterSameDayWindowsOverlap,
-  utcDayBoundsFromInstant,
-  utcMidnightForCalendarDay,
+  utcIsoDateFromInstant,
 } from "../../utils/roster-time";
 import type { PaginationQuery } from "../../utils/query-parser";
 
 /** Stored on roster rows and required for telehealth booking checks. */
 export const TELEHEALTH_ROSTER_SERVICE = "telehealth";
 
-export const ROSTER_STATUS_ACTIVE = 0;
-export const ROSTER_STATUS_CANCELLED = 1;
+
 
 export class RosterService {
   private rosterRepository: RosterRepository;
@@ -36,18 +34,15 @@ export class RosterService {
     scheduledAt: Date;
     service: string;
   }): Promise<boolean> {
-    const { dayStart, nextDayStart } = utcDayBoundsFromInstant(
-      params.scheduledAt,
-    );
-    const rows = await this.rosterRepository.findForUserOnUtcDay(
+    const isoDate = utcIsoDateFromInstant(params.scheduledAt);
+    const rows = await this.rosterRepository.findForUserOnDay(
       params.userId,
-      dayStart,
-      nextDayStart,
+      isoDate,
     );
     const scheduledMinutes = minutesSinceUtcMidnight(params.scheduledAt);
 
     for (const row of rows) {
-      if (row.status !== ROSTER_STATUS_ACTIVE) continue;
+      if (row.status !== "active") continue;
       if (row.deletedAt) continue;
       if (row.service !== params.service) continue;
       if (isTimeWithinWindow(scheduledMinutes, row.fromTime, row.toTime)) {
@@ -65,19 +60,9 @@ export class RosterService {
     userId?: string;
     service?: string;
   }) {
-    let fromUtc: Date | undefined;
-    let toUtc: Date | undefined;
-    if (query.fromDate) {
-      fromUtc = utcMidnightForCalendarDay(query.fromDate);
-    }
-    if (query.toDate) {
-      const toUtcEnd = utcMidnightForCalendarDay(query.toDate);
-      toUtc = new Date(toUtcEnd.getTime() + 24 * 60 * 60 * 1000 - 1);
-    }
-
     return this.rosterRepository.findMany({
-      fromUtc,
-      toUtc,
+      fromDate: query.fromDate,
+      toDate: query.toDate,
       userId: query.userId,
       service: query.service,
       limit: query.pageSize,
@@ -95,16 +80,14 @@ export class RosterService {
       return { error: "USER_NOT_IN_FACILITY" as const };
     }
 
-    const dateValue = utcMidnightForCalendarDay(input.date);
-
     return this.rosterRepository.create({
       userId: input.userId,
       facilityId: this.context.facilityId,
-      date: dateValue,
+      date: input.date,
       fromTime: input.fromTime,
       toTime: input.toTime,
       service: input.service,
-      status: input.status ?? ROSTER_STATUS_ACTIVE,
+      status: input.status ?? "active",
       createdBy: this.context.userId,
       updatedBy: this.context.userId,
     });
@@ -120,7 +103,7 @@ export class RosterService {
       return { error: "USER_NOT_IN_FACILITY" as const };
     }
 
-    const status = input.status ?? ROSTER_STATUS_ACTIVE;
+    const status = input.status ?? "active";
     const indicesByDate = new Map<string, number[]>();
     input.entries.forEach((e, idx) => {
       const list = indicesByDate.get(e.date) ?? [];
@@ -158,7 +141,7 @@ export class RosterService {
       rows.push({
         userId: input.userId,
         facilityId,
-        date: utcMidnightForCalendarDay(entry.date),
+        date: entry.date,
         fromTime: entry.fromTime,
         toTime: entry.toTime,
         service: entry.service,
@@ -187,18 +170,18 @@ export class RosterService {
 
     const patch: {
       updatedBy: string;
-      date?: Date;
+      date?: string;
       fromTime?: string;
       toTime?: string;
       service?: string;
-      status?: number;
+      status?: "active" | "inactive";
       updatedAt: Date;
     } = {
       updatedBy: this.context.userId,
       updatedAt: new Date(),
     };
     if (input.date !== undefined) {
-      patch.date = utcMidnightForCalendarDay(input.date);
+      patch.date = input.date;
     }
     if (input.fromTime !== undefined) patch.fromTime = input.fromTime;
     if (input.toTime !== undefined) patch.toTime = input.toTime;
@@ -220,12 +203,8 @@ export class RosterService {
     service?: string;
     atTime?: string;
   }) {
-    const dayStart = utcMidnightForCalendarDay(query.date);
-    const nextDayStart = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
-
     const slots = await this.rosterRepository.findActiveSlotsOnDay({
-      dayStartUtc: dayStart,
-      nextDayStartUtc: nextDayStart,
+      date: query.date,
       service: query.service,
     });
 

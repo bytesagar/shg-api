@@ -1,10 +1,31 @@
 import * as bcrypt from "bcryptjs";
 import { FacilityContext } from "../../context/facility-context";
+import { HTTP_STATUS } from "../../config/constants";
+import { AppError } from "../../utils/app-error";
 import { UserRepository } from "./user.repository";
 import { UserCreateInput } from "./user.validation";
 
 export class UserService {
   private userRepository: UserRepository;
+
+  private deriveUserTypeFromRoleName(roleName: string):
+    | "admin"
+    | "user"
+    | "facility"
+    | "doctor"
+    | "fchv" {
+    const normalized = roleName.trim().toLowerCase();
+    if (
+      normalized === "admin" ||
+      normalized === "user" ||
+      normalized === "facility" ||
+      normalized === "doctor" ||
+      normalized === "fchv"
+    ) {
+      return normalized;
+    }
+    return "user";
+  }
 
   constructor(private readonly context: FacilityContext) {
     this.userRepository = new UserRepository(context);
@@ -54,9 +75,18 @@ export class UserService {
       throw error;
     }
 
+    const roles = await this.userRepository.findRoleNamesByIds([input.userRoleId]);
+    const primaryRole = roles[0];
+    if (!primaryRole) {
+      throw new AppError("Invalid userRoleId", HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const userType = this.deriveUserTypeFromRoleName(primaryRole.name);
+
     const hashedPassword = await bcrypt.hash(input.password, 10);
     return this.userRepository.create({
       ...input,
+      userType,
       passwordHash: hashedPassword,
     });
   }

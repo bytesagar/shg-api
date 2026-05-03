@@ -1,8 +1,19 @@
 import { db } from "../../db";
-import { rosters } from "../../db/schema";
+import { health_facilities, rosters, users } from "../../db/schema";
 import { FacilityContext } from "../../context/facility-context";
 import { FacilityRepository } from "../../core/facility-repository";
-import { SQL, and, count, desc, eq, gte, isNull, lt, lte } from "drizzle-orm";
+import {
+  SQL,
+  and,
+  count,
+  desc,
+  eq,
+  getTableColumns,
+  gte,
+  isNull,
+  lt,
+  lte,
+} from "drizzle-orm";
 
 export class RosterRepository extends FacilityRepository {
   constructor(context: FacilityContext) {
@@ -19,19 +30,19 @@ export class RosterRepository extends FacilityRepository {
   }
 
   public async findMany(params: {
-    fromUtc?: Date;
-    toUtc?: Date;
+    fromDate?: string;
+    toDate?: string;
     userId?: string;
     service?: string;
     limit: number;
     offset: number;
   }) {
     const clauses: SQL[] = [isNull(rosters.deletedAt)];
-    if (params.fromUtc !== undefined) {
-      clauses.push(gte(rosters.date, params.fromUtc));
+    if (params.fromDate !== undefined) {
+      clauses.push(gte(rosters.date, params.fromDate));
     }
-    if (params.toUtc !== undefined) {
-      clauses.push(lte(rosters.date, params.toUtc));
+    if (params.toDate !== undefined) {
+      clauses.push(lte(rosters.date, params.toDate));
     }
     if (params.userId) {
       clauses.push(eq(rosters.userId, params.userId));
@@ -48,9 +59,22 @@ export class RosterRepository extends FacilityRepository {
     const total = Number(totalResult[0]?.count ?? 0);
 
     const items = await db
-      .select()
+      .select({
+        ...getTableColumns(rosters),
+        healthFacility: {
+          facilityName: health_facilities.name,
+          address: health_facilities.address,
+        },
+        user: {
+          firstName: users.firstName,
+          lastName: users.lastName,
+          designation: users.designation,
+        },
+      })
       .from(rosters)
       .where(where)
+      .leftJoin(health_facilities, eq(rosters.facilityId, health_facilities.id))
+      .leftJoin(users, eq(rosters.userId, users.id))
       .orderBy(desc(rosters.date), desc(rosters.createdAt))
       .limit(params.limit)
       .offset(params.offset);
@@ -58,12 +82,7 @@ export class RosterRepository extends FacilityRepository {
     return { items, total };
   }
 
-  /** Active roster rows for a user on a UTC calendar day: `date` in [dayStartUtc, nextDayStartUtc). */
-  public async findForUserOnUtcDay(
-    userId: string,
-    dayStartUtc: Date,
-    nextDayStartUtc: Date,
-  ) {
+  public async findForUserOnDay(userId: string, date: string) {
     return db
       .select()
       .from(rosters)
@@ -71,23 +90,18 @@ export class RosterRepository extends FacilityRepository {
         this.withFacilityScope(
           and(
             eq(rosters.userId, userId),
-            gte(rosters.date, dayStartUtc),
-            lt(rosters.date, nextDayStartUtc),
+            eq(rosters.date, date),
+            eq(rosters.status, "active"),
             isNull(rosters.deletedAt),
           ),
         ),
       );
   }
 
-  public async findActiveSlotsOnDay(params: {
-    dayStartUtc: Date;
-    nextDayStartUtc: Date;
-    service?: string;
-  }) {
+  public async findActiveSlotsOnDay(params: { date: string; service?: string }) {
     const clauses: SQL[] = [
-      gte(rosters.date, params.dayStartUtc),
-      lt(rosters.date, params.nextDayStartUtc),
-      eq(rosters.status, 0),
+      eq(rosters.date, params.date),
+      eq(rosters.status, "active"),
       isNull(rosters.deletedAt),
     ];
     if (params.service) {

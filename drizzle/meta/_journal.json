@@ -64,6 +64,48 @@
       "when": 1777623012123,
       "tag": "0008_round_puma",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1777671976414,
+      "tag": "0009_unknown_gambit",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1777673490880,
+      "tag": "0010_light_wrecker",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1777673864085,
+      "tag": "0011_sad_moon_knight",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1777674402351,
+      "tag": "0012_wet_red_hulk",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1777800077890,
+      "tag": "0013_bent_patch",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1777800775287,
+      "tag": "0014_naive_whirlwind",
+      "breakpoints": true
     }
   ]
 }

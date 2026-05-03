@@ -11,13 +11,15 @@ const timeString = z
     "Expected HH:mm or HH:mm:ss",
   );
 
+const rosterStatus = z.enum(["active", "inactive"]);
+
 export const rosterCreateSchema = z.object({
   userId: z.uuid(),
   date: isoDateString,
   fromTime: timeString,
   toTime: timeString,
   service: z.string().min(1).max(255),
-  status: z.number().int().min(0).max(1).optional(),
+  status: rosterStatus.optional(),
 });
 
 export type RosterCreateInput = z.infer<typeof rosterCreateSchema>;
@@ -33,8 +35,7 @@ const rosterEntryRowSchema = z.object({
 
 export const rosterBatchCreateSchema = z.object({
   userId: z.uuid(),
-  /** 0 = active, 1 = cancelled/inactive (applies to every row in the batch). */
-  status: z.number().int().min(0).max(1).optional(),
+  status: rosterStatus.optional(),
   entries: z.array(rosterEntryRowSchema).min(1).max(50),
 });
 
@@ -45,7 +46,7 @@ export const rosterUpdateSchema = z.object({
   fromTime: timeString.optional(),
   toTime: timeString.optional(),
   service: z.string().min(1).max(255).optional(),
-  status: z.number().int().min(0).max(1).optional(),
+  status: rosterStatus.optional(),
 });
 
 export type RosterUpdateInput = z.infer<typeof rosterUpdateSchema>;

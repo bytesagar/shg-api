@@ -804,7 +804,7 @@ async function seed() {
       });
     }
 
-    const rosterDate = new Date("2026-04-16T00:00:00.000Z");
+    const rosterDate = "2026-04-16";
     const [existingRoster] = await db
       .select({ id: rosters.id })
       .from(rosters)
@@ -827,7 +827,7 @@ async function seed() {
         fromTime: "08:00",
         toTime: "12:00",
         service: "telehealth",
-        status: 0,
+        status: "active",
         createdBy: adminId,
       });
     }

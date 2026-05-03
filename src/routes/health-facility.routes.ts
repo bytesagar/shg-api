@@ -139,4 +139,18 @@ router.post(
   healthFacilityController.createHealthFacility,
 );
 
+router.post(
+  "/:facilityId/doctors/:doctorId/affiliations",
+  authMiddleware,
+  authorize([...FACILITY_MANAGEMENT_ROLES]),
+  healthFacilityController.upsertDoctorAffiliation,
+);
+
+router.delete(
+  "/:facilityId/doctors/:doctorId/affiliations",
+  authMiddleware,
+  authorize([...FACILITY_MANAGEMENT_ROLES]),
+  healthFacilityController.deactivateDoctorAffiliation,
+);
+
 export default router;

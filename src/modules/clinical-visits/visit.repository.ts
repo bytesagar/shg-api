@@ -48,7 +48,7 @@ export class VisitRepository extends FacilityRepository {
   public async create(data: {
     patientId: string;
     facilityId: string;
-    date: Date;
+    date: string;
     reason: string;
     service?: string | null;
     status?:

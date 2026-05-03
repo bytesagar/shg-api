@@ -106,6 +106,11 @@ export const visitStatusEnum = pgEnum("visit_status_enum", [
   "cancelled",
 ]);
 
+export const rosterStatusEnum = pgEnum("roster_status_enum", [
+  "active",
+  "inactive",
+]);
+
 export const pregnancyStatusEnum = pgEnum("pregnancy_status_enum", [
   "active",
   "ended",
@@ -385,6 +390,31 @@ export const user_role_assignments = pgTable(
     index("user_role_assignment_user_id_idx").on(t.userId),
     index("user_role_assignment_role_id_idx").on(t.roleId),
     uniqueIndex("user_role_assignment_unique").on(t.userId, t.roleId, t.facilityId),
+  ],
+);
+
+export const user_facility_affiliations = pgTable(
+  "user_facility_affiliations",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
+    roleId: uuid("role_id").references(() => user_roles.id),
+    isActive: boolean("is_active").default(true).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+  },
+  (t) => [
+    index("user_facility_affiliation_user_id_idx").on(t.userId),
+    index("user_facility_affiliation_facility_id_idx").on(t.facilityId),
+    uniqueIndex("user_facility_affiliation_unique").on(t.userId, t.facilityId),
   ],
 );
 
@@ -723,7 +753,7 @@ export const visits = pgTable(
       .primaryKey()
       .notNull()
       .default(sql`gen_random_uuid()`),
-    date: timestamp("date").notNull(),
+    date: date("date", { mode: "string" }).notNull(),
     reason: text("reason").notNull(),
     service: varchar("service", { length: 255 }),
     status: visitStatusEnum("status").default("planned"),
@@ -1725,11 +1755,11 @@ export const rosters = pgTable(
     facilityId: uuid("facility_id")
       .notNull()
       .references(() => health_facilities.id),
-    date: timestamp("date").notNull(),
+    date: date("date", { mode: "string" }).notNull(),
     fromTime: varchar("from_time", { length: 50 }).notNull(),
     toTime: varchar("to_time", { length: 50 }).notNull(),
     service: varchar("service", { length: 255 }).notNull(),
-    status: integer("status").default(0).notNull(),
+    status: rosterStatusEnum("status").notNull().default("active"),
     createdBy: uuid("created_by").references(() => users.id),
     updatedBy: uuid("updated_by").references(() => users.id),
     createdAt: timestamp("created_at").defaultNow().notNull(),

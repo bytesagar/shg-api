@@ -4,6 +4,7 @@ import {
   person_names,
   persons,
   user_profiles,
+  health_facilities,
   user_role_assignments,
   user_roles,
   users,
@@ -18,6 +19,7 @@ import {
   eq,
   ilike,
   inArray,
+  isNull,
   or,
   sql,
 } from "drizzle-orm";
@@ -27,7 +29,7 @@ export class UserRepository extends FacilityRepository {
     super(context, users.facilityId);
   }
 
-  private userSelect = {
+  private userSelectBase = {
     id: users.id,
     email: users.email,
     username: users.username,
@@ -45,6 +47,18 @@ export class UserRepository extends FacilityRepository {
     signatureUrl: users.signatureUrl,
     createdAt: users.createdAt,
     updatedAt: users.updatedAt,
+  };
+
+  private userSelectWithFacility = {
+    ...this.userSelectBase,
+    facility: {
+      id: health_facilities.id,
+      name: health_facilities.name,
+      palika: health_facilities.palika,
+      district: health_facilities.district,
+      province: health_facilities.province,
+      ward: health_facilities.ward,
+    },
   };
 
   public async countAll(where?: SQL) {
@@ -112,8 +126,9 @@ export class UserRepository extends FacilityRepository {
 
   public async findAll(where?: SQL, opts?: { limit: number; offset: number }) {
     const base = db
-      .select(this.userSelect)
+      .select(this.userSelectWithFacility)
       .from(users)
+      .leftJoin(health_facilities, eq(health_facilities.id, users.facilityId))
       .where(this.withFacilityScope(where));
     if (opts) {
       return base
@@ -158,8 +173,9 @@ export class UserRepository extends FacilityRepository {
           : this.withFacilityScope(eq(user_roles.name, params.role));
 
       return db
-        .select(this.userSelect)
+        .select(this.userSelectWithFacility)
         .from(users)
+        .leftJoin(health_facilities, eq(health_facilities.id, users.facilityId))
         .innerJoin(
           user_role_assignments,
           and(
@@ -180,8 +196,9 @@ export class UserRepository extends FacilityRepository {
         : this.withFacilityScope();
 
     return db
-      .select(this.userSelect)
+      .select(this.userSelectWithFacility)
       .from(users)
+      .leftJoin(health_facilities, eq(health_facilities.id, users.facilityId))
       .where(where)
       .orderBy(desc(users.createdAt))
       .limit(params.limit)
@@ -209,7 +226,7 @@ export class UserRepository extends FacilityRepository {
     opts: { limit: number; offset: number },
   ) {
     return db
-      .select(this.userSelect)
+      .select(this.userSelectBase)
       .from(users)
       .innerJoin(
         user_role_assignments,
@@ -243,7 +260,7 @@ export class UserRepository extends FacilityRepository {
     offset: number;
   }) {
     return db
-      .select(this.userSelect)
+      .select(this.userSelectBase)
       .from(users)
       .where(
         this.withFacilityScope(
@@ -257,7 +274,7 @@ export class UserRepository extends FacilityRepository {
 
   public async findById(id: string) {
     const result = await db
-      .select(this.userSelect)
+      .select(this.userSelectBase)
       .from(users)
       .where(this.withFacilityScope(eq(users.id, id)))
       .limit(1);
@@ -266,11 +283,25 @@ export class UserRepository extends FacilityRepository {
 
   public async findByEmail(email: string) {
     const result = await db
-      .select(this.userSelect)
+      .select(this.userSelectBase)
       .from(users)
       .where(this.withFacilityScope(eq(users.email, email)))
       .limit(1);
     return result[0];
+  }
+
+  public async findRoleNamesByIds(roleIds: string[]) {
+    if (roleIds.length === 0) return [] as Array<{ id: string; name: string }>;
+
+    const rows = await db
+      .select({
+        id: user_roles.id,
+        name: user_roles.name,
+      })
+      .from(user_roles)
+      .where(and(inArray(user_roles.id, roleIds), isNull(user_roles.deletedAt)));
+
+    return rows;
   }
 
   public async create(data: {
@@ -283,7 +314,9 @@ export class UserRepository extends FacilityRepository {
     phoneNumber: string;
     designation?: string | null;
     municipalityId?: string | null;
-    userRoleId?: string | null;
+    facilityId?: string | null;
+    userRoleId: string;
+    roleIds?: string[] | null;
     specialization?: string | null;
     nmcRegistrationNumber?: string | null;
     signatureUrl?: string | null;
@@ -313,15 +346,17 @@ export class UserRepository extends FacilityRepository {
         isPrimary: true,
       });
 
+      const { roleIds: _roleIds, facilityId: inputFacilityId, ...insertValues } = data;
+      const facilityId = inputFacilityId ?? this.context.facilityId;
+
       const insertedUsers = await tx
         .insert(users)
         .values({
-          ...data,
-          passwordHash: data.passwordHash,
+          ...insertValues,
           personId: person.id,
-          facilityId: this.context.facilityId,
+          facilityId,
         })
-        .returning(this.userSelect);
+        .returning(this.userSelectBase);
       const createdUser = insertedUsers[0];
 
       await tx.insert(user_profiles).values({
@@ -331,15 +366,25 @@ export class UserRepository extends FacilityRepository {
         signatureUrl: data.signatureUrl,
       });
 
-      if (data.userRoleId) {
-        await tx.insert(user_role_assignments).values({
-          userId: createdUser.id,
-          roleId: data.userRoleId,
-          facilityId: this.context.facilityId,
+      const extraRoleIds = Array.isArray(data.roleIds)
+        ? Array.from(new Set(data.roleIds))
+        : [];
+
+      const finalRoleIds = Array.from(
+        new Set([data.userRoleId, ...extraRoleIds]),
+      );
+
+      const createdUserId = createdUser.id as string;
+
+      await tx.insert(user_role_assignments).values(
+        finalRoleIds.map((roleId) => ({
+          userId: createdUserId,
+          roleId,
+          facilityId,
           municipalityId: data.municipalityId ?? null,
-          isPrimary: true,
-        });
-      }
+          isPrimary: roleId === data.userRoleId,
+        })),
+      );
 
       return createdUser;
     });

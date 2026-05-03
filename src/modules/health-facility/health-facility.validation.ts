@@ -21,3 +21,20 @@ export const healthFacilityCreateSchema = z.object({
 });
 
 export type HealthFacilityCreateInput = z.infer<typeof healthFacilityCreateSchema>;
+
+export const facilityDoctorAffiliationParamsSchema = z
+  .object({
+    facilityId: z.uuid(),
+    doctorId: z.uuid(),
+  })
+  .strict();
+
+export const facilityDoctorAffiliationUpsertBodySchema = z
+  .object({
+    roleId: z.uuid().optional().nullable(),
+  })
+  .strict();
+
+export type FacilityDoctorAffiliationUpsertInput = z.infer<
+  typeof facilityDoctorAffiliationUpsertBodySchema
+>;

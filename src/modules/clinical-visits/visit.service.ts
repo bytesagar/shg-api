@@ -4,6 +4,7 @@ import { PatientRepository } from "../patients/patient.repository";
 import { VisitCreateInput } from "./visit.validation";
 import { AppError } from "@/utils/app-error";
 import { HTTP_STATUS } from "@/config/constants";
+import { format } from "date-fns";
 
 
 export class VisitService {
@@ -37,7 +38,7 @@ export class VisitService {
     return this.visitRepository.create({
       patientId: patient.id,
       facilityId: this.context.facilityId,
-      date: input.date ?? new Date(),
+      date: input.date,
       reason: input.reason,
       service: input.service ?? null,
       status: input.status ?? "planned",

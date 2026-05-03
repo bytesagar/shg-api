@@ -1,27 +1,13 @@
-/** UTC calendar helpers for roster day + time windows (matches stored roster.date as UTC midnight). */
+/** UTC calendar helpers for roster day + time windows. */
 
-export function utcMidnightForCalendarDay(isoDate: string): Date {
-  const [y, m, d] = isoDate.split("-").map(Number);
-  if (!y || !m || !d) throw new Error("Invalid date");
-  return new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0));
-}
-
-/** UTC midnight and next midnight for the calendar day of `instant` (UTC). */
-export function utcDayBoundsFromInstant(instant: Date): {
-  dayStart: Date;
-  nextDayStart: Date;
-} {
+export function utcIsoDateFromInstant(instant: Date): string {
   const y = instant.getUTCFullYear();
-  const m = instant.getUTCMonth();
+  const m = instant.getUTCMonth() + 1;
   const d = instant.getUTCDate();
-  const dayStart = new Date(Date.UTC(y, m, d, 0, 0, 0, 0));
-  const nextDayStart = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
-  return { dayStart, nextDayStart };
-}
 
-export function endOfUtcCalendarDay(isoDate: string): Date {
-  const start = utcMidnightForCalendarDay(isoDate);
-  return new Date(start.getTime() + 24 * 60 * 60 * 1000 - 1);
+  const mm = String(m).padStart(2, "0");
+  const dd = String(d).padStart(2, "0");
+  return `${y}-${mm}-${dd}`;
 }
 
 /** Minutes since midnight UTC for a Date. */

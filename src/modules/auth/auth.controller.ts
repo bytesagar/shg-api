@@ -74,4 +74,13 @@ export class AuthController extends BaseController {
     const result = await this.authService.getCurrentUser(userId);
     return res.status(HTTP_STATUS.OK).json(result);
   });
+
+  public myFacilities = catchAsync(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
+    }
+    const result = await this.authService.listMyFacilities(userId);
+    return this.ok(res, result, "Facilities retrieved successfully");
+  });
 }

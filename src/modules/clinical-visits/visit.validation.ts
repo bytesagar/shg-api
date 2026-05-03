@@ -1,11 +1,9 @@
+import { isoDateString } from "@/validations/common.validation";
 import { z } from "zod";
 
 export const visitCreateSchema = z.object({
   patientId: z.string(),
-  date: z.preprocess(
-    (val) => (typeof val === "string" ? new Date(val) : val),
-    z.date().optional().nullable(),
-  ),
+  date: isoDateString,
   reason: z.string().min(1, "Reason is required"),
   service: z.string().max(255).optional().nullable(),
   status: z

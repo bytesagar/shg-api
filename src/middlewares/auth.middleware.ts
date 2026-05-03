@@ -4,6 +4,9 @@ import { HTTP_STATUS } from "../config/constants";
 import { FacilityContext } from "../context/facility-context";
 import { verifyJwt } from "../utils/jwt";
 import { getPermissionsForRole, normalizeRole } from "../constants/rbac";
+import { db } from "../db";
+import { user_facility_affiliations } from "../db/schema";
+import { and, eq } from "drizzle-orm";
 
 // Extend Express Request type to include user payload
 export interface AuthRequest extends Request {
@@ -88,18 +91,67 @@ export const authMiddleware = (
     }
 
     const normalizedRole = normalizeRole(decoded.role) ?? decoded.role;
-    req.user = {
-      ...decoded,
-      role: normalizedRole,
-      permissions: decoded.permissions ?? getPermissionsForRole(normalizedRole),
+
+    const requestedFacilityIdRaw = req.headers["x-facility-id"];
+    const requestedFacilityId =
+      typeof requestedFacilityIdRaw === "string" &&
+      requestedFacilityIdRaw.trim()
+        ? requestedFacilityIdRaw.trim()
+        : undefined;
+
+    const resolveFacilityId = async (): Promise<string> => {
+      if (!requestedFacilityId || requestedFacilityId === decoded.facilityId) {
+        return decoded.facilityId;
+      }
+
+      if (normalizedRole === "admin") return requestedFacilityId;
+
+      if (normalizedRole === "doctor") {
+        const rows = await db
+          .select({ id: user_facility_affiliations.id })
+          .from(user_facility_affiliations)
+          .where(
+            and(
+              eq(user_facility_affiliations.userId, decoded.id),
+              eq(user_facility_affiliations.facilityId, requestedFacilityId),
+              eq(user_facility_affiliations.isActive, true),
+            ),
+          )
+          .limit(1);
+
+        if (!rows[0]) {
+          throw new AppError(
+            "Forbidden: user is not affiliated with the requested facility",
+            HTTP_STATUS.FORBIDDEN,
+          );
+        }
+        return requestedFacilityId;
+      }
+
+      throw new AppError(
+        "Forbidden: cross-facility access denied",
+        HTTP_STATUS.FORBIDDEN,
+      );
     };
-    req.context = {
-      facilityId: decoded.facilityId,
-      userId: decoded.id,
-      role: normalizedRole,
-      userType: decoded.userType,
+
+    const setContext = async () => {
+      const facilityId = await resolveFacilityId();
+      req.user = {
+        ...decoded,
+        role: normalizedRole,
+        permissions:
+          decoded.permissions ?? getPermissionsForRole(normalizedRole),
+      };
+      req.context = {
+        facilityId,
+        userId: decoded.id,
+        role: normalizedRole,
+        userType: decoded.userType,
+      };
+      next();
     };
-    next();
+
+    setContext().catch(next);
   } catch (err) {
     return next(
       new AppError("Unauthorized: Invalid token", HTTP_STATUS.UNAUTHORIZED),

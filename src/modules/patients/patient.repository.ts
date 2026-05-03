@@ -13,6 +13,7 @@ import { FacilityRepository } from "../../core/facility-repository";
 import { FacilityContext } from "../../context/facility-context";
 import { PatientCreateInput } from "../../validations/patient.validation";
 import { SQL, and, count, desc, eq, inArray } from "drizzle-orm";
+import { format } from "date-fns";
 
 type HydratedPatient = typeof patients.$inferSelect & {
   firstName: string | null;
@@ -184,7 +185,7 @@ export class PatientRepository extends FacilityRepository {
 
       if (data.service.toLowerCase() !== "family-planning") {
         await tx.insert(visits).values({
-          date: new Date(),
+          date: format(new Date(), "yyyy-MM-dd"),
           reason: "Patient Registration",
           patientId: newPatient.id,
           facilityId: this.context.facilityId,

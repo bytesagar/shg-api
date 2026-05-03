@@ -2,11 +2,13 @@ import { db } from "../../db";
 import {
   audit_events,
   auth_sessions,
+  health_facilities,
+  user_facility_affiliations,
   user_role_assignments,
   user_roles,
   users,
 } from "../../db/schema";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import * as bcrypt from "bcryptjs";
 import { signJwt } from "../../utils/jwt";
 import { randomBytes, createHash } from "crypto";
@@ -53,6 +55,69 @@ export class AuthService {
     }
     return {
       user: this.sanitizeUser(user),
+    };
+  }
+
+  public async listMyFacilities(userId: string) {
+    const [user] = await db
+      .select({
+        id: users.id,
+        facilityId: users.facilityId,
+        userType: users.userType,
+      })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+
+    if (!user || !user.facilityId) {
+      throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
+    }
+
+    const affiliations = await db
+      .select({
+        facilityId: user_facility_affiliations.facilityId,
+        roleId: user_facility_affiliations.roleId,
+      })
+      .from(user_facility_affiliations)
+      .where(
+        and(
+          eq(user_facility_affiliations.userId, userId),
+          eq(user_facility_affiliations.isActive, true),
+        ),
+      );
+
+    const facilityIds = [
+      user.facilityId,
+      ...affiliations.map((a) => a.facilityId),
+    ].filter((v): v is string => typeof v === "string");
+
+    const uniqueFacilityIds = [...new Set(facilityIds)];
+
+    const facilities = await db
+      .select({
+        id: health_facilities.id,
+        name: health_facilities.name,
+        address: health_facilities.address,
+        phone: health_facilities.phone,
+        email: health_facilities.email,
+        ward: health_facilities.ward,
+        palika: health_facilities.palika,
+        district: health_facilities.district,
+        province: health_facilities.province,
+      })
+      .from(health_facilities)
+      .where(inArray(health_facilities.id, uniqueFacilityIds));
+
+    const byFacilityId = new Map(
+      affiliations.map((a) => [a.facilityId, a] as const),
+    );
+
+    return {
+      items: facilities.map((f) => ({
+        facility: f,
+        isPrimary: f.id === user.facilityId,
+        roleId: byFacilityId.get(f.id)?.roleId ?? null,
+      })),
     };
   }
 

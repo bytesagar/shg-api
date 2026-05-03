@@ -1,0 +1,1 @@
+ALTER TABLE "rosters" ADD COLUMN "status_text" "roster_status_enum" DEFAULT 'active' NOT NULL;

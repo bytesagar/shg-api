@@ -1,0 +1,2 @@
+ALTER TABLE "user_facility_affiliations" RENAME COLUMN "role" TO "role_id";--> statement-breakpoint
+ALTER TABLE "user_facility_affiliations" ADD CONSTRAINT "user_facility_affiliations_role_id_user_roles_id_fk" FOREIGN KEY ("role_id") REFERENCES "public"."user_roles"("id") ON DELETE no action ON UPDATE no action;
