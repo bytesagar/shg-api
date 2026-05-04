@@ -556,7 +556,8 @@ async function seed() {
       throw new Error("Missing seeded patients");
     }
 
-    const visitDate = new Date("2026-04-10T09:30:00.000Z");
+    const visitDate = "2026-04-10";
+    const visitEncounterAt = new Date("2026-04-10T09:30:00.000Z");
     const [existingVisit] = await db
       .select({ id: visits.id })
       .from(visits)
@@ -600,7 +601,7 @@ async function seed() {
         await db
           .insert(encounters)
           .values({
-            encounterAt: visitDate,
+            encounterAt: visitEncounterAt,
             reason: "Routine follow-up review",
             service: "ANC",
             status: "in_progress",
@@ -762,7 +763,7 @@ async function seed() {
     }
 
     console.log("🌱 Seeding telehealth + roster data...");
-    const appointmentDate = new Date("2026-04-16T08:00:00.000Z");
+    const appointmentDate = "2026-04-16";
     const [existingAppointment] = await db
       .select({ id: appointments.id })
       .from(appointments)
@@ -862,8 +863,75 @@ async function seed() {
       .where(eq(family_plannings.patientId, mchPatient.id))
       .limit(1);
     if (!existingFamilyPlanning) {
+      const fpVisitDate = "2026-04-14";
+      const fpEncounterAt = new Date("2026-04-14T10:00:00.000Z");
+
+      const [existingFpVisit] = await db
+        .select({ id: visits.id })
+        .from(visits)
+        .where(
+          and(
+            eq(visits.patientId, mchPatient.id),
+            eq(visits.facilityId, facilityId),
+            eq(visits.date, fpVisitDate),
+            eq(visits.reason, "Family planning follow-up"),
+          ),
+        )
+        .limit(1);
+
+      const fpVisitId =
+        existingFpVisit?.id ||
+        (
+          await db
+            .insert(visits)
+            .values({
+              date: fpVisitDate,
+              reason: "Family planning follow-up",
+              service: "FP",
+              status: "in_progress",
+              patientId: mchPatient.id,
+              facilityId,
+              doctorId: hfUserId,
+            })
+            .returning({ id: visits.id })
+        )[0].id;
+
+      const [existingFpEncounter] = await db
+        .select({ id: encounters.id })
+        .from(encounters)
+        .where(
+          and(
+            eq(encounters.visitId, fpVisitId),
+            eq(encounters.encounterType, "outpatient"),
+          ),
+        )
+        .limit(1);
+
+      const fpEncounterId =
+        existingFpEncounter?.id ||
+        (
+          await db
+            .insert(encounters)
+            .values({
+              encounterAt: fpEncounterAt,
+              reason: "Family planning follow-up",
+              service: "FP",
+              status: "in_progress",
+              encounterType: "outpatient",
+              patientId: mchPatient.id,
+              visitId: fpVisitId,
+              facilityId,
+              doctorId: hfUserId,
+              createdBy: hfUserId,
+              updatedBy: hfUserId,
+            })
+            .returning({ id: encounters.id })
+        )[0].id;
+
       await db.insert(family_plannings).values({
         serviceDate: "2026-04-14",
+        visitId: fpVisitId,
+        encounterId: fpEncounterId,
         patientId: mchPatient.id,
         facilityId,
         serviceType: "follow_up",

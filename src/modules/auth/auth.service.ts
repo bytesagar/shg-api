@@ -8,7 +8,7 @@ import {
   user_roles,
   users,
 } from "../../db/schema";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, isNotNull, or } from "drizzle-orm";
 import * as bcrypt from "bcryptjs";
 import { signJwt } from "../../utils/jwt";
 import { randomBytes, createHash } from "crypto";
@@ -59,43 +59,10 @@ export class AuthService {
   }
 
   public async listMyFacilities(userId: string) {
-    const [user] = await db
+    const rows = await db
       .select({
-        id: users.id,
-        facilityId: users.facilityId,
-        userType: users.userType,
-      })
-      .from(users)
-      .where(eq(users.id, userId))
-      .limit(1);
-
-    if (!user || !user.facilityId) {
-      throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
-    }
-
-    const affiliations = await db
-      .select({
-        facilityId: user_facility_affiliations.facilityId,
-        roleId: user_facility_affiliations.roleId,
-      })
-      .from(user_facility_affiliations)
-      .where(
-        and(
-          eq(user_facility_affiliations.userId, userId),
-          eq(user_facility_affiliations.isActive, true),
-        ),
-      );
-
-    const facilityIds = [
-      user.facilityId,
-      ...affiliations.map((a) => a.facilityId),
-    ].filter((v): v is string => typeof v === "string");
-
-    const uniqueFacilityIds = [...new Set(facilityIds)];
-
-    const facilities = await db
-      .select({
-        id: health_facilities.id,
+        primaryFacilityId: users.facilityId,
+        facilityId: health_facilities.id,
         name: health_facilities.name,
         address: health_facilities.address,
         phone: health_facilities.phone,
@@ -104,19 +71,49 @@ export class AuthService {
         palika: health_facilities.palika,
         district: health_facilities.district,
         province: health_facilities.province,
+        roleId: user_facility_affiliations.roleId,
       })
       .from(health_facilities)
-      .where(inArray(health_facilities.id, uniqueFacilityIds));
+      .innerJoin(users, eq(users.id, userId))
+      .leftJoin(
+        user_facility_affiliations,
+        and(
+          eq(user_facility_affiliations.userId, userId),
+          eq(user_facility_affiliations.facilityId, health_facilities.id),
+          eq(user_facility_affiliations.isActive, true),
+        ),
+      )
+      .where(
+        or(
+          eq(health_facilities.id, users.facilityId),
+          isNotNull(user_facility_affiliations.id),
+        ),
+      );
 
-    const byFacilityId = new Map(
-      affiliations.map((a) => [a.facilityId, a] as const),
-    );
+    if (rows.length === 0) {
+      throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
+    }
+
+    const primaryFacilityId = rows[0]?.primaryFacilityId ?? null;
+    if (!primaryFacilityId) {
+      throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
+    }
 
     return {
-      items: facilities.map((f) => ({
-        facility: f,
-        isPrimary: f.id === user.facilityId,
-        roleId: byFacilityId.get(f.id)?.roleId ?? null,
+      items: rows.map((r) => ({
+        facility: {
+          id: r.facilityId,
+          name: r.name,
+          address: r.address,
+          phone: r.phone,
+          email: r.email,
+          ward: r.ward,
+          palika: r.palika,
+          district: r.district,
+          province: r.province,
+        },
+        isPrimary: r.facilityId === primaryFacilityId,
+        roleId: r.roleId ?? null,
       })),
     };
   }

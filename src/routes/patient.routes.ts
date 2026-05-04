@@ -1,7 +1,11 @@
 import { Router } from "express";
 import { PatientController } from "../modules/patients/patient.controller";
+import { ImmunizationController } from "../modules/immunizations/immunization.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
-import { authorize } from "../middlewares/authorize.middleware";
+import {
+  authorize,
+  authorizePermission,
+} from "../middlewares/authorize.middleware";
 import {
   CLINICAL_READ_ROLES,
   CLINICAL_WRITE_ROLES,
@@ -10,6 +14,7 @@ import {
 
 const router = Router();
 const patientController = new PatientController();
+const immunizationController = new ImmunizationController();
 
 /**
  * @openapi
@@ -169,6 +174,20 @@ router.patch(
   authMiddleware,
   authorize([...COMMUNITY_WRITE_ROLES]),
   patientController.updateFamilyPlanningProfile,
+);
+
+router.put(
+  "/:patientId/child-immunization",
+  authMiddleware,
+  authorizePermission("immunization:create"),
+  immunizationController.upsertChildImmunizationProfile,
+);
+
+router.post(
+  "/:patientId/immunizations",
+  authMiddleware,
+  authorizePermission("immunization:create"),
+  immunizationController.createImmunizationHistory,
 );
 
 export default router;

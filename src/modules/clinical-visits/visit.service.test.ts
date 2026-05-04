@@ -68,7 +68,7 @@ describe("VisitService", () => {
     const result = await service.createVisit({
       patientId: "patient-1",
       reason: "Follow up",
-      date: null,
+      date: "2026-04-10",
       service: null,
       status: null,
       doctorId: null,
