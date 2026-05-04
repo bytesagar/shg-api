@@ -1,0 +1,1 @@
+ALTER TABLE "provinces" ADD COLUMN "code" integer NOT NULL;

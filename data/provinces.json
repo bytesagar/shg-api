@@ -1,0 +1,57 @@
+{
+  "provinces": [
+    {
+      "code": 1,
+      "name": {
+        "en": "Koshi Province",
+        "np": "कोशी प्रदेश"
+      }
+    },
+    {
+      "code": 2,
+      "name": {
+        "en": "Madhesh Province",
+        "np": "मधेश प्रदेश"
+      }
+    },
+    {
+      "code": 3,
+      "name": {
+        "en": "Bagmati Province",
+        "np": "बागमती प्रदेश"
+      }
+    },
+    {
+      "code": 4,
+      "name": {
+        "en": "Gandaki Province",
+        "np": "गण्डकी प्रदेश"
+      }
+     
+    },
+    {
+      "code": 5,
+      "name": {
+        "en": "Lumbini Province",
+        "np": "लुम्बिनी प्रदेश"
+      }
+     
+    },
+    {
+      "code": 6,
+      "name": {
+        "en": "Karnali Province",
+        "np": "कर्णाली प्रदेश"
+      }
+    
+    },
+    {
+      "code": 7,
+      "name": {
+        "en": "Sudurpashchim Province",
+        "np": "सुदूरपश्चिम प्रदेश"
+      }
+     
+    }
+  ]
+}

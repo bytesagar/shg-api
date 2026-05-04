@@ -187,6 +187,7 @@ export const provinces = pgTable("provinces", {
     .notNull()
     .default(sql`gen_random_uuid()`),
   name: jsonb("name").notNull(), // { en: string, np: string }
+  code: integer("code").notNull(),
   createdBy: uuid("created_by"),
   updatedBy: uuid("updated_by"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

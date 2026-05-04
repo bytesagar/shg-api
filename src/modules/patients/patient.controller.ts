@@ -79,6 +79,9 @@ export class PatientController extends BaseController {
       upcomingAppointmentDoctorPhoneNumber: string | null;
       upcomingAppointmentDoctorDesignation: string | null;
       upcomingAppointmentService: string | null;
+      immunizationMothersName: string | null;
+      immunizationFathersName: string | null;
+      immunizationWeightAtBirth: number | null;
     }>(sql`
       select
         v.id as "activeVisitId",
@@ -95,7 +98,10 @@ export class PatientController extends BaseController {
         a.doctor_last_name as "upcomingAppointmentDoctorLastName",
         a.doctor_phone_number as "upcomingAppointmentDoctorPhoneNumber",
         a.doctor_designation as "upcomingAppointmentDoctorDesignation",
-        a.service as "upcomingAppointmentService"
+        a.service as "upcomingAppointmentService",
+        ci.mothers_name as "immunizationMothersName",
+        ci.fathers_name as "immunizationFathersName",
+        ci.weight_at_birth as "immunizationWeightAtBirth"
       from (
         select ${patient.id}::uuid as patient_id, ${context.facilityId}::uuid as facility_id
       ) p
@@ -130,6 +136,14 @@ export class PatientController extends BaseController {
         order by ap.date asc
         limit 1
       ) a on true
+      left join lateral (
+        select mothers_name, fathers_name, weight_at_birth
+        from child_immunizations
+        where patient_id = p.patient_id
+          and facility_id = p.facility_id
+          and deleted_at is null
+        limit 1
+      ) ci on true
     `);
 
     const row = summary.rows[0];
@@ -170,10 +184,22 @@ export class PatientController extends BaseController {
         }
       : null;
 
+    const immunization =
+      row?.immunizationMothersName ||
+      row?.immunizationFathersName ||
+      row?.immunizationWeightAtBirth != null
+        ? {
+            motherName: row?.immunizationMothersName ?? null,
+            fatherName: row?.immunizationFathersName ?? null,
+            weightAtBirth: row?.immunizationWeightAtBirth ?? null,
+          }
+        : null;
+
     const responseData = {
       ...patient,
       activeVisit,
       upcomingAppointment,
+      immunization,
     };
     return this.ok(res, responseData, "Patient retrieved successfully");
   });

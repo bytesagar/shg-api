@@ -9,6 +9,7 @@ import {
   complaints,
   confirm_diagnoses,
   consents,
+  districts,
   encounters,
   family_plannings,
   growths,
@@ -17,6 +18,7 @@ import {
   icd11_codes,
   immunization_histories,
   medications,
+  municipalities,
   patient_identifiers,
   patients,
   person_contacts,
@@ -24,6 +26,7 @@ import {
   person_names,
   persons,
   pregnancies,
+  provinces,
   provisional_diagnoses,
   practitioner_role_assignments,
   practitioners,
@@ -117,9 +120,157 @@ async function seedIcd11Codes() {
   console.log(`✅ ICD-11 codes seeded (${rows.length} rows)`);
 }
 
+function readDataJson<T>(relativePath: string): T | null {
+  const filePath = join(__dirname, "../../", relativePath);
+  const raw = readFileSync(filePath, "utf-8");
+  if (!raw.trim()) return null;
+  return JSON.parse(raw) as T;
+}
+
+async function seedGeography() {
+  console.log("🌱 Seeding provinces/districts/municipalities...");
+
+  const provincesJson = readDataJson<{ provinces: { code: number; name: { en: string; np: string } }[] }>(
+    "data/provinces.json",
+  );
+  const districtsJson = readDataJson<{ districts: { code: number; province_code: number; name: { en: string; np: string } }[] }>(
+    "data/districts.json",
+  );
+  const municipalitiesJson = readDataJson<
+    | { municipalities: { code: number; district_code: number; name: { en: string; np: string }; no_of_wards: number }[] }
+    | { muncipalities: { code: number; district_code: number; name: { en: string; np: string }; no_of_wards: number }[] }
+  >("data/muncipalities.json");
+
+  const provinceItems = provincesJson?.provinces ?? [];
+  if (provinceItems.length) {
+    const byCode = new Map<number, { code: number; name: { en: string; np: string } }>();
+    for (const p of provinceItems) byCode.set(p.code, p);
+
+    const tuples = [...byCode.values()].map(
+      (p) => sql`(${p.code}::int, ${JSON.stringify(p.name)}::jsonb)`,
+    );
+
+    await db.execute(sql`
+      insert into provinces (code, name, created_at, updated_at)
+      select v.code, v.name, now(), now()
+      from (values ${sql.join(tuples, sql`,`)}) as v(code, name)
+      where not exists (select 1 from provinces p where p.code = v.code)
+    `);
+
+    await db.execute(sql`
+      update provinces p
+      set name = v.name,
+          updated_at = now()
+      from (values ${sql.join(tuples, sql`,`)}) as v(code, name)
+      where p.code = v.code
+    `);
+  }
+
+  const districtItems = districtsJson?.districts ?? [];
+  if (districtItems.length) {
+    const byCode = new Map<number, { code: number; province_code: number; name: { en: string; np: string } }>();
+    for (const d of districtItems) byCode.set(d.code, d);
+
+    const tuples = [...byCode.values()].map(
+      (d) =>
+        sql`(${d.code}::int, ${d.province_code}::int, ${JSON.stringify(d.name)}::jsonb)`,
+    );
+
+    await db.execute(sql`
+      insert into districts (code, province_id, name, created_at, updated_at)
+      select v.code, p.id, v.name, now(), now()
+      from (values ${sql.join(tuples, sql`,`)}) as v(code, province_code, name)
+      join provinces p on p.code = v.province_code
+      where not exists (select 1 from districts d where d.code = v.code)
+    `);
+
+    await db.execute(sql`
+      update districts d
+      set province_id = p.id,
+          name = v.name,
+          updated_at = now()
+      from (values ${sql.join(tuples, sql`,`)}) as v(code, province_code, name)
+      join provinces p on p.code = v.province_code
+      where d.code = v.code
+    `);
+  }
+
+  const municipalityItemsRaw: any[] =
+    (municipalitiesJson && "municipalities" in municipalitiesJson
+      ? municipalitiesJson.municipalities
+      : municipalitiesJson && "muncipalities" in municipalitiesJson
+        ? municipalitiesJson.muncipalities
+        : []) ?? [];
+
+  if (municipalityItemsRaw.length) {
+    const toFiniteNumber = (v: unknown): number | null => {
+      const n = typeof v === "string" && v.trim() ? Number(v) : typeof v === "number" ? v : Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+
+    const normalized = municipalityItemsRaw
+      .map((m) => {
+        const code = toFiniteNumber(m.code);
+        const districtCode = toFiniteNumber(
+          m.district_code ?? m.districtCode ?? m.district ?? m.district_id,
+        );
+        const wards =
+          toFiniteNumber(m.no_of_wards ?? m.noOfWards ?? m.no_of_ward ?? m.wards) ??
+          0;
+
+        return {
+          code,
+          district_code: districtCode,
+          name: m.name,
+          no_of_wards: wards,
+        };
+      })
+      .filter(
+        (m): m is {
+          code: number;
+          district_code: number;
+          name: any;
+          no_of_wards: number;
+        } => m.code != null && m.district_code != null,
+      );
+
+    const byCode = new Map<number, (typeof normalized)[number]>();
+    for (const m of normalized) byCode.set(m.code, m);
+
+    const tuples = [...byCode.values()].map(
+      (m) =>
+        sql`(${m.code}::int, ${m.district_code}::int, ${JSON.stringify(m.name)}::jsonb, ${m.no_of_wards}::int)`,
+    );
+
+    if (tuples.length) {
+      await db.execute(sql`
+        insert into municipalities (code, district_id, name, no_of_wards, created_at, updated_at)
+        select v.code, d.id, v.name, v.no_of_wards, now(), now()
+        from (values ${sql.join(tuples, sql`,`)}) as v(code, district_code, name, no_of_wards)
+        join districts d on d.code = v.district_code
+        where not exists (select 1 from municipalities m where m.code = v.code)
+      `);
+
+      await db.execute(sql`
+        update municipalities m
+        set district_id = d.id,
+            name = v.name,
+            no_of_wards = v.no_of_wards,
+            updated_at = now()
+        from (values ${sql.join(tuples, sql`,`)}) as v(code, district_code, name, no_of_wards)
+        join districts d on d.code = v.district_code
+        where m.code = v.code
+      `);
+    }
+  }
+
+  console.log("✅ Geography seeded");
+}
+
 async function seed() {
   await seedUserRoles();
   await seedIcd11Codes();
+  await seedGeography();
 
   console.log("🌱 Seeding health facilities...");
 

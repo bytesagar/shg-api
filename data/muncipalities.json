@@ -1,0 +1,6823 @@
+{
+  "municipalities": [
+    {
+      "code": 10101,
+      "district_code": 101,
+      "province_code": 1,
+      "name": {
+        "en": "Phaktanlung Rural Municipality",
+        "np": "फक्ताङ्लुङ्ग गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10102,
+      "district_code": 101,
+      "province_code": 1,
+      "name": {
+        "en": "Mikwakhola Rural Municipality",
+        "np": "मिक्वाखोला गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10103,
+      "district_code": 101,
+      "province_code": 1,
+      "name": {
+        "en": "Meringden Rural Municipality",
+        "np": "मेरिङ्गदेन गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10104,
+      "district_code": 101,
+      "province_code": 1,
+      "name": {
+        "en": "Maiwakhola Rural Municipality",
+        "np": "मैवाखोला गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10105,
+      "district_code": 101,
+      "province_code": 1,
+      "name": {
+        "en": "Aatharai Tribeni Rural Municipality",
+        "np": "आठराई त्रिवेणी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10106,
+      "district_code": 101,
+      "province_code": 1,
+      "name": {
+        "en": "Phungling Urban Municipality",
+        "np": "फुङलिङ्ग नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10107,
+      "district_code": 101,
+      "province_code": 1,
+      "name": {
+        "en": "Pathivara Yangwarak Rural Municipality",
+        "np": "पाथीभरा याङवरक गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10108,
+      "district_code": 101,
+      "province_code": 1,
+      "name": {
+        "en": "Sirijanga Rural Municipality",
+        "np": "सिरीजङ्गा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10109,
+      "district_code": 101,
+      "province_code": 1,
+      "name": {
+        "en": "Sidingba Rural Municipality",
+        "np": "सिदिङ्गवा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10201,
+      "district_code": 102,
+      "province_code": 1,
+      "name": {
+        "en": "Bhotkhola Rural Municipality",
+        "np": "भोटखोला गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10202,
+      "district_code": 102,
+      "province_code": 1,
+      "name": { "en": "Makalu Rural Municipality", "np": "मकालु गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10203,
+      "district_code": 102,
+      "province_code": 1,
+      "name": {
+        "en": "Silichong Rural Municipality",
+        "np": "सिलिचोङ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10204,
+      "district_code": 102,
+      "province_code": 1,
+      "name": {
+        "en": "Chichila Rural Municipality",
+        "np": "चिचिला गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10205,
+      "district_code": 102,
+      "province_code": 1,
+      "name": {
+        "en": "Sabhapokhari Rural Municipality",
+        "np": "सभापोखरी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10206,
+      "district_code": 102,
+      "province_code": 1,
+      "name": {
+        "en": "Khandabari Urban Municipality",
+        "np": "खाँदबारी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10207,
+      "district_code": 102,
+      "province_code": 1,
+      "name": {
+        "en": "Panchakhapan Urban Municipality",
+        "np": "पाँचखपन नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10208,
+      "district_code": 102,
+      "province_code": 1,
+      "name": {
+        "en": "Chainapur Urban Municipality",
+        "np": "चैनपुर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10209,
+      "district_code": 102,
+      "province_code": 1,
+      "name": { "en": "Madi Urban Municipality", "np": "मादी नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10210,
+      "district_code": 102,
+      "province_code": 1,
+      "name": {
+        "en": "Dharmadevi Urban Municipality",
+        "np": "धर्मदेवी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10301,
+      "district_code": 103,
+      "province_code": 1,
+      "name": {
+        "en": "Khumbu Pasanglhamu Rural Municipality",
+        "np": "खुम्बुपासाङल्हामु गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10302,
+      "district_code": 103,
+      "province_code": 1,
+      "name": {
+        "en": "Mahakulung Rural Municipality",
+        "np": "माहाकुलुङ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10303,
+      "district_code": 103,
+      "province_code": 1,
+      "name": { "en": "Sotang Rural Municipality", "np": "सोताङ गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10304,
+      "district_code": 103,
+      "province_code": 1,
+      "name": {
+        "en": "Mapya Dudhkoshi Rural Municipality",
+        "np": "माप्य दुधकोशी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10305,
+      "district_code": 103,
+      "province_code": 1,
+      "name": {
+        "en": "Thulung Dudhkoshi Rural Municipality",
+        "np": "थुलुङ दुधकोशी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10306,
+      "district_code": 103,
+      "province_code": 1,
+      "name": {
+        "en": "Necha Salyan Rural Municipality",
+        "np": "नेचासल्यान गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10307,
+      "district_code": 103,
+      "province_code": 1,
+      "name": {
+        "en": "Solu Dhudhakunda Urban Municipality",
+        "np": "सोलुदुधकुण्ड नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10308,
+      "district_code": 103,
+      "province_code": 1,
+      "name": {
+        "en": "Likhu Pike Rural Municipality",
+        "np": "लिखुपिके गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10401,
+      "district_code": 104,
+      "province_code": 1,
+      "name": {
+        "en": "Chishankhu Gadhi Rural Municipality",
+        "np": "चिशंखुगढी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10402,
+      "district_code": 104,
+      "province_code": 1,
+      "name": {
+        "en": "Siddhicharan Urban Municipality",
+        "np": "सिद्धिचरण नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10403,
+      "district_code": 104,
+      "province_code": 1,
+      "name": { "en": "Molung Rural Municipality", "np": "मोलुङ्ग गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10404,
+      "district_code": 104,
+      "province_code": 1,
+      "name": {
+        "en": "Khiji Demba Rural Municipality",
+        "np": "खिजीदेम्बा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10405,
+      "district_code": 104,
+      "province_code": 1,
+      "name": { "en": "Likhu Rural Municipality", "np": "लिखु गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10406,
+      "district_code": 104,
+      "province_code": 1,
+      "name": {
+        "en": "Champadevi Rural Municipality",
+        "np": "चम्पादेवी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10407,
+      "district_code": 104,
+      "province_code": 1,
+      "name": {
+        "en": "Sunkoshi Rural Municipality",
+        "np": "सुनकोशी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10408,
+      "district_code": 104,
+      "province_code": 1,
+      "name": {
+        "en": "Manebhanjyang Rural Municipality",
+        "np": "मानेभन्ज्याङ्ग गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10501,
+      "district_code": 105,
+      "province_code": 1,
+      "name": {
+        "en": "Kepilasgadhi Rural Municipality",
+        "np": "केपिलासगढी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10502,
+      "district_code": 105,
+      "province_code": 1,
+      "name": {
+        "en": "Aiselukharka Rural Municipality",
+        "np": "ऐसेलुखर्क गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10503,
+      "district_code": 105,
+      "province_code": 1,
+      "name": {
+        "en": "Rawa Besi Rural Municipality",
+        "np": "रावा बेसी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10504,
+      "district_code": 105,
+      "province_code": 1,
+      "name": {
+        "en": "Halesi Tuwachung Urban Municipality",
+        "np": "हलेसी तुवाचुङ नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10505,
+      "district_code": 105,
+      "province_code": 1,
+      "name": {
+        "en": "Diktel Rupakot Majhuwagadhi Urban Municipality",
+        "np": "दिक्तेल रुपाकोट मझुवागढी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10506,
+      "district_code": 105,
+      "province_code": 1,
+      "name": { "en": "Sakela Rural Municipality", "np": "साकेला गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10507,
+      "district_code": 105,
+      "province_code": 1,
+      "name": {
+        "en": "Diprung Chuichumma Rural Municipality",
+        "np": "दिप्रुङ चुइचुम्मा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10508,
+      "district_code": 105,
+      "province_code": 1,
+      "name": {
+        "en": "Khotehang Rural Municipality",
+        "np": "खोटेहाङ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10509,
+      "district_code": 105,
+      "province_code": 1,
+      "name": {
+        "en": "Jante Dhunga Rural Municipality",
+        "np": "जन्तेढुङ्गा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10510,
+      "district_code": 105,
+      "province_code": 1,
+      "name": {
+        "en": "Baraha Pokhari Rural Municipality",
+        "np": "बराहपोखरी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10601,
+      "district_code": 106,
+      "province_code": 1,
+      "name": {
+        "en": "Shadananda Urban Municipality",
+        "np": "षडानन्द नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10602,
+      "district_code": 106,
+      "province_code": 1,
+      "name": {
+        "en": "Salpa Silichho Rural Municipality",
+        "np": "साल्पासिलिछो गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10603,
+      "district_code": 106,
+      "province_code": 1,
+      "name": {
+        "en": "Temkemaiyum Rural Municipality",
+        "np": "टेम्केमैयुङ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10604,
+      "district_code": 106,
+      "province_code": 1,
+      "name": { "en": "Bhojpur Urban Municipality", "np": "भोजपुर नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10605,
+      "district_code": 106,
+      "province_code": 1,
+      "name": { "en": "Arun Rural Municipality", "np": "अरुण गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10606,
+      "district_code": 106,
+      "province_code": 1,
+      "name": {
+        "en": "Pauwa Dunma Rural Municipality",
+        "np": "पौवादुङ्मा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10607,
+      "district_code": 106,
+      "province_code": 1,
+      "name": {
+        "en": "Ramprasad Rai Rural Municipality",
+        "np": "रामप्रसादराई गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10608,
+      "district_code": 106,
+      "province_code": 1,
+      "name": {
+        "en": "Hatuwagadhi Rural Municipality",
+        "np": "हतुवागढी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10609,
+      "district_code": 106,
+      "province_code": 1,
+      "name": { "en": "Aamchowk Rural Municipality", "np": "आमचोक गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10701,
+      "district_code": 107,
+      "province_code": 1,
+      "name": {
+        "en": "Mahalaxmi Urban Municipality",
+        "np": "महालक्ष्मी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10702,
+      "district_code": 107,
+      "province_code": 1,
+      "name": {
+        "en": "Pakhribas Urban Municipality",
+        "np": "पाख्रिबास नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10703,
+      "district_code": 107,
+      "province_code": 1,
+      "name": {
+        "en": "Chhathar Jorpati Rural Municipality",
+        "np": "छथर जोरपाटी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10704,
+      "district_code": 107,
+      "province_code": 1,
+      "name": { "en": "Dhankuta Urban Municipality", "np": "धनकुटा नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10705,
+      "district_code": 107,
+      "province_code": 1,
+      "name": {
+        "en": "Shahidbhumi Rural Municipality",
+        "np": "सहिदभूमि गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10706,
+      "district_code": 107,
+      "province_code": 1,
+      "name": {
+        "en": "Sangurigadhi Rural Municipality",
+        "np": "साँगुरीगढी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10707,
+      "district_code": 107,
+      "province_code": 1,
+      "name": {
+        "en": "Chaubise Rural Municipality",
+        "np": "चौबिसे गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10801,
+      "district_code": 108,
+      "province_code": 1,
+      "name": { "en": "Aatharai Rural Municipality", "np": "आठराई गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10802,
+      "district_code": 108,
+      "province_code": 1,
+      "name": { "en": "Phedap Rural Municipality", "np": "फेदाप गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10803,
+      "district_code": 108,
+      "province_code": 1,
+      "name": {
+        "en": "Menchhayayem Rural Municipality",
+        "np": "मेन्छयायेम गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10804,
+      "district_code": 108,
+      "province_code": 1,
+      "name": {
+        "en": "Myanglung Urban Municipality",
+        "np": "म्याङ्गलुङ्ग नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10805,
+      "district_code": 108,
+      "province_code": 1,
+      "name": {
+        "en": "Laligurans Urban Municipality",
+        "np": "लालीगुराँस नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10806,
+      "district_code": 108,
+      "province_code": 1,
+      "name": { "en": "Chhathar Rural Municipality", "np": "छथर गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10901,
+      "district_code": 109,
+      "province_code": 1,
+      "name": {
+        "en": "Yangbarak Rural Municipality",
+        "np": "याङवरक गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10902,
+      "district_code": 109,
+      "province_code": 1,
+      "name": {
+        "en": "Hilihan Rural Municipality",
+        "np": "हिलिहाङ्ग गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10903,
+      "district_code": 109,
+      "province_code": 1,
+      "name": {
+        "en": "Falelung Rural Municipality",
+        "np": "फालेलुङ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10904,
+      "district_code": 109,
+      "province_code": 1,
+      "name": { "en": "Phidim Urban Municipality", "np": "फिदिम नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 10905,
+      "district_code": 109,
+      "province_code": 1,
+      "name": {
+        "en": "Falgunanda Rural Municipality",
+        "np": "फाल्गुनन्द गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10906,
+      "district_code": 109,
+      "province_code": 1,
+      "name": {
+        "en": "Kummayak Rural Municipality",
+        "np": "कुम्मायक गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10907,
+      "district_code": 109,
+      "province_code": 1,
+      "name": {
+        "en": "Tumbewa Rural Municipality",
+        "np": "तुम्बेवा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 10908,
+      "district_code": 109,
+      "province_code": 1,
+      "name": {
+        "en": "Miklajung Rural Municipality",
+        "np": "मिक्लाजुङ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11001,
+      "district_code": 110,
+      "province_code": 1,
+      "name": {
+        "en": "Mai Jogmai Rural Municipality",
+        "np": "माईजोगमाई गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11002,
+      "district_code": 110,
+      "province_code": 1,
+      "name": {
+        "en": "Sandakpur Rural Municipality",
+        "np": "सन्दकपुर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11003,
+      "district_code": 110,
+      "province_code": 1,
+      "name": { "en": "Illam Urban Municipality", "np": "ईलाम नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11004,
+      "district_code": 110,
+      "province_code": 1,
+      "name": { "en": "Deumai Urban Municipality", "np": "देउमाई नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11005,
+      "district_code": 110,
+      "province_code": 1,
+      "name": {
+        "en": "Fakfokathum Rural Municipality",
+        "np": "फाकफोकथुम गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11006,
+      "district_code": 110,
+      "province_code": 1,
+      "name": {
+        "en": "Mangsebung Rural Municipality",
+        "np": "माङसेबुङ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11007,
+      "district_code": 110,
+      "province_code": 1,
+      "name": {
+        "en": "Chulachuli Rural Municipality",
+        "np": "चुलाचुली गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11008,
+      "district_code": 110,
+      "province_code": 1,
+      "name": { "en": "Mai Urban Municipality", "np": "माई नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11009,
+      "district_code": 110,
+      "province_code": 1,
+      "name": {
+        "en": "Suryodaya Urban Municipality",
+        "np": "सूर्योदय नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11010,
+      "district_code": 110,
+      "province_code": 1,
+      "name": { "en": "Rong Rural Municipality", "np": "रोङ गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11101,
+      "district_code": 111,
+      "province_code": 1,
+      "name": {
+        "en": "Mechinagar Urban Municipality",
+        "np": "मेचीनगर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11102,
+      "district_code": 111,
+      "province_code": 1,
+      "name": {
+        "en": "Buddhashanti Rural Municipality",
+        "np": "बुद्धशान्ति गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11103,
+      "district_code": 111,
+      "province_code": 1,
+      "name": {
+        "en": "Arjundhara Urban Municipality",
+        "np": "अर्जुनधारा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11104,
+      "district_code": 111,
+      "province_code": 1,
+      "name": { "en": "Kankai Urban Municipality", "np": "कन्काई नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11105,
+      "district_code": 111,
+      "province_code": 1,
+      "name": {
+        "en": "Shivasatakshi Urban Municipality",
+        "np": "शिवसताक्षी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11106,
+      "district_code": 111,
+      "province_code": 1,
+      "name": { "en": "Kamal Rural Municipality", "np": "कमल गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11107,
+      "district_code": 111,
+      "province_code": 1,
+      "name": { "en": "Damak Urban Municipality", "np": "दमक नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11108,
+      "district_code": 111,
+      "province_code": 1,
+      "name": {
+        "en": "Gauradaha Urban Municipality",
+        "np": "गौरादह नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11109,
+      "district_code": 111,
+      "province_code": 1,
+      "name": {
+        "en": "Gauriganj Rural Municipality",
+        "np": "गौरीगञ्ज गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11110,
+      "district_code": 111,
+      "province_code": 1,
+      "name": { "en": "Jhapa Rural Municipality", "np": "झापा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11111,
+      "district_code": 111,
+      "province_code": 1,
+      "name": {
+        "en": "Barhadashi Rural Municipality",
+        "np": "बाह्रदशी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11112,
+      "district_code": 111,
+      "province_code": 1,
+      "name": {
+        "en": "Birtamod Urban Municipality",
+        "np": "बिर्तामोड नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11113,
+      "district_code": 111,
+      "province_code": 1,
+      "name": {
+        "en": "Haldibari Rural Municipality",
+        "np": "हल्दीबारी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11114,
+      "district_code": 111,
+      "province_code": 1,
+      "name": {
+        "en": "Bhadrapur Urban Municipality",
+        "np": "भद्रपुर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11115,
+      "district_code": 111,
+      "province_code": 1,
+      "name": {
+        "en": "Kachanakawal Rural Municipality",
+        "np": "कचनकवल गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11201,
+      "district_code": 112,
+      "province_code": 1,
+      "name": {
+        "en": "Miklajung Rural Municipality",
+        "np": "मिक्लाजुङ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11202,
+      "district_code": 112,
+      "province_code": 1,
+      "name": { "en": "Letang Urban Municipality", "np": "लेटाङ नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11203,
+      "district_code": 112,
+      "province_code": 1,
+      "name": {
+        "en": "Kerabari Rural Municipality",
+        "np": "केराबारी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11204,
+      "district_code": 112,
+      "province_code": 1,
+      "name": {
+        "en": "Sundarharaicha Urban Municipality",
+        "np": "सुन्दरहरैंचा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11205,
+      "district_code": 112,
+      "province_code": 1,
+      "name": { "en": "Belbari Urban Municipality", "np": "बेलबारी नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11206,
+      "district_code": 112,
+      "province_code": 1,
+      "name": {
+        "en": "Kanepokhari Rural Municipality",
+        "np": "कानेपोखरी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11207,
+      "district_code": 112,
+      "province_code": 1,
+      "name": {
+        "en": "Pathari Shanishchare Urban Municipality",
+        "np": "पथरीशनिश्चरे नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11208,
+      "district_code": 112,
+      "province_code": 1,
+      "name": {
+        "en": "Urlabari Urban Municipality",
+        "np": "उर्लाबारी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11209,
+      "district_code": 112,
+      "province_code": 1,
+      "name": {
+        "en": "Ratuwamai Urban Municipality",
+        "np": "रतुवामाई नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11210,
+      "district_code": 112,
+      "province_code": 1,
+      "name": {
+        "en": "Sunwarshi Urban Municipality",
+        "np": "सुनवर्षी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11211,
+      "district_code": 112,
+      "province_code": 1,
+      "name": { "en": "Rangeli Urban Municipality", "np": "रंगेली नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11212,
+      "district_code": 112,
+      "province_code": 1,
+      "name": {
+        "en": "Gramthan Rural Municipality",
+        "np": "ग्रामथान गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11213,
+      "district_code": 112,
+      "province_code": 1,
+      "name": {
+        "en": "Budhiganga Rural Municipality",
+        "np": "बुढीगंगा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11214,
+      "district_code": 112,
+      "province_code": 1,
+      "name": {
+        "en": "Biratnagar Metropolitan City",
+        "np": "विराटनगर महानगरपालिका"
+      },
+      "type": "Metropolitan City"
+    },
+    {
+      "code": 11215,
+      "district_code": 112,
+      "province_code": 1,
+      "name": { "en": "Katahari Rural Municipality", "np": "कटहरी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11216,
+      "district_code": 112,
+      "province_code": 1,
+      "name": {
+        "en": "Dhanapalthan Rural Municipality",
+        "np": "धनपालथान गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11217,
+      "district_code": 112,
+      "province_code": 1,
+      "name": { "en": "Jahada Rural Municipality", "np": "जहदा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11301,
+      "district_code": 113,
+      "province_code": 1,
+      "name": {
+        "en": "Dharan Sub-Metropolitan City",
+        "np": "धरान उपमहानगरपालिका"
+      },
+      "type": "Sub-Metropolitan City"
+    },
+    {
+      "code": 11302,
+      "district_code": 113,
+      "province_code": 1,
+      "name": {
+        "en": "Barahachhetra Urban Municipality",
+        "np": "बराहक्षेत्र नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11303,
+      "district_code": 113,
+      "province_code": 1,
+      "name": { "en": "Koshi Rural Municipality", "np": "कोशी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11304,
+      "district_code": 113,
+      "province_code": 1,
+      "name": {
+        "en": "Bhokraha Narsingh Rural Municipality",
+        "np": "भोक्राहा नरसिंह गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11305,
+      "district_code": 113,
+      "province_code": 1,
+      "name": {
+        "en": "Ramdhuni Urban Municipality",
+        "np": "रामधुनी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11306,
+      "district_code": 113,
+      "province_code": 1,
+      "name": {
+        "en": "Itahari Sub-Metropolitan City",
+        "np": "ईटहरी उपमहानगरपालिका"
+      },
+      "type": "Sub-Metropolitan City"
+    },
+    {
+      "code": 11307,
+      "district_code": 113,
+      "province_code": 1,
+      "name": { "en": "Duhabi Urban Municipality", "np": "दुहबी नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11308,
+      "district_code": 113,
+      "province_code": 1,
+      "name": { "en": "Gadhi Rural Municipality", "np": "गढी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11309,
+      "district_code": 113,
+      "province_code": 1,
+      "name": { "en": "Inaruwa Urban Municipality", "np": "इनरुवा नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11310,
+      "district_code": 113,
+      "province_code": 1,
+      "name": {
+        "en": "Harinagar Rural Municipality",
+        "np": "हरिनगर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11311,
+      "district_code": 113,
+      "province_code": 1,
+      "name": {
+        "en": "Dewangunj Rural Municipality",
+        "np": "देवानगन्ज गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11312,
+      "district_code": 113,
+      "province_code": 1,
+      "name": { "en": "Barju Rural Municipality", "np": "बर्जु गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11401,
+      "district_code": 114,
+      "province_code": 1,
+      "name": { "en": "Belaka Urban Municipality", "np": "बेलका नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11402,
+      "district_code": 114,
+      "province_code": 1,
+      "name": {
+        "en": "Chaudandigadhi Urban Municipality",
+        "np": "चौदण्डीगढी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11403,
+      "district_code": 114,
+      "province_code": 1,
+      "name": {
+        "en": "Triyuga Urban Municipality",
+        "np": "त्रियुगा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11404,
+      "district_code": 114,
+      "province_code": 1,
+      "name": {
+        "en": "Rautamai Rural Municipality",
+        "np": "रौतामाई गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11405,
+      "district_code": 114,
+      "province_code": 1,
+      "name": {
+        "en": "Limchungbung Rural Municipality",
+        "np": "लिम्चुङबुङ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11406,
+      "district_code": 114,
+      "province_code": 1,
+      "name": { "en": "Tapli Rural Municipality", "np": "ताप्ली गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 11407,
+      "district_code": 114,
+      "province_code": 1,
+      "name": { "en": "Katari Urban Municipality", "np": "कटारी नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 11408,
+      "district_code": 114,
+      "province_code": 1,
+      "name": {
+        "en": "Udayapurgadhi Rural Municipality",
+        "np": "उदयपुरगढी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20101,
+      "district_code": 201,
+      "province_code": 2,
+      "name": {
+        "en": "Saptakoshi Urban Municipality",
+        "np": "सप्तकोशी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20102,
+      "district_code": 201,
+      "province_code": 2,
+      "name": {
+        "en": "Kanchanrup Urban Municipality",
+        "np": "कन्चनरुप नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20103,
+      "district_code": 201,
+      "province_code": 2,
+      "name": {
+        "en": "Agnisair Krishna Sabaran Rural Municipality",
+        "np": "अग्निसाइर कृष्णसवरन गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20104,
+      "district_code": 201,
+      "province_code": 2,
+      "name": { "en": "Rupani Rural Municipality", "np": "रुपनी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20105,
+      "district_code": 201,
+      "province_code": 2,
+      "name": {
+        "en": "Shambhunath Urban Municipality",
+        "np": "शम्भुनाथ नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20106,
+      "district_code": 201,
+      "province_code": 2,
+      "name": { "en": "Khadak Urban Municipality", "np": "खडक नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20107,
+      "district_code": 201,
+      "province_code": 2,
+      "name": {
+        "en": "Surunga Urban Municipality",
+        "np": "सुरुङ्गा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20108,
+      "district_code": 201,
+      "province_code": 2,
+      "name": {
+        "en": "Balan-Bihul Rural Municipality",
+        "np": "बलानबिहुल गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20109,
+      "district_code": 201,
+      "province_code": 2,
+      "name": {
+        "en": "Bode Barsain Urban Municipality",
+        "np": "बोदेबरसाईन नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20110,
+      "district_code": 201,
+      "province_code": 2,
+      "name": {
+        "en": "Dakneshwori Urban Municipality",
+        "np": "डाक्नेश्वरी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20111,
+      "district_code": 201,
+      "province_code": 2,
+      "name": { "en": "Rajgadh Rural Municipality", "np": "राजगढ गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20112,
+      "district_code": 201,
+      "province_code": 2,
+      "name": {
+        "en": "Bishnupur Rural Municipality",
+        "np": "बिष्णुपुर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20113,
+      "district_code": 201,
+      "province_code": 2,
+      "name": {
+        "en": "Rajbiraj Urban Municipality",
+        "np": "राजविराज नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20114,
+      "district_code": 201,
+      "province_code": 2,
+      "name": {
+        "en": "Mahadewa Rural Municipality",
+        "np": "महादेवा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20115,
+      "district_code": 201,
+      "province_code": 2,
+      "name": { "en": "Tirahut Rural Municipality", "np": "तिरहुत गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20116,
+      "district_code": 201,
+      "province_code": 2,
+      "name": {
+        "en": "Hanumannagar Kankalini Urban Municipality",
+        "np": "हनुमाननगर कङ्कालिनी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20117,
+      "district_code": 201,
+      "province_code": 2,
+      "name": {
+        "en": "Tilathi Koiladi Rural Municipality",
+        "np": "तिलाठी कोईलाडी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20118,
+      "district_code": 201,
+      "province_code": 2,
+      "name": {
+        "en": "Chhinnamasta Rural Municipality",
+        "np": "छिन्नमस्ता गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20201,
+      "district_code": 202,
+      "province_code": 2,
+      "name": { "en": "Lahan Urban Municipality", "np": "लहान नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20202,
+      "district_code": 202,
+      "province_code": 2,
+      "name": {
+        "en": "Dhangadhimai Urban Municipality",
+        "np": "धनगढीमाई नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20203,
+      "district_code": 202,
+      "province_code": 2,
+      "name": {
+        "en": "Golbazar Urban Municipality",
+        "np": "गोलबजार नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20204,
+      "district_code": 202,
+      "province_code": 2,
+      "name": {
+        "en": "Mirchaiya Urban Municipality",
+        "np": "मिर्चैया नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20205,
+      "district_code": 202,
+      "province_code": 2,
+      "name": {
+        "en": "Karjanha Urban Municipality",
+        "np": "कर्जन्हा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20206,
+      "district_code": 202,
+      "province_code": 2,
+      "name": {
+        "en": "Kalyanpur Urban Municipality",
+        "np": "कल्याणपुर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20207,
+      "district_code": 202,
+      "province_code": 2,
+      "name": { "en": "Naraha Rural Municipality", "np": "नरहा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20208,
+      "district_code": 202,
+      "province_code": 2,
+      "name": {
+        "en": "Bishnupur Rural Municipality",
+        "np": "बिष्णुपुर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20209,
+      "district_code": 202,
+      "province_code": 2,
+      "name": { "en": "Arnama Rural Municipality", "np": "अर्नमा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20210,
+      "district_code": 202,
+      "province_code": 2,
+      "name": {
+        "en": "Sukhipur Urban Municipality",
+        "np": "सुखीपुर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20211,
+      "district_code": 202,
+      "province_code": 2,
+      "name": {
+        "en": "Laxmipur Patari Rural Municipality",
+        "np": "लक्ष्मीपुर पतारी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20212,
+      "district_code": 202,
+      "province_code": 2,
+      "name": {
+        "en": "Sakhuwa Nankarkatti Rural Municipality",
+        "np": "सखुवा नान्कारकट्टी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20213,
+      "district_code": 202,
+      "province_code": 2,
+      "name": {
+        "en": "Bhagawanpur Rural Municipality",
+        "np": "भगवानपुर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20214,
+      "district_code": 202,
+      "province_code": 2,
+      "name": {
+        "en": "Nawarajpur Rural Municipality",
+        "np": "नवराजपुर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20215,
+      "district_code": 202,
+      "province_code": 2,
+      "name": {
+        "en": "Bariyarpatti Rural Municipality",
+        "np": "बरियारपट्टी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20216,
+      "district_code": 202,
+      "province_code": 2,
+      "name": { "en": "Aurahi Rural Municipality", "np": "औरही गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20217,
+      "district_code": 202,
+      "province_code": 2,
+      "name": { "en": "Siraha Urban Municipality", "np": "सिराहा नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20301,
+      "district_code": 203,
+      "province_code": 2,
+      "name": {
+        "en": "Ganeshman Charnath Urban Municipality",
+        "np": "गणेशमान चारनाथ नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20302,
+      "district_code": 203,
+      "province_code": 2,
+      "name": {
+        "en": "Dhanushadham Urban Municipality",
+        "np": "धनुषाधाम नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20303,
+      "district_code": 203,
+      "province_code": 2,
+      "name": { "en": "Mithila Urban Municipality", "np": "मिथिला नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20304,
+      "district_code": 203,
+      "province_code": 2,
+      "name": {
+        "en": "Bateshwor Rural Municipality",
+        "np": "बटेश्वर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20305,
+      "district_code": 203,
+      "province_code": 2,
+      "name": {
+        "en": "Chhireshwornath Urban Municipality",
+        "np": "क्षिरेश्वरनाथ नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20306,
+      "district_code": 203,
+      "province_code": 2,
+      "name": {
+        "en": "Laxminiya Rural Municipality",
+        "np": "लक्ष्मीनिया गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20307,
+      "district_code": 203,
+      "province_code": 2,
+      "name": {
+        "en": "Mithila Bihari Urban Municipality",
+        "np": "मिथिला बिहारी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20308,
+      "district_code": 203,
+      "province_code": 2,
+      "name": { "en": "Hansapur Urban Municipality", "np": "हंसपुर नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20309,
+      "district_code": 203,
+      "province_code": 2,
+      "name": { "en": "Sabaila Urban Municipality", "np": "सबैला नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20310,
+      "district_code": 203,
+      "province_code": 2,
+      "name": {
+        "en": "Shahidnagar Urban Municipality",
+        "np": "शहीदनगर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20311,
+      "district_code": 203,
+      "province_code": 2,
+      "name": { "en": "Kamala Urban Municipality", "np": "कमला नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20312,
+      "district_code": 203,
+      "province_code": 2,
+      "name": {
+        "en": "Janak Nandini Rural Municipality",
+        "np": "जनकनन्दिनी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20313,
+      "district_code": 203,
+      "province_code": 2,
+      "name": { "en": "Bideha Urban Municipality", "np": "बिदेह नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20314,
+      "district_code": 203,
+      "province_code": 2,
+      "name": { "en": "Aurahi Rural Municipality", "np": "औरही गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20315,
+      "district_code": 203,
+      "province_code": 2,
+      "name": {
+        "en": "Janakpurdham Sub-Metropolitan City",
+        "np": "जनकपुरधाम उपमहानगरपालिका"
+      },
+      "type": "Sub-Metropolitan City"
+    },
+    {
+      "code": 20316,
+      "district_code": 203,
+      "province_code": 2,
+      "name": { "en": "Dhanauji Rural Municipality", "np": "धनौजी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20317,
+      "district_code": 203,
+      "province_code": 2,
+      "name": { "en": "Nagarain Urban Municipality", "np": "नगराइन नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20318,
+      "district_code": 203,
+      "province_code": 2,
+      "name": {
+        "en": "Mukhiyapatti Musaharmiya Rural Municipality",
+        "np": "मुखियापट्टी मुसहरमिया गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20401,
+      "district_code": 204,
+      "province_code": 2,
+      "name": {
+        "en": "Bardibas Urban Municipality",
+        "np": "बर्दिबास नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20402,
+      "district_code": 204,
+      "province_code": 2,
+      "name": { "en": "Gaushala Urban Municipality", "np": "गौशाला नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20403,
+      "district_code": 204,
+      "province_code": 2,
+      "name": { "en": "Sonama Rural Municipality", "np": "सोनमा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20404,
+      "district_code": 204,
+      "province_code": 2,
+      "name": { "en": "Aurahi Urban Municipality", "np": "औरही नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20405,
+      "district_code": 204,
+      "province_code": 2,
+      "name": { "en": "Bhangaha Urban Municipality", "np": "भँगाहा नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20406,
+      "district_code": 204,
+      "province_code": 2,
+      "name": {
+        "en": "Loharpatti Urban Municipality",
+        "np": "लोहरपट्टी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20407,
+      "district_code": 204,
+      "province_code": 2,
+      "name": { "en": "Balawa Urban Municipality", "np": "बलवा नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20408,
+      "district_code": 204,
+      "province_code": 2,
+      "name": {
+        "en": "Ram Gopalpur Urban Municipality",
+        "np": "रामगोपालपुर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20409,
+      "district_code": 204,
+      "province_code": 2,
+      "name": { "en": "Samsi Rural Municipality", "np": "साम्सी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20410,
+      "district_code": 204,
+      "province_code": 2,
+      "name": {
+        "en": "Manara Shisawa Urban Municipality",
+        "np": "मनरा शिसवा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20411,
+      "district_code": 204,
+      "province_code": 2,
+      "name": { "en": "Ekadara Rural Municipality", "np": "एकडारा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20412,
+      "district_code": 204,
+      "province_code": 2,
+      "name": {
+        "en": "Mahottari Rural Municipality",
+        "np": "महोत्तरी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20413,
+      "district_code": 204,
+      "province_code": 2,
+      "name": { "en": "Pipara Rural Municipality", "np": "पिपरा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20414,
+      "district_code": 204,
+      "province_code": 2,
+      "name": {
+        "en": "Matihani Urban Municipality",
+        "np": "मटिहानी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20415,
+      "district_code": 204,
+      "province_code": 2,
+      "name": {
+        "en": "Jaleshwor Urban Municipality",
+        "np": "जलेश्वर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20501,
+      "district_code": 205,
+      "province_code": 2,
+      "name": {
+        "en": "Lalbandi Urban Municipality",
+        "np": "लालबन्दी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20502,
+      "district_code": 205,
+      "province_code": 2,
+      "name": { "en": "Hariwan Urban Municipality", "np": "हरिवन नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20503,
+      "district_code": 205,
+      "province_code": 2,
+      "name": { "en": "Bagmati Urban Municipality", "np": "बागमती नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20504,
+      "district_code": 205,
+      "province_code": 2,
+      "name": {
+        "en": "Barahathawa Urban Municipality",
+        "np": "बरहथवा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20505,
+      "district_code": 205,
+      "province_code": 2,
+      "name": { "en": "Haripur Urban Municipality", "np": "हरिपुर नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20506,
+      "district_code": 205,
+      "province_code": 2,
+      "name": {
+        "en": "Ishworpur Urban Municipality",
+        "np": "ईश्वरपुर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20507,
+      "district_code": 205,
+      "province_code": 2,
+      "name": {
+        "en": "Haripurwa Urban Municipality",
+        "np": "हरिपुर्वा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20508,
+      "district_code": 205,
+      "province_code": 2,
+      "name": { "en": "Parsa Rural Municipality", "np": "पर्सा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20509,
+      "district_code": 205,
+      "province_code": 2,
+      "name": {
+        "en": "Brahmapuri Rural Municipality",
+        "np": "ब्रह्मपुरी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20510,
+      "district_code": 205,
+      "province_code": 2,
+      "name": {
+        "en": "Chandranagar Rural Municipality",
+        "np": "चन्द्रनगर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20511,
+      "district_code": 205,
+      "province_code": 2,
+      "name": {
+        "en": "Kabilashi Urban Municipality",
+        "np": "कविलासी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20512,
+      "district_code": 205,
+      "province_code": 2,
+      "name": {
+        "en": "Chakraghatta Rural Municipality",
+        "np": "चक्रघट्टा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20513,
+      "district_code": 205,
+      "province_code": 2,
+      "name": {
+        "en": "Basbariya Rural Municipality",
+        "np": "बसबरिया गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20514,
+      "district_code": 205,
+      "province_code": 2,
+      "name": {
+        "en": "Dhanakaul Rural Municipality",
+        "np": "धनकौल गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20515,
+      "district_code": 205,
+      "province_code": 2,
+      "name": {
+        "en": "Ramnagar Rural Municipality",
+        "np": "रामनगर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20516,
+      "district_code": 205,
+      "province_code": 2,
+      "name": { "en": "Balara Urban Municipality", "np": "बलरा नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20517,
+      "district_code": 205,
+      "province_code": 2,
+      "name": { "en": "Godaita Urban Municipality", "np": "गोडैटा नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20518,
+      "district_code": 205,
+      "province_code": 2,
+      "name": { "en": "Bishnu Rural Municipality", "np": "विष्णु गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20519,
+      "district_code": 205,
+      "province_code": 2,
+      "name": { "en": "Kaudena Rural Municipality", "np": "कौडेना गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20520,
+      "district_code": 205,
+      "province_code": 2,
+      "name": {
+        "en": "Malangawa Urban Municipality",
+        "np": "मलंगवा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20601,
+      "district_code": 206,
+      "province_code": 2,
+      "name": {
+        "en": "Chandrapur Urban Municipality",
+        "np": "चन्द्रपुर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20602,
+      "district_code": 206,
+      "province_code": 2,
+      "name": { "en": "Gujara Urban Municipality", "np": "गुजरा नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20603,
+      "district_code": 206,
+      "province_code": 2,
+      "name": {
+        "en": "Phatuwa Bijayapur Urban Municipality",
+        "np": "फतुवा बिजयपुर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20604,
+      "district_code": 206,
+      "province_code": 2,
+      "name": {
+        "en": "Katahariya Urban Municipality",
+        "np": "कटहरिया नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20605,
+      "district_code": 206,
+      "province_code": 2,
+      "name": {
+        "en": "Brindaban Urban Municipality",
+        "np": "बृन्दावन नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20606,
+      "district_code": 206,
+      "province_code": 2,
+      "name": { "en": "Gadhimai Urban Municipality", "np": "गढीमाई नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20607,
+      "district_code": 206,
+      "province_code": 2,
+      "name": {
+        "en": "Madhav Narayan Urban Municipality",
+        "np": "माधवनारायण नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20608,
+      "district_code": 206,
+      "province_code": 2,
+      "name": { "en": "Garuda Urban Municipality", "np": "गरुडा नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20609,
+      "district_code": 206,
+      "province_code": 2,
+      "name": {
+        "en": "Dewahi Gonahi Urban Municipality",
+        "np": "देवाही गोनाही नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20610,
+      "district_code": 206,
+      "province_code": 2,
+      "name": {
+        "en": "Maulapur Urban Municipality",
+        "np": "मौलापुर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20611,
+      "district_code": 206,
+      "province_code": 2,
+      "name": {
+        "en": "Boudhimai Urban Municipality",
+        "np": "बौधीमाई नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20612,
+      "district_code": 206,
+      "province_code": 2,
+      "name": { "en": "Paroha Urban Municipality", "np": "परोहा नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20613,
+      "district_code": 206,
+      "province_code": 2,
+      "name": { "en": "Rajpur Urban Municipality", "np": "राजपुर नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20614,
+      "district_code": 206,
+      "province_code": 2,
+      "name": {
+        "en": "Yamunamai Rural Municipality",
+        "np": "यमुनामाई गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20615,
+      "district_code": 206,
+      "province_code": 2,
+      "name": {
+        "en": "Durga Bhagawati Rural Municipality",
+        "np": "दुर्गा भगवती गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20616,
+      "district_code": 206,
+      "province_code": 2,
+      "name": { "en": "Rajdevi Urban Municipality", "np": "राजदेवी नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20617,
+      "district_code": 206,
+      "province_code": 2,
+      "name": { "en": "Gaur Urban Municipality", "np": "गौर नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20618,
+      "district_code": 206,
+      "province_code": 2,
+      "name": { "en": "Ishanath Urban Municipality", "np": "ईशनाथ नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20701,
+      "district_code": 207,
+      "province_code": 2,
+      "name": { "en": "Nijagadh Urban Municipality", "np": "निजगढ नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20702,
+      "district_code": 207,
+      "province_code": 2,
+      "name": { "en": "Kolhabi Urban Municipality", "np": "कोल्हवी नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20703,
+      "district_code": 207,
+      "province_code": 2,
+      "name": {
+        "en": "Jitpur Simara Sub-Metropolitan City",
+        "np": "जीतपुर सिमरा उपमहानगरपालिका"
+      },
+      "type": "Sub-Metropolitan City"
+    },
+    {
+      "code": 20704,
+      "district_code": 207,
+      "province_code": 2,
+      "name": {
+        "en": "Parawanipur Rural Municipality",
+        "np": "परवानीपुर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20705,
+      "district_code": 207,
+      "province_code": 2,
+      "name": {
+        "en": "Prasauni Rural Municipality",
+        "np": "प्रसौनी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20706,
+      "district_code": 207,
+      "province_code": 2,
+      "name": {
+        "en": "Bishrampur Rural Municipality",
+        "np": "विश्रामपुर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20707,
+      "district_code": 207,
+      "province_code": 2,
+      "name": { "en": "Pheta Rural Municipality", "np": "फेटा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20708,
+      "district_code": 207,
+      "province_code": 2,
+      "name": {
+        "en": "Kalaiya Sub-Metropolitan City",
+        "np": "कलैया उपमहानगरपालिका"
+      },
+      "type": "Sub-Metropolitan City"
+    },
+    {
+      "code": 20709,
+      "district_code": 207,
+      "province_code": 2,
+      "name": {
+        "en": "Karaiyamai Rural Municipality",
+        "np": "करैयामाई गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20710,
+      "district_code": 207,
+      "province_code": 2,
+      "name": {
+        "en": "Baragadhi Rural Municipality",
+        "np": "बारागढी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20711,
+      "district_code": 207,
+      "province_code": 2,
+      "name": {
+        "en": "Aadarsha Kotwal Rural Municipality",
+        "np": "आदर्श कोटवाल गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20712,
+      "district_code": 207,
+      "province_code": 2,
+      "name": {
+        "en": "Simroungadh Urban Municipality",
+        "np": "सिम्रौनगढ नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20713,
+      "district_code": 207,
+      "province_code": 2,
+      "name": {
+        "en": "Pacharauta Urban Municipality",
+        "np": "पचरौता नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20714,
+      "district_code": 207,
+      "province_code": 2,
+      "name": {
+        "en": "Mahagadhimai Urban Municipality",
+        "np": "महागढीमाई नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20715,
+      "district_code": 207,
+      "province_code": 2,
+      "name": { "en": "Devtal Rural Municipality", "np": "देवताल गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20716,
+      "district_code": 207,
+      "province_code": 2,
+      "name": { "en": "Subarna Rural Municipality", "np": "सुवर्ण गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20801,
+      "district_code": 208,
+      "province_code": 2,
+      "name": { "en": "Thori Rural Municipality", "np": "ठोरी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20802,
+      "district_code": 208,
+      "province_code": 2,
+      "name": {
+        "en": "Jirabhawani Rural Municipality",
+        "np": "जिराभवानी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20803,
+      "district_code": 208,
+      "province_code": 2,
+      "name": {
+        "en": "Jagarnathpur Rural Municipality",
+        "np": "जगरनाथपुर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20804,
+      "district_code": 208,
+      "province_code": 2,
+      "name": {
+        "en": "Paterwa Sugauli Rural Municipality",
+        "np": "पटेर्वा सुगौली गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20805,
+      "district_code": 208,
+      "province_code": 2,
+      "name": {
+        "en": "Sakhuwa Prasauni Rural Municipality",
+        "np": "सखुवा प्रसौनी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20806,
+      "district_code": 208,
+      "province_code": 2,
+      "name": {
+        "en": "Parsagadhi Urban Municipality",
+        "np": "पर्सागढी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20807,
+      "district_code": 208,
+      "province_code": 2,
+      "name": {
+        "en": "Birgunj Metropolitan City",
+        "np": "बिरगन्ज महानगरपालिका"
+      },
+      "type": "Metropolitan City"
+    },
+    {
+      "code": 20808,
+      "district_code": 208,
+      "province_code": 2,
+      "name": {
+        "en": "Bahudarmai Urban Municipality",
+        "np": "बहुदरमाई नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20809,
+      "district_code": 208,
+      "province_code": 2,
+      "name": {
+        "en": "Pokhariya Urban Municipality",
+        "np": "पोखरिया नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 20810,
+      "district_code": 208,
+      "province_code": 2,
+      "name": {
+        "en": "Kalikamai Rural Municipality",
+        "np": "कालिकामाई गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20811,
+      "district_code": 208,
+      "province_code": 2,
+      "name": { "en": "Dhobini Rural Municipality", "np": "धोबीनी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20812,
+      "district_code": 208,
+      "province_code": 2,
+      "name": {
+        "en": "Chhipaharmai Rural Municipality",
+        "np": "छिपहरमाई गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20813,
+      "district_code": 208,
+      "province_code": 2,
+      "name": {
+        "en": "Pakaha Mainpur Rural Municipality",
+        "np": "पकाहा मैनपुर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 20814,
+      "district_code": 208,
+      "province_code": 2,
+      "name": {
+        "en": "Bindabasini Rural Municipality",
+        "np": "बिन्दवासिनी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30101,
+      "district_code": 301,
+      "province_code": 3,
+      "name": {
+        "en": "Gaurishankar Rural Municipality",
+        "np": "गौरीशंकर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30102,
+      "district_code": 301,
+      "province_code": 3,
+      "name": { "en": "Bigu Rural Municipality", "np": "बिगु गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30103,
+      "district_code": 301,
+      "province_code": 3,
+      "name": {
+        "en": "Kalinchowk Rural Municipality",
+        "np": "कालिन्चोक गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30104,
+      "district_code": 301,
+      "province_code": 3,
+      "name": {
+        "en": "Baiteshwor Rural Municipality",
+        "np": "बैतेश्वर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30105,
+      "district_code": 301,
+      "province_code": 3,
+      "name": { "en": "Jiri Urban Municipality", "np": "जिरी नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30106,
+      "district_code": 301,
+      "province_code": 3,
+      "name": {
+        "en": "Tamakoshi Rural Municipality",
+        "np": "तामाकोशी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30107,
+      "district_code": 301,
+      "province_code": 3,
+      "name": { "en": "Melung Rural Municipality", "np": "मेलुङ्ग गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30108,
+      "district_code": 301,
+      "province_code": 3,
+      "name": { "en": "Shailung Rural Municipality", "np": "शैलुङ गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30109,
+      "district_code": 301,
+      "province_code": 3,
+      "name": {
+        "en": "Bhimeshwor Urban Municipality",
+        "np": "भीमेश्वर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30201,
+      "district_code": 302,
+      "province_code": 3,
+      "name": {
+        "en": "Bhotekoshi Rural Municipality",
+        "np": "भोटेकोशी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30202,
+      "district_code": 302,
+      "province_code": 3,
+      "name": { "en": "Jugal Rural Municipality", "np": "जुगल गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30203,
+      "district_code": 302,
+      "province_code": 3,
+      "name": {
+        "en": "Panchpokhari Thangpal Rural Municipality",
+        "np": "पाँचपोखरी थाङपाल गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30204,
+      "district_code": 302,
+      "province_code": 3,
+      "name": {
+        "en": "Helambu Rural Municipality",
+        "np": "हेलम्बु गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30205,
+      "district_code": 302,
+      "province_code": 3,
+      "name": {
+        "en": "Melanchi Urban Municipality",
+        "np": "मेलम्ची नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30206,
+      "district_code": 302,
+      "province_code": 3,
+      "name": {
+        "en": "Indrawoti Rural Municipality",
+        "np": "इन्द्रावती गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30207,
+      "district_code": 302,
+      "province_code": 3,
+      "name": {
+        "en": "Choutara Sangachowkgadhi Urban Municipality",
+        "np": "चौतारा साँगाचोकगढी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30208,
+      "district_code": 302,
+      "province_code": 3,
+      "name": { "en": "Balephi Rural Municipality", "np": "बलेफी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30209,
+      "district_code": 302,
+      "province_code": 3,
+      "name": {
+        "en": "Bahrabise Urban Municipality",
+        "np": "बाह्रबिसे नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30210,
+      "district_code": 302,
+      "province_code": 3,
+      "name": {
+        "en": "Tripurasundari Rural Municipality",
+        "np": "त्रिपुरासुन्दरी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30211,
+      "district_code": 302,
+      "province_code": 3,
+      "name": {
+        "en": "Lisankhu Pakhar Rural Municipality",
+        "np": "लिसंखुपाखर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30212,
+      "district_code": 302,
+      "province_code": 3,
+      "name": {
+        "en": "Sunkoshi Rural Municipality",
+        "np": "सुनकोशी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30301,
+      "district_code": 303,
+      "province_code": 3,
+      "name": {
+        "en": "Gosaikunda Rural Municipality",
+        "np": "गोसाईकुण्ड गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30302,
+      "district_code": 303,
+      "province_code": 3,
+      "name": {
+        "en": "Aamachhodingmo Rural Municipality",
+        "np": "आमाछोदिङमो गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30303,
+      "district_code": 303,
+      "province_code": 3,
+      "name": {
+        "en": "Uttargaya Rural Municipality",
+        "np": "उत्तरगया गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30304,
+      "district_code": 303,
+      "province_code": 3,
+      "name": {
+        "en": "Shuva Kalika Rural Municipality",
+        "np": "शुभकालिका गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30305,
+      "district_code": 303,
+      "province_code": 3,
+      "name": {
+        "en": "Naukunda Rural Municipality",
+        "np": "नौकुण्ड गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30401,
+      "district_code": 304,
+      "province_code": 3,
+      "name": {
+        "en": "Rubi Valley Rural Municipality",
+        "np": "रुबी भ्याली गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30402,
+      "district_code": 304,
+      "province_code": 3,
+      "name": {
+        "en": "Khaniyabas Rural Municipality",
+        "np": "खनियाबास गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30403,
+      "district_code": 304,
+      "province_code": 3,
+      "name": {
+        "en": "Ganga Jamuna Rural Municipality",
+        "np": "गङ्गाजमुना गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30404,
+      "district_code": 304,
+      "province_code": 3,
+      "name": {
+        "en": "Tripurasundari Rural Municipality",
+        "np": "त्रिपुरासुन्दरी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30405,
+      "district_code": 304,
+      "province_code": 3,
+      "name": {
+        "en": "Netrawati Dabjong Rural Municipality",
+        "np": "नेत्रावती डबजोङ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30406,
+      "district_code": 304,
+      "province_code": 3,
+      "name": {
+        "en": "Nilkhantha Urban Municipality",
+        "np": "नीलकण्ठ नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30407,
+      "district_code": 304,
+      "province_code": 3,
+      "name": {
+        "en": "Jwalamukhi Rural Municipality",
+        "np": "ज्वालामुखी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30408,
+      "district_code": 304,
+      "province_code": 3,
+      "name": {
+        "en": "Siddhalek Rural Municipality",
+        "np": "सिद्धलेक गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30409,
+      "district_code": 304,
+      "province_code": 3,
+      "name": {
+        "en": "Benighat Rorang Rural Municipality",
+        "np": "बेनीघाट रोराङ्ग गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30410,
+      "district_code": 304,
+      "province_code": 3,
+      "name": { "en": "Gajuri Rural Municipality", "np": "गजुरी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30411,
+      "district_code": 304,
+      "province_code": 3,
+      "name": { "en": "Galchhi Rural Municipality", "np": "गल्छी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30412,
+      "district_code": 304,
+      "province_code": 3,
+      "name": { "en": "Thakre Rural Municipality", "np": "थाक्रे गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30413,
+      "district_code": 304,
+      "province_code": 3,
+      "name": {
+        "en": "Dhunibenshi Urban Municipality",
+        "np": "धुनीबेंशी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30501,
+      "district_code": 305,
+      "province_code": 3,
+      "name": {
+        "en": "Dupcheshwor Rural Municipality",
+        "np": "दुप्चेश्वर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30502,
+      "district_code": 305,
+      "province_code": 3,
+      "name": { "en": "Tadi Rural Municipality", "np": "तादी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30503,
+      "district_code": 305,
+      "province_code": 3,
+      "name": {
+        "en": "Suryagadhi Rural Municipality",
+        "np": "सूर्यगढी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30504,
+      "district_code": 305,
+      "province_code": 3,
+      "name": { "en": "Bidur Urban Municipality", "np": "बिदुर नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30505,
+      "district_code": 305,
+      "province_code": 3,
+      "name": {
+        "en": "Kispang Rural Municipality",
+        "np": "किस्पाङ्ग गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30506,
+      "district_code": 305,
+      "province_code": 3,
+      "name": { "en": "Myagang Rural Municipality", "np": "म्यगङ गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30507,
+      "district_code": 305,
+      "province_code": 3,
+      "name": {
+        "en": "Tarakeshwor Rural Municipality",
+        "np": "तारकेश्वर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30508,
+      "district_code": 305,
+      "province_code": 3,
+      "name": {
+        "en": "Belkotgadhi Urban Municipality",
+        "np": "बेलकोटगढी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30509,
+      "district_code": 305,
+      "province_code": 3,
+      "name": { "en": "Likhu Rural Municipality", "np": "लिखु गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30510,
+      "district_code": 305,
+      "province_code": 3,
+      "name": {
+        "en": "Panchakanya Rural Municipality",
+        "np": "पन्चकन्या गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30511,
+      "district_code": 305,
+      "province_code": 3,
+      "name": {
+        "en": "Shivapuri Rural Municipality",
+        "np": "शिवपुरी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30512,
+      "district_code": 305,
+      "province_code": 3,
+      "name": { "en": "Kakani Rural Municipality", "np": "ककनी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30601,
+      "district_code": 306,
+      "province_code": 3,
+      "name": {
+        "en": "Shankharapur Urban Municipality",
+        "np": "शङ्खरापुर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30602,
+      "district_code": 306,
+      "province_code": 3,
+      "name": {
+        "en": "Kageshwori Manahara Urban Municipality",
+        "np": "कागेश्वरी मनहरा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30603,
+      "district_code": 306,
+      "province_code": 3,
+      "name": {
+        "en": "Gokarneshwor Urban Municipality",
+        "np": "गोकर्णेश्वर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30604,
+      "district_code": 306,
+      "province_code": 3,
+      "name": {
+        "en": "Budhanilkhantha Urban Municipality",
+        "np": "बुढानिलकण्ठ नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30605,
+      "district_code": 306,
+      "province_code": 3,
+      "name": { "en": "Tokha Urban Municipality", "np": "टोखा नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30606,
+      "district_code": 306,
+      "province_code": 3,
+      "name": {
+        "en": "Tarakeshwor Urban Municipality",
+        "np": "तारकेश्वर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30607,
+      "district_code": 306,
+      "province_code": 3,
+      "name": {
+        "en": "Nagarjun Urban Municipality",
+        "np": "नागार्जुन नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30608,
+      "district_code": 306,
+      "province_code": 3,
+      "name": {
+        "en": "Kathmandu Metropolitan City",
+        "np": "काठमाण्डौ महानगरपालिका"
+      },
+      "type": "Metropolitan City"
+    },
+    {
+      "code": 30609,
+      "district_code": 306,
+      "province_code": 3,
+      "name": {
+        "en": "Kirtipur Urban Municipality",
+        "np": "किर्तिपुर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30610,
+      "district_code": 306,
+      "province_code": 3,
+      "name": {
+        "en": "Chandragiri Urban Municipality",
+        "np": "चन्द्रागिरी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30611,
+      "district_code": 306,
+      "province_code": 3,
+      "name": {
+        "en": "Dakshinkali Urban Municipality",
+        "np": "दक्षिणकाली नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30701,
+      "district_code": 307,
+      "province_code": 3,
+      "name": {
+        "en": "Changunarayan Urban Municipality",
+        "np": "चाँगुनारायण नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30702,
+      "district_code": 307,
+      "province_code": 3,
+      "name": {
+        "en": "Bhaktapur Urban Municipality",
+        "np": "भक्तपुर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30703,
+      "district_code": 307,
+      "province_code": 3,
+      "name": {
+        "en": "Madhyapur Thimi Urban Municipality",
+        "np": "मध्यपुर थिमी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30704,
+      "district_code": 307,
+      "province_code": 3,
+      "name": {
+        "en": "Suryabinayak Urban Municipality",
+        "np": "सूर्यबिनायक नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30801,
+      "district_code": 308,
+      "province_code": 3,
+      "name": {
+        "en": "Mahalaxmi Urban Municipality",
+        "np": "महालक्ष्मी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30802,
+      "district_code": 308,
+      "province_code": 3,
+      "name": {
+        "en": "Lalitpur Metropolitan City",
+        "np": "ललितपुर महानगरपालिका"
+      },
+      "type": "Metropolitan City"
+    },
+    {
+      "code": 30803,
+      "district_code": 308,
+      "province_code": 3,
+      "name": {
+        "en": "Godawari Urban Municipality",
+        "np": "गोदावरी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30804,
+      "district_code": 308,
+      "province_code": 3,
+      "name": {
+        "en": "Konjyosom Rural Municipality",
+        "np": "कोन्ज्योसोम गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30805,
+      "district_code": 308,
+      "province_code": 3,
+      "name": {
+        "en": "Mahankal Rural Municipality",
+        "np": "महाङ्काल गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30806,
+      "district_code": 308,
+      "province_code": 3,
+      "name": {
+        "en": "Bagmati Rural Municipality",
+        "np": "बाग्मती गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30901,
+      "district_code": 309,
+      "province_code": 3,
+      "name": {
+        "en": "Chauri Deurali Rural Municipality",
+        "np": "चौरीदेउराली गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30902,
+      "district_code": 309,
+      "province_code": 3,
+      "name": { "en": "Bhumlu Rural Municipality", "np": "भुम्रु गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30903,
+      "district_code": 309,
+      "province_code": 3,
+      "name": {
+        "en": "Mandan Deupur Urban Municipality",
+        "np": "मण्डन देउपुर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30904,
+      "district_code": 309,
+      "province_code": 3,
+      "name": { "en": "Banepa Urban Municipality", "np": "बनेपा नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30905,
+      "district_code": 309,
+      "province_code": 3,
+      "name": {
+        "en": "Dhulikhel Urban Municipality",
+        "np": "धुलिखेल नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30906,
+      "district_code": 309,
+      "province_code": 3,
+      "name": {
+        "en": "Panchkhal Urban Municipality",
+        "np": "पाँचखाल नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30907,
+      "district_code": 309,
+      "province_code": 3,
+      "name": { "en": "Temal Rural Municipality", "np": "तेमाल गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30908,
+      "district_code": 309,
+      "province_code": 3,
+      "name": {
+        "en": "Namobuddha Urban Municipality",
+        "np": "नमोबुद्ध नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30909,
+      "district_code": 309,
+      "province_code": 3,
+      "name": { "en": "Panauti Urban Municipality", "np": "पनौती नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 30910,
+      "district_code": 309,
+      "province_code": 3,
+      "name": {
+        "en": "Bethanchowk Rural Municipality",
+        "np": "बेथानचोक गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30911,
+      "district_code": 309,
+      "province_code": 3,
+      "name": { "en": "Roshi Rural Municipality", "np": "रोशी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30912,
+      "district_code": 309,
+      "province_code": 3,
+      "name": {
+        "en": "Mahabharat Rural Municipality",
+        "np": "महाभारत गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 30913,
+      "district_code": 309,
+      "province_code": 3,
+      "name": {
+        "en": "Khanikhola Rural Municipality",
+        "np": "खानीखोला गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31001,
+      "district_code": 310,
+      "province_code": 3,
+      "name": {
+        "en": "Umakunda Rural Municipality",
+        "np": "उमाकुण्ड गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31002,
+      "district_code": 310,
+      "province_code": 3,
+      "name": {
+        "en": "Gokulganga Rural Municipality",
+        "np": "गोकुलगंगा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31003,
+      "district_code": 310,
+      "province_code": 3,
+      "name": {
+        "en": "Likhu Tamakoshi Rural Municipality",
+        "np": "लिखु तामाकोशी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31004,
+      "district_code": 310,
+      "province_code": 3,
+      "name": {
+        "en": "Ramechhap Urban Municipality",
+        "np": "रामेछाप नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 31005,
+      "district_code": 310,
+      "province_code": 3,
+      "name": { "en": "Manthali Urban Municipality", "np": "मन्थली नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 31006,
+      "district_code": 310,
+      "province_code": 3,
+      "name": {
+        "en": "Khandadevi Rural Municipality",
+        "np": "खाँडादेवी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31007,
+      "district_code": 310,
+      "province_code": 3,
+      "name": {
+        "en": "Doramba Rural Municipality",
+        "np": "दोरम्बा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31008,
+      "district_code": 310,
+      "province_code": 3,
+      "name": {
+        "en": "Sunapati Rural Municipality",
+        "np": "सुनापती गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31101,
+      "district_code": 311,
+      "province_code": 3,
+      "name": { "en": "Dudhouli Urban Municipality", "np": "दुधौली नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 31102,
+      "district_code": 311,
+      "province_code": 3,
+      "name": { "en": "Phikkal Rural Municipality", "np": "फिक्कल गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31103,
+      "district_code": 311,
+      "province_code": 3,
+      "name": {
+        "en": "Tinpatan Rural Municipality",
+        "np": "तीनपाटन गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31104,
+      "district_code": 311,
+      "province_code": 3,
+      "name": {
+        "en": "Golanjor Rural Municipality",
+        "np": "गोलन्जोर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31105,
+      "district_code": 311,
+      "province_code": 3,
+      "name": {
+        "en": "Kamalamai Urban Municipality",
+        "np": "कमलामाई नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 31106,
+      "district_code": 311,
+      "province_code": 3,
+      "name": {
+        "en": "Sunkoshi Rural Municipality",
+        "np": "सुनकोशी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31107,
+      "district_code": 311,
+      "province_code": 3,
+      "name": {
+        "en": "Ghyanglekha Rural Municipality",
+        "np": "ध्याङलेख गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31108,
+      "district_code": 311,
+      "province_code": 3,
+      "name": { "en": "Marin Rural Municipality", "np": "मरिण गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31109,
+      "district_code": 311,
+      "province_code": 3,
+      "name": {
+        "en": "Hariharpurgadhi Rural Municipality",
+        "np": "हरिहरपुरगढी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31201,
+      "district_code": 312,
+      "province_code": 3,
+      "name": {
+        "en": "Indrasarowar Rural Municipality",
+        "np": "इन्द्रसरोवर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31202,
+      "district_code": 312,
+      "province_code": 3,
+      "name": { "en": "Thaha Urban Municipality", "np": "थाहा नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 31203,
+      "district_code": 312,
+      "province_code": 3,
+      "name": { "en": "Kailash Rural Municipality", "np": "कैलाश गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31204,
+      "district_code": 312,
+      "province_code": 3,
+      "name": {
+        "en": "Raksirang Rural Municipality",
+        "np": "राक्सिराङ्ग गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31205,
+      "district_code": 312,
+      "province_code": 3,
+      "name": { "en": "Manahari Rural Municipality", "np": "मनहरी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31206,
+      "district_code": 312,
+      "province_code": 3,
+      "name": {
+        "en": "Hetauda Sub-Metropolitan City",
+        "np": "हेटौडा उपमहानगरपालिका"
+      },
+      "type": "Sub-Metropolitan City"
+    },
+    {
+      "code": 31207,
+      "district_code": 312,
+      "province_code": 3,
+      "name": {
+        "en": "Bhimphedi Rural Municipality",
+        "np": "भीमफेदी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31208,
+      "district_code": 312,
+      "province_code": 3,
+      "name": {
+        "en": "Makawanpurgadhi Rural Municipality",
+        "np": "मकवानपुरगढी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31209,
+      "district_code": 312,
+      "province_code": 3,
+      "name": { "en": "Bakaiya Rural Municipality", "np": "बकैया गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31210,
+      "district_code": 312,
+      "province_code": 3,
+      "name": {
+        "en": "Bagmati Rural Municipality",
+        "np": "बाग्मती गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31301,
+      "district_code": 313,
+      "province_code": 3,
+      "name": { "en": "Rapti Urban Municipality", "np": "राप्ती नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 31302,
+      "district_code": 313,
+      "province_code": 3,
+      "name": { "en": "Kalika Urban Municipality", "np": "कालिका नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 31303,
+      "district_code": 313,
+      "province_code": 3,
+      "name": {
+        "en": "Ichchha Kamana Rural Municipality",
+        "np": "इच्छाकामना गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 31304,
+      "district_code": 313,
+      "province_code": 3,
+      "name": {
+        "en": "Bharatpur Metropolitan City",
+        "np": "भरतपुर महानगरपालिका"
+      },
+      "type": "Metropolitan City"
+    },
+    {
+      "code": 31305,
+      "district_code": 313,
+      "province_code": 3,
+      "name": {
+        "en": "Ratnanagar Urban Municipality",
+        "np": "रत्ननगर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 31306,
+      "district_code": 313,
+      "province_code": 3,
+      "name": {
+        "en": "Khairahani Urban Municipality",
+        "np": "खैरहनी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 31307,
+      "district_code": 313,
+      "province_code": 3,
+      "name": { "en": "Madi Urban Municipality", "np": "मादी नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40101,
+      "district_code": 401,
+      "province_code": 4,
+      "name": {
+        "en": "Chumanubri Rural Municipality",
+        "np": "चुमनुब्री गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40102,
+      "district_code": 401,
+      "province_code": 4,
+      "name": {
+        "en": "Ajirkot Rural Municipality",
+        "np": "अजिरकोट गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40103,
+      "district_code": 401,
+      "province_code": 4,
+      "name": {
+        "en": "Barpak Sulikot Rural Municipality",
+        "np": "बारपाक सुलिकोट गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40104,
+      "district_code": 401,
+      "province_code": 4,
+      "name": { "en": "Dharche Rural Municipality", "np": "धार्चे गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40105,
+      "district_code": 401,
+      "province_code": 4,
+      "name": {
+        "en": "Aarughat Rural Municipality",
+        "np": "आरुघाट गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40106,
+      "district_code": 401,
+      "province_code": 4,
+      "name": {
+        "en": "Bhimsenthapa Rural Municipality",
+        "np": "भिमसेनथापा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40107,
+      "district_code": 401,
+      "province_code": 4,
+      "name": {
+        "en": "Siranchowk Rural Municipality",
+        "np": "सिरानचोक गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40108,
+      "district_code": 401,
+      "province_code": 4,
+      "name": {
+        "en": "Palungtar Urban Municipality",
+        "np": "पालुङ्गटार नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40109,
+      "district_code": 401,
+      "province_code": 4,
+      "name": { "en": "Gorkha Urban Municipality", "np": "गोरखा नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40110,
+      "district_code": 401,
+      "province_code": 4,
+      "name": {
+        "en": "Shahid Lakhan Rural Municipality",
+        "np": "शहीद लखन गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40111,
+      "district_code": 401,
+      "province_code": 4,
+      "name": { "en": "Gandaki Rural Municipality", "np": "गण्डकी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40201,
+      "district_code": 402,
+      "province_code": 4,
+      "name": {
+        "en": "Narpa Bhumi Rural Municipality",
+        "np": "नार्पाभूमि गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40202,
+      "district_code": 402,
+      "province_code": 4,
+      "name": {
+        "en": "Manang Ngisyang Rural Municipality",
+        "np": "मनाङ ङिस्याङ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40203,
+      "district_code": 402,
+      "province_code": 4,
+      "name": { "en": "Chame Rural Municipality", "np": "चामे गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40204,
+      "district_code": 402,
+      "province_code": 4,
+      "name": { "en": "Nason Rural Municipality", "np": "नासोँ गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40301,
+      "district_code": 403,
+      "province_code": 4,
+      "name": {
+        "en": "Lo Ghekar Damodarkunda Rural Municipality",
+        "np": "लो-घेकर दामोदरकुण्ड गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40302,
+      "district_code": 403,
+      "province_code": 4,
+      "name": {
+        "en": "Gharpajhong Rural Municipality",
+        "np": "घरपझोङ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40303,
+      "district_code": 403,
+      "province_code": 4,
+      "name": {
+        "en": "Varagung Muktichhetra Rural Municipality",
+        "np": "वारागुङ मुक्तिक्षेत्र गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40304,
+      "district_code": 403,
+      "province_code": 4,
+      "name": {
+        "en": "Lomanthang Rural Municipality",
+        "np": "लोमन्थाङ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40305,
+      "district_code": 403,
+      "province_code": 4,
+      "name": { "en": "Thasang Rural Municipality", "np": "थासाङ गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40401,
+      "district_code": 404,
+      "province_code": 4,
+      "name": {
+        "en": "Annapurna Rural Municipality",
+        "np": "अन्नपूर्ण गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40402,
+      "district_code": 404,
+      "province_code": 4,
+      "name": {
+        "en": "Raghuganga Rural Municipality",
+        "np": "रघुगंगा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40403,
+      "district_code": 404,
+      "province_code": 4,
+      "name": {
+        "en": "Dhawalagiri Rural Municipality",
+        "np": "धवलागिरी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40404,
+      "district_code": 404,
+      "province_code": 4,
+      "name": { "en": "Malika Rural Municipality", "np": "मालिका गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40405,
+      "district_code": 404,
+      "province_code": 4,
+      "name": { "en": "Mangala Rural Municipality", "np": "मंगला गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40406,
+      "district_code": 404,
+      "province_code": 4,
+      "name": { "en": "Beni Urban Municipality", "np": "बेनी नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40501,
+      "district_code": 405,
+      "province_code": 4,
+      "name": { "en": "Madi Rural Municipality", "np": "मादी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40502,
+      "district_code": 405,
+      "province_code": 4,
+      "name": {
+        "en": "Machhapuchchhre Rural Municipality",
+        "np": "माछापुच्छ्रे गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40503,
+      "district_code": 405,
+      "province_code": 4,
+      "name": {
+        "en": "Annapurna Rural Municipality",
+        "np": "अन्नपूर्ण गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40504,
+      "district_code": 405,
+      "province_code": 4,
+      "name": { "en": "Pokhara Metropolitan City", "np": "पोखरा महानगरपालिका" },
+      "type": "Metropolitan City"
+    },
+    {
+      "code": 40505,
+      "district_code": 405,
+      "province_code": 4,
+      "name": { "en": "Rupa Rural Municipality", "np": "रूपा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40601,
+      "district_code": 406,
+      "province_code": 4,
+      "name": { "en": "Dordi Rural Municipality", "np": "दोर्दी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40602,
+      "district_code": 406,
+      "province_code": 4,
+      "name": {
+        "en": "Marshyangdi Rural Municipality",
+        "np": "मर्स्याङ्गदी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40603,
+      "district_code": 406,
+      "province_code": 4,
+      "name": {
+        "en": "Kwhola Sothar Rural Municipality",
+        "np": "क्ब्होला सोथार गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40604,
+      "district_code": 406,
+      "province_code": 4,
+      "name": {
+        "en": "Madhya Nepal Urban Municipality",
+        "np": "मध्यनेपाल नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40605,
+      "district_code": 406,
+      "province_code": 4,
+      "name": {
+        "en": "Bensi Shahar Urban Municipality",
+        "np": "बेंसीशहर नगरापालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40606,
+      "district_code": 406,
+      "province_code": 4,
+      "name": {
+        "en": "Sundarbazar Urban Municipality",
+        "np": "सुन्दरबजार नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40607,
+      "district_code": 406,
+      "province_code": 4,
+      "name": { "en": "Rainas Urban Municipality", "np": "राईनास नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40608,
+      "district_code": 406,
+      "province_code": 4,
+      "name": {
+        "en": "Dudhapokhari Rural Municipality",
+        "np": "दुधपोखरी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40701,
+      "district_code": 407,
+      "province_code": 4,
+      "name": { "en": "Bhanu Urban Municipality", "np": "भानु नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40702,
+      "district_code": 407,
+      "province_code": 4,
+      "name": { "en": "Byas Urban Municipality", "np": "व्यास नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40703,
+      "district_code": 407,
+      "province_code": 4,
+      "name": {
+        "en": "Myagde Rural Municipality",
+        "np": "म्याग्दे गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40704,
+      "district_code": 407,
+      "province_code": 4,
+      "name": {
+        "en": "Shuklagandaki Urban Municipality",
+        "np": "शुक्लागण्डकी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40705,
+      "district_code": 407,
+      "province_code": 4,
+      "name": { "en": "Bhimad Urban Municipality", "np": "भिमाद नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40706,
+      "district_code": 407,
+      "province_code": 4,
+      "name": {
+        "en": "Ghiring Rural Municipality",
+        "np": "घिरिङ्ग गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40707,
+      "district_code": 407,
+      "province_code": 4,
+      "name": {
+        "en": "Rhishing Rural Municipality",
+        "np": "ऋषिङ्ग गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40708,
+      "district_code": 407,
+      "province_code": 4,
+      "name": { "en": "Devghat Rural Municipality", "np": "देवघाट गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40709,
+      "district_code": 407,
+      "province_code": 4,
+      "name": {
+        "en": "Bandipur Rural Municipality",
+        "np": "बन्दिपुर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40710,
+      "district_code": 407,
+      "province_code": 4,
+      "name": {
+        "en": "Aanbu Khaireni Rural Municipality",
+        "np": "आँबुखैरेनी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40801,
+      "district_code": 408,
+      "province_code": 4,
+      "name": {
+        "en": "Gaidakot Urban Municipality",
+        "np": "गैडाकोट नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40802,
+      "district_code": 408,
+      "province_code": 4,
+      "name": {
+        "en": "Bulingtar Rural Municipality",
+        "np": "बुलिङ्गटार गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40803,
+      "district_code": 408,
+      "province_code": 4,
+      "name": {
+        "en": "Baudikali Rural Municipality",
+        "np": "बौदीकाली गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40804,
+      "district_code": 408,
+      "province_code": 4,
+      "name": {
+        "en": "Hupsekot Rural Municipality",
+        "np": "हुप्सेकोट गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40805,
+      "district_code": 408,
+      "province_code": 4,
+      "name": {
+        "en": "Devchuli Urban Municipality",
+        "np": "देवचुली नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40806,
+      "district_code": 408,
+      "province_code": 4,
+      "name": {
+        "en": "Kawasoti Urban Municipality",
+        "np": "कावासोती नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40807,
+      "district_code": 408,
+      "province_code": 4,
+      "name": {
+        "en": "Madhya Bindu Urban Municipality",
+        "np": "मध्यबिन्दु नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40808,
+      "district_code": 408,
+      "province_code": 4,
+      "name": {
+        "en": "Binayi Tribeni Rural Municipality",
+        "np": "बिनयी त्रिवेणी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40901,
+      "district_code": 409,
+      "province_code": 4,
+      "name": {
+        "en": "Putalibazar Urban Municipality",
+        "np": "पुतलीबजार नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40902,
+      "district_code": 409,
+      "province_code": 4,
+      "name": {
+        "en": "Phedikhola Rural Municipality",
+        "np": "फेदीखोला गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40903,
+      "district_code": 409,
+      "province_code": 4,
+      "name": {
+        "en": "Aandhikhola Rural Municipality",
+        "np": "आँधिखोला गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40904,
+      "district_code": 409,
+      "province_code": 4,
+      "name": {
+        "en": "Arjun Choupari Rural Municipality",
+        "np": "अर्जुन चौपारी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40905,
+      "district_code": 409,
+      "province_code": 4,
+      "name": { "en": "Bhirkot Urban Municipality", "np": "भीरकोट नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40906,
+      "district_code": 409,
+      "province_code": 4,
+      "name": { "en": "Biruwa Rural Municipality", "np": "बिरुवा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40907,
+      "district_code": 409,
+      "province_code": 4,
+      "name": { "en": "Harinas Rural Municipality", "np": "हरिनास गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 40908,
+      "district_code": 409,
+      "province_code": 4,
+      "name": {
+        "en": "Chapakot Urban Municipality",
+        "np": "चापाकोट नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40909,
+      "district_code": 409,
+      "province_code": 4,
+      "name": { "en": "Walling Urban Municipality", "np": "वालिङ्ग नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40910,
+      "district_code": 409,
+      "province_code": 4,
+      "name": { "en": "Galyang Urban Municipality", "np": "गल्याङ नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 40911,
+      "district_code": 409,
+      "province_code": 4,
+      "name": {
+        "en": "Kaligandaki Rural Municipality",
+        "np": "कालीगण्डकी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 41001,
+      "district_code": 410,
+      "province_code": 4,
+      "name": { "en": "Modi Rural Municipality", "np": "मोदी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 41002,
+      "district_code": 410,
+      "province_code": 4,
+      "name": { "en": "Jaljala Rural Municipality", "np": "जलजला गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 41003,
+      "district_code": 410,
+      "province_code": 4,
+      "name": { "en": "Kushma Urban Municipality", "np": "कुश्मा नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 41004,
+      "district_code": 410,
+      "province_code": 4,
+      "name": { "en": "Phalebas Urban Municipality", "np": "फलेबास नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 41005,
+      "district_code": 410,
+      "province_code": 4,
+      "name": {
+        "en": "Mahashila Rural Municipality",
+        "np": "महाशिला गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 41006,
+      "district_code": 410,
+      "province_code": 4,
+      "name": { "en": "Bihadi Rural Municipality", "np": "बिहादी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 41007,
+      "district_code": 410,
+      "province_code": 4,
+      "name": { "en": "Paiyu Rural Municipality", "np": "पैयुँ गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 41101,
+      "district_code": 411,
+      "province_code": 4,
+      "name": {
+        "en": "Baglung Urban Municipality",
+        "np": "बाग्लुङ्ग नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 41102,
+      "district_code": 411,
+      "province_code": 4,
+      "name": {
+        "en": "Kathekhola Rural Municipality",
+        "np": "काठेखोला गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 41103,
+      "district_code": 411,
+      "province_code": 4,
+      "name": {
+        "en": "Tarakhola Rural Municipality",
+        "np": "ताराखोला गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 41104,
+      "district_code": 411,
+      "province_code": 4,
+      "name": {
+        "en": "Tamankhola Rural Municipality",
+        "np": "तमानखोला गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 41105,
+      "district_code": 411,
+      "province_code": 4,
+      "name": {
+        "en": "Dhorpatan Urban Municipality",
+        "np": "ढोरपाटन नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 41106,
+      "district_code": 411,
+      "province_code": 4,
+      "name": {
+        "en": "Nisikhola Rural Municipality",
+        "np": "निसीखोला गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 41107,
+      "district_code": 411,
+      "province_code": 4,
+      "name": { "en": "Badigad Rural Municipality", "np": "बडिगाड गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 41108,
+      "district_code": 411,
+      "province_code": 4,
+      "name": { "en": "Galkot Urban Municipality", "np": "गल्कोट नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 41109,
+      "district_code": 411,
+      "province_code": 4,
+      "name": { "en": "Bareng Rural Municipality", "np": "बरेङ गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 41110,
+      "district_code": 411,
+      "province_code": 4,
+      "name": { "en": "Jaimuni Urban Municipality", "np": "जैमुनी नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50101,
+      "district_code": 501,
+      "province_code": 5,
+      "name": {
+        "en": "Putha Uttanganga Rural Municipality",
+        "np": "पुथा उत्तरगंगा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50102,
+      "district_code": 501,
+      "province_code": 5,
+      "name": { "en": "Sisne Rural Municipality", "np": "सिस्ने गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50103,
+      "district_code": 501,
+      "province_code": 5,
+      "name": { "en": "Bhoome Rural Municipality", "np": "भूमे गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50201,
+      "district_code": 502,
+      "province_code": 5,
+      "name": {
+        "en": "Sunchhahari Rural Municipality",
+        "np": "सुनछहरी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50202,
+      "district_code": 502,
+      "province_code": 5,
+      "name": { "en": "Thawang Rural Municipality", "np": "थबाङ्ग गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50203,
+      "district_code": 502,
+      "province_code": 5,
+      "name": {
+        "en": "Pariwartan Rural Municipality",
+        "np": "परिवर्तन गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50204,
+      "district_code": 502,
+      "province_code": 5,
+      "name": {
+        "en": "Gangadev Rural Municipality",
+        "np": "गंगादेव गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50205,
+      "district_code": 502,
+      "province_code": 5,
+      "name": { "en": "Madi Rural Municipality", "np": "मादी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50206,
+      "district_code": 502,
+      "province_code": 5,
+      "name": {
+        "en": "Tribeni Rural Municipality",
+        "np": "त्रिवेणी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50207,
+      "district_code": 502,
+      "province_code": 5,
+      "name": { "en": "Rolpa Urban Municipality", "np": "रोल्पा नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50208,
+      "district_code": 502,
+      "province_code": 5,
+      "name": {
+        "en": "Runtigadhi Rural Municipality",
+        "np": "रुन्टीगढी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50209,
+      "district_code": 502,
+      "province_code": 5,
+      "name": {
+        "en": "Sunil Smriti Rural Municipality",
+        "np": "सुनिल स्मृति गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50210,
+      "district_code": 502,
+      "province_code": 5,
+      "name": {
+        "en": "Lungri Rural Municipality",
+        "np": "लुङ्ग्री गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50301,
+      "district_code": 503,
+      "province_code": 5,
+      "name": {
+        "en": "Gaumukhi Rural Municipality",
+        "np": "गौमुखी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50302,
+      "district_code": 503,
+      "province_code": 5,
+      "name": {
+        "en": "Naubahini Rural Municipality",
+        "np": "नौबहिनी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50303,
+      "district_code": 503,
+      "province_code": 5,
+      "name": {
+        "en": "Jhimaruk Rural Municipality",
+        "np": "झिमरुक गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50304,
+      "district_code": 503,
+      "province_code": 5,
+      "name": { "en": "Pyuthan Urban Municipality", "np": "प्यूठान नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50305,
+      "district_code": 503,
+      "province_code": 5,
+      "name": {
+        "en": "Sworgadwari Urban Municipality",
+        "np": "स्वर्गद्वारी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50306,
+      "district_code": 503,
+      "province_code": 5,
+      "name": {
+        "en": "Mandavi Rural Municipality",
+        "np": "माण्डवी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50307,
+      "district_code": 503,
+      "province_code": 5,
+      "name": {
+        "en": "Mallarani Rural Municipality",
+        "np": "मल्लरानी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50308,
+      "district_code": 503,
+      "province_code": 5,
+      "name": {
+        "en": "Aairawati Rural Municipality",
+        "np": "ऐरावती गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50309,
+      "district_code": 503,
+      "province_code": 5,
+      "name": {
+        "en": "Sarumarani Rural Municipality",
+        "np": "सरुमारानी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50401,
+      "district_code": 504,
+      "province_code": 5,
+      "name": {
+        "en": "Kali Gandaki Rural Municipality",
+        "np": "काली गण्डकी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50402,
+      "district_code": 504,
+      "province_code": 5,
+      "name": {
+        "en": "Satyawoti Rural Municipality",
+        "np": "सत्यवती गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50403,
+      "district_code": 504,
+      "province_code": 5,
+      "name": {
+        "en": "Chandrakot Rural Municipality",
+        "np": "चन्द्रकोट गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50404,
+      "district_code": 504,
+      "province_code": 5,
+      "name": { "en": "Musikot Urban Municipality", "np": "मुसिकोट नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50405,
+      "district_code": 504,
+      "province_code": 5,
+      "name": { "en": "Isma Rural Municipality", "np": "ईस्मा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50406,
+      "district_code": 504,
+      "province_code": 5,
+      "name": { "en": "Malika Rural Municipality", "np": "मालिका गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50407,
+      "district_code": 504,
+      "province_code": 5,
+      "name": { "en": "Madane Rural Municipality", "np": "मदाने गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50408,
+      "district_code": 504,
+      "province_code": 5,
+      "name": {
+        "en": "Dhurkot Rural Municipality",
+        "np": "धुर्कोट गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50409,
+      "district_code": 504,
+      "province_code": 5,
+      "name": {
+        "en": "Resunga Urban Municipality",
+        "np": "रेसुङ्गा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50410,
+      "district_code": 504,
+      "province_code": 5,
+      "name": {
+        "en": "Gulmi Durbar Rural Municipality",
+        "np": "गुल्मी दरबार गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50411,
+      "district_code": 504,
+      "province_code": 5,
+      "name": {
+        "en": "Chhatrakot Rural Municipality",
+        "np": "छत्रकोट गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50412,
+      "district_code": 504,
+      "province_code": 5,
+      "name": {
+        "en": "Ruruchhetra Rural Municipality",
+        "np": "रुरुक्षेत्र गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50501,
+      "district_code": 505,
+      "province_code": 5,
+      "name": {
+        "en": "Chhatradev Rural Municipality",
+        "np": "छत्रदेव गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50502,
+      "district_code": 505,
+      "province_code": 5,
+      "name": {
+        "en": "Malarani Rural Municipality",
+        "np": "मालारानी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50503,
+      "district_code": 505,
+      "province_code": 5,
+      "name": {
+        "en": "Bhumikasthan Urban Municipality",
+        "np": "भूमिकास्थान नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50504,
+      "district_code": 505,
+      "province_code": 5,
+      "name": {
+        "en": "Sandhikharka Urban Municipality",
+        "np": "सन्धिखर्क नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50505,
+      "district_code": 505,
+      "province_code": 5,
+      "name": { "en": "Panini Rural Municipality", "np": "पाणिनी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50506,
+      "district_code": 505,
+      "province_code": 5,
+      "name": {
+        "en": "Shitaganga Urban Municipality",
+        "np": "शितगंगा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50601,
+      "district_code": 506,
+      "province_code": 5,
+      "name": { "en": "Rampur Urban Municipality", "np": "रामपुर नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50602,
+      "district_code": 506,
+      "province_code": 5,
+      "name": {
+        "en": "Purbakhola Rural Municipality",
+        "np": "पूर्वखोला गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50603,
+      "district_code": 506,
+      "province_code": 5,
+      "name": { "en": "Rambha Rural Municipality", "np": "रम्भा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50604,
+      "district_code": 506,
+      "province_code": 5,
+      "name": {
+        "en": "Baganaskali Rural Municipality",
+        "np": "बगनासकाली गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50605,
+      "district_code": 506,
+      "province_code": 5,
+      "name": { "en": "Tansen Urban Municipality", "np": "तानसेन नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50606,
+      "district_code": 506,
+      "province_code": 5,
+      "name": {
+        "en": "Ribdikot Rural Municipality",
+        "np": "रिब्दीकोट गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50607,
+      "district_code": 506,
+      "province_code": 5,
+      "name": {
+        "en": "Rainadevi Chhahara Rural Municipality",
+        "np": "रैनादेवी छहरा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50608,
+      "district_code": 506,
+      "province_code": 5,
+      "name": { "en": "Tinau Rural Municipality", "np": "तिनाउ गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50609,
+      "district_code": 506,
+      "province_code": 5,
+      "name": {
+        "en": "Mathagadhi Rural Municipality",
+        "np": "माथागढी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50610,
+      "district_code": 506,
+      "province_code": 5,
+      "name": { "en": "Nisdi Rural Municipality", "np": "निस्दी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50701,
+      "district_code": 507,
+      "province_code": 5,
+      "name": {
+        "en": "Bardaghat Urban Municipality",
+        "np": "बर्दघाट नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50702,
+      "district_code": 507,
+      "province_code": 5,
+      "name": { "en": "Sunawal Urban Municipality", "np": "सुनवल नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50703,
+      "district_code": 507,
+      "province_code": 5,
+      "name": {
+        "en": "Ramgram Urban Municipality",
+        "np": "रामग्राम नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50704,
+      "district_code": 507,
+      "province_code": 5,
+      "name": {
+        "en": "Palhinandan Rural Municipality",
+        "np": "पाल्हीनन्दन गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50705,
+      "district_code": 507,
+      "province_code": 5,
+      "name": { "en": "Sarawal Rural Municipality", "np": "सरावल गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50706,
+      "district_code": 507,
+      "province_code": 5,
+      "name": {
+        "en": "Pratapapur Rural Municipality",
+        "np": "प्रतापुर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50707,
+      "district_code": 507,
+      "province_code": 5,
+      "name": { "en": "Susta Rural Municipality", "np": "सुस्ता गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50801,
+      "district_code": 508,
+      "province_code": 5,
+      "name": { "en": "Devdaha Urban Municipality", "np": "देबदह नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50802,
+      "district_code": 508,
+      "province_code": 5,
+      "name": {
+        "en": "Butwal Sub-Metropolitan City",
+        "np": "बुटवल उपमहानगरपालिका"
+      },
+      "type": "Sub-Metropolitan City"
+    },
+    {
+      "code": 50803,
+      "district_code": 508,
+      "province_code": 5,
+      "name": {
+        "en": "Sainamaina Urban Municipality",
+        "np": "सैनामैना नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50804,
+      "district_code": 508,
+      "province_code": 5,
+      "name": { "en": "Kanchan Rural Municipality", "np": "कञ्चन गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50805,
+      "district_code": 508,
+      "province_code": 5,
+      "name": {
+        "en": "Gaidahawa Rural Municipality",
+        "np": "गैडहवा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50806,
+      "district_code": 508,
+      "province_code": 5,
+      "name": {
+        "en": "Suddhodhan Rural Municipality",
+        "np": "सुद्धोधन गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50807,
+      "district_code": 508,
+      "province_code": 5,
+      "name": { "en": "Siyari Rural Municipality", "np": "सियारी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50808,
+      "district_code": 508,
+      "province_code": 5,
+      "name": {
+        "en": "Tilottama Urban Municipality",
+        "np": "तिलोत्तमा नगरापालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50809,
+      "district_code": 508,
+      "province_code": 5,
+      "name": {
+        "en": "Om Satiya Rural Municipality",
+        "np": "ओमसतिया गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50810,
+      "district_code": 508,
+      "province_code": 5,
+      "name": { "en": "Rohini Rural Municipality", "np": "रोहिणी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50811,
+      "district_code": 508,
+      "province_code": 5,
+      "name": {
+        "en": "Siddharthanagar Urban Municipality",
+        "np": "सिद्धार्थनगर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50812,
+      "district_code": 508,
+      "province_code": 5,
+      "name": {
+        "en": "Mayadevi Rural Municipality",
+        "np": "मायादेवी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50813,
+      "district_code": 508,
+      "province_code": 5,
+      "name": {
+        "en": "Lumbini Sanskritik Urban Municipality",
+        "np": "लुम्बिनी साँस्कृतिक नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50814,
+      "district_code": 508,
+      "province_code": 5,
+      "name": {
+        "en": "Kotahimai Rural Municipality",
+        "np": "कोटहीमाई गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50815,
+      "district_code": 508,
+      "province_code": 5,
+      "name": {
+        "en": "Sammarimai Rural Municipality",
+        "np": "सम्मरीमाई गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50816,
+      "district_code": 508,
+      "province_code": 5,
+      "name": {
+        "en": "Marchawari Rural Municipality",
+        "np": "मर्चवारी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50901,
+      "district_code": 509,
+      "province_code": 5,
+      "name": {
+        "en": "Banganga Urban Municipality",
+        "np": "बाणगंगा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50902,
+      "district_code": 509,
+      "province_code": 5,
+      "name": {
+        "en": "Buddhabhumi Urban Municipality",
+        "np": "बुद्धभूमी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50903,
+      "district_code": 509,
+      "province_code": 5,
+      "name": { "en": "Shivaraj Urban Municipality", "np": "शिवराज नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50904,
+      "district_code": 509,
+      "province_code": 5,
+      "name": {
+        "en": "Bijayanagar Rural Municipality",
+        "np": "बिजयनगर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50905,
+      "district_code": 509,
+      "province_code": 5,
+      "name": {
+        "en": "Krishnanagar Urban Municipality",
+        "np": "कृष्णनगर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50906,
+      "district_code": 509,
+      "province_code": 5,
+      "name": {
+        "en": "Maharajganj Urban Municipality",
+        "np": "महाराजगन्ज नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50907,
+      "district_code": 509,
+      "province_code": 5,
+      "name": {
+        "en": "Kapilbastu Urban Municipality",
+        "np": "कपिलबस्तु नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 50908,
+      "district_code": 509,
+      "province_code": 5,
+      "name": {
+        "en": "Yasodhara Rural Municipality",
+        "np": "यसोधरा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50909,
+      "district_code": 509,
+      "province_code": 5,
+      "name": {
+        "en": "Mayadevi Rural Municipality",
+        "np": "मायादेवी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 50910,
+      "district_code": 509,
+      "province_code": 5,
+      "name": {
+        "en": "Shuddhodhan Rural Municipality",
+        "np": "शुद्धोधन गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 51001,
+      "district_code": 510,
+      "province_code": 5,
+      "name": {
+        "en": "Bangalachuli Rural Municipality",
+        "np": "बंगलाचुली गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 51002,
+      "district_code": 510,
+      "province_code": 5,
+      "name": {
+        "en": "Ghorahi Sub-Metropolitan City",
+        "np": "घोराही उपमहानगरपालिका"
+      },
+      "type": "Sub-Metropolitan City"
+    },
+    {
+      "code": 51003,
+      "district_code": 510,
+      "province_code": 5,
+      "name": {
+        "en": "Tulsipur Sub-Metropolitan City",
+        "np": "तुल्सीपुर उपमहानगरपालिका"
+      },
+      "type": "Sub-Metropolitan City"
+    },
+    {
+      "code": 51004,
+      "district_code": 510,
+      "province_code": 5,
+      "name": {
+        "en": "Shantinagar Rural Municipality",
+        "np": "शान्तिनगर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 51005,
+      "district_code": 510,
+      "province_code": 5,
+      "name": { "en": "Babai Rural Municipality", "np": "बबई गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 51006,
+      "district_code": 510,
+      "province_code": 5,
+      "name": {
+        "en": "Dangisharan Rural Municipality",
+        "np": "दंगीशरण गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 51007,
+      "district_code": 510,
+      "province_code": 5,
+      "name": { "en": "Lamahi Urban Municipality", "np": "लमही नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 51008,
+      "district_code": 510,
+      "province_code": 5,
+      "name": { "en": "Rapti Rural Municipality", "np": "राप्ती गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 51009,
+      "district_code": 510,
+      "province_code": 5,
+      "name": { "en": "Gadhawa Rural Municipality", "np": "गढवा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 51010,
+      "district_code": 510,
+      "province_code": 5,
+      "name": { "en": "Rajpur Rural Municipality", "np": "राजपुर गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 51101,
+      "district_code": 511,
+      "province_code": 5,
+      "name": {
+        "en": "Rapti Sonari Rural Municipality",
+        "np": "राप्तीसोनारी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 51102,
+      "district_code": 511,
+      "province_code": 5,
+      "name": {
+        "en": "Kohalpur Urban Municipality",
+        "np": "कोहलपुर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 51103,
+      "district_code": 511,
+      "province_code": 5,
+      "name": {
+        "en": "Baijanath Rural Municipality",
+        "np": "बैजनाथ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 51104,
+      "district_code": 511,
+      "province_code": 5,
+      "name": { "en": "Khajura Rural Municipality", "np": "खजुरा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 51105,
+      "district_code": 511,
+      "province_code": 5,
+      "name": { "en": "Janaki Rural Municipality", "np": "जानकी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 51106,
+      "district_code": 511,
+      "province_code": 5,
+      "name": {
+        "en": "Nepalganj Sub-Metropolitan City",
+        "np": "नेपालगञ्ज उपमहानगरपालिका"
+      },
+      "type": "Sub-Metropolitan City"
+    },
+    {
+      "code": 51107,
+      "district_code": 511,
+      "province_code": 5,
+      "name": { "en": "Duduwa Rural Municipality", "np": "डुडुवा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 51108,
+      "district_code": 511,
+      "province_code": 5,
+      "name": {
+        "en": "Narainapur Rural Municipality",
+        "np": "नरैनापुर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 51201,
+      "district_code": 512,
+      "province_code": 5,
+      "name": {
+        "en": "Bansgadhi Urban Municipality",
+        "np": "बाँसगढी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 51202,
+      "district_code": 512,
+      "province_code": 5,
+      "name": {
+        "en": "Barbardiya Urban Municipality",
+        "np": "बारबर्दिया नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 51203,
+      "district_code": 512,
+      "province_code": 5,
+      "name": {
+        "en": "Thakurbaba Urban Municipality",
+        "np": "ठाकुरबाबा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 51204,
+      "district_code": 512,
+      "province_code": 5,
+      "name": { "en": "Geruwa Rural Municipality", "np": "गेरुवा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 51205,
+      "district_code": 512,
+      "province_code": 5,
+      "name": { "en": "Rajapur Urban Municipality", "np": "राजापुर नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 51206,
+      "district_code": 512,
+      "province_code": 5,
+      "name": { "en": "Madhuwan Urban Municipality", "np": "मधुवन नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 51207,
+      "district_code": 512,
+      "province_code": 5,
+      "name": {
+        "en": "Gulariya Urban Municipality",
+        "np": "गुलरिया नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 51208,
+      "district_code": 512,
+      "province_code": 5,
+      "name": {
+        "en": "Badhaiyatal Rural Municipality",
+        "np": "बढैयाताल गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60101,
+      "district_code": 601,
+      "province_code": 6,
+      "name": {
+        "en": "Dolpo Buddha Rural Municipality",
+        "np": "डोल्पो बुद्ध गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60102,
+      "district_code": 601,
+      "province_code": 6,
+      "name": {
+        "en": "Shey Phoksundo Rural Municipality",
+        "np": "शे फोक्सुण्डो गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60103,
+      "district_code": 601,
+      "province_code": 6,
+      "name": {
+        "en": "Jagadulla Rural Municipality",
+        "np": "जगदुल्ला गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60104,
+      "district_code": 601,
+      "province_code": 6,
+      "name": {
+        "en": "Mudkechula Rural Municipality",
+        "np": "मुड्केचुला गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60105,
+      "district_code": 601,
+      "province_code": 6,
+      "name": {
+        "en": "Tripurasundari Urban Municipality",
+        "np": "त्रिपुरासुन्दरी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60106,
+      "district_code": 601,
+      "province_code": 6,
+      "name": {
+        "en": "Thulibheri Urban Municipality",
+        "np": "ठूलीभेरी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60107,
+      "district_code": 601,
+      "province_code": 6,
+      "name": { "en": "Kaike Rural Municipality", "np": "काइके गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60108,
+      "district_code": 601,
+      "province_code": 6,
+      "name": {
+        "en": "Chharka Tangsong Rural Municipality",
+        "np": "छार्का ताङसोङ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60201,
+      "district_code": 602,
+      "province_code": 6,
+      "name": {
+        "en": "Mugumakarmarog Rural Municipality",
+        "np": "मुगुमकार्मारोग गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60202,
+      "district_code": 602,
+      "province_code": 6,
+      "name": {
+        "en": "Chhayanath Rara Urban Municipality",
+        "np": "छायाँनाथ रारा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60203,
+      "district_code": 602,
+      "province_code": 6,
+      "name": { "en": "Soru Rural Municipality", "np": "सोरु गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60204,
+      "district_code": 602,
+      "province_code": 6,
+      "name": { "en": "Khatyad Rural Municipality", "np": "खत्याड गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60301,
+      "district_code": 603,
+      "province_code": 6,
+      "name": {
+        "en": "Chankheli Rural Municipality",
+        "np": "चंखेली गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60302,
+      "district_code": 603,
+      "province_code": 6,
+      "name": {
+        "en": "Kharpunath Rural Municipality",
+        "np": "खार्पुनाथ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60303,
+      "district_code": 603,
+      "province_code": 6,
+      "name": { "en": "Simkot Rural Municipality", "np": "सिमकोट गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60304,
+      "district_code": 603,
+      "province_code": 6,
+      "name": { "en": "Namkha Rural Municipality", "np": "नाम्खा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60305,
+      "district_code": 603,
+      "province_code": 6,
+      "name": {
+        "en": "Sarkegad Rural Municipality",
+        "np": "सर्केगाड गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60306,
+      "district_code": 603,
+      "province_code": 6,
+      "name": {
+        "en": "Adanchuli Rural Municipality",
+        "np": "अदानचुली गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60307,
+      "district_code": 603,
+      "province_code": 6,
+      "name": {
+        "en": "Tanjakot Rural Municipality",
+        "np": "ताँजाकोट गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60401,
+      "district_code": 604,
+      "province_code": 6,
+      "name": {
+        "en": "Patarasi Rural Municipality",
+        "np": "पातारासी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60402,
+      "district_code": 604,
+      "province_code": 6,
+      "name": {
+        "en": "Kanaka Sundari Rural Municipality",
+        "np": "कनकासुन्दरी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60403,
+      "district_code": 604,
+      "province_code": 6,
+      "name": { "en": "Sinja Rural Municipality", "np": "सिंजा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60404,
+      "district_code": 604,
+      "province_code": 6,
+      "name": {
+        "en": "Chandannath Urban Municipality",
+        "np": "चन्दननाथ नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60405,
+      "district_code": 604,
+      "province_code": 6,
+      "name": {
+        "en": "Guthichaur Rural Municipality",
+        "np": "गुठिचौर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60406,
+      "district_code": 604,
+      "province_code": 6,
+      "name": {
+        "en": "Tatopani Rural Municipality",
+        "np": "तातोपानी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60407,
+      "district_code": 604,
+      "province_code": 6,
+      "name": { "en": "Tila Rural Municipality", "np": "तिला गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60408,
+      "district_code": 604,
+      "province_code": 6,
+      "name": { "en": "Hima Rural Municipality", "np": "हिमा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60501,
+      "district_code": 605,
+      "province_code": 6,
+      "name": { "en": "Palata Rural Municipality", "np": "पलाता गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60502,
+      "district_code": 605,
+      "province_code": 6,
+      "name": {
+        "en": "Pachal Jharana Rural Municipality",
+        "np": "पचालझरना गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60503,
+      "district_code": 605,
+      "province_code": 6,
+      "name": { "en": "Raskot Urban Municipality", "np": "रास्कोट नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60504,
+      "district_code": 605,
+      "province_code": 6,
+      "name": {
+        "en": "Sanni Tribeni Rural Municipality",
+        "np": "सान्नी त्रिवेणी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60505,
+      "district_code": 605,
+      "province_code": 6,
+      "name": {
+        "en": "Naraharinath Rural Municipality",
+        "np": "नरहरिनाथ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60506,
+      "district_code": 605,
+      "province_code": 6,
+      "name": {
+        "en": "Khandachakra Urban Municipality",
+        "np": "खाँडाचक्र नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60507,
+      "district_code": 605,
+      "province_code": 6,
+      "name": {
+        "en": "Tilagupha Urban Municipality",
+        "np": "तिलागुफा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60508,
+      "district_code": 605,
+      "province_code": 6,
+      "name": { "en": "Mahawai Rural Municipality", "np": "महावै गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60509,
+      "district_code": 605,
+      "province_code": 6,
+      "name": {
+        "en": "Shuva Kalika Rural Municipality",
+        "np": "शुभकालिका गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60601,
+      "district_code": 606,
+      "province_code": 6,
+      "name": { "en": "Naumule Rural Municipality", "np": "नौमुले गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60602,
+      "district_code": 606,
+      "province_code": 6,
+      "name": { "en": "Mahabu Rural Municipality", "np": "महाबु गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60603,
+      "district_code": 606,
+      "province_code": 6,
+      "name": { "en": "Bhairabi Rural Municipality", "np": "भैरवी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60604,
+      "district_code": 606,
+      "province_code": 6,
+      "name": {
+        "en": "Thantikandh Rural Municipality",
+        "np": "ठाँटीकाँध गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60605,
+      "district_code": 606,
+      "province_code": 6,
+      "name": { "en": "Aathbis Urban Municipality", "np": "आठबीस नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60606,
+      "district_code": 606,
+      "province_code": 6,
+      "name": {
+        "en": "Chamunda Bindrasaini Urban Municipality",
+        "np": "चामुण्डा बिन्द्रासैनी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60607,
+      "district_code": 606,
+      "province_code": 6,
+      "name": { "en": "Dullu Urban Municipality", "np": "दुल्लु नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60608,
+      "district_code": 606,
+      "province_code": 6,
+      "name": { "en": "Narayan Urban Municipality", "np": "नारायण नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60609,
+      "district_code": 606,
+      "province_code": 6,
+      "name": {
+        "en": "Bhagawatimai Rural Municipality",
+        "np": "भगवतीमाई गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60610,
+      "district_code": 606,
+      "province_code": 6,
+      "name": {
+        "en": "Dungeshwor Rural Municipality",
+        "np": "डुङ्गेश्वर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60611,
+      "district_code": 606,
+      "province_code": 6,
+      "name": { "en": "Gurans Rural Municipality", "np": "गुराँस गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60701,
+      "district_code": 607,
+      "province_code": 6,
+      "name": {
+        "en": "Barekot Rural Municipality",
+        "np": "बारेकोट गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60702,
+      "district_code": 607,
+      "province_code": 6,
+      "name": { "en": "Kushe Rural Municipality", "np": "कुशे गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60703,
+      "district_code": 607,
+      "province_code": 6,
+      "name": {
+        "en": "Junichande Rural Municipality",
+        "np": "जुनीचाँदे गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60704,
+      "district_code": 607,
+      "province_code": 6,
+      "name": {
+        "en": "Chhedagad Urban Municipality",
+        "np": "छेडागाड नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60705,
+      "district_code": 607,
+      "province_code": 6,
+      "name": {
+        "en": "Shivalaya Rural Municipality",
+        "np": "शिवालय गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60706,
+      "district_code": 607,
+      "province_code": 6,
+      "name": {
+        "en": "Bheri Malika Urban Municipality",
+        "np": "भेरी मालिका नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60707,
+      "district_code": 607,
+      "province_code": 6,
+      "name": { "en": "Nalgad Urban Municipality", "np": "नलगाड नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60801,
+      "district_code": 608,
+      "province_code": 6,
+      "name": {
+        "en": "Aathabisakot Urban Municipality",
+        "np": "आठबिसकोट नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60802,
+      "district_code": 608,
+      "province_code": 6,
+      "name": {
+        "en": "Sanibheri Rural Municipality",
+        "np": "सानीभेरी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60803,
+      "district_code": 608,
+      "province_code": 6,
+      "name": {
+        "en": "Banphikot Rural Municipality",
+        "np": "बाँफिकोट गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60804,
+      "district_code": 608,
+      "province_code": 6,
+      "name": { "en": "Musikot Urban Municipality", "np": "मुसिकोट नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60805,
+      "district_code": 608,
+      "province_code": 6,
+      "name": {
+        "en": "Tribeni Rural Municipality",
+        "np": "त्रिवेणी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60806,
+      "district_code": 608,
+      "province_code": 6,
+      "name": {
+        "en": "Chaurjahari Urban Municipality",
+        "np": "चौरजहारी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60901,
+      "district_code": 609,
+      "province_code": 6,
+      "name": { "en": "Darma Rural Municipality", "np": "दार्मा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60902,
+      "district_code": 609,
+      "province_code": 6,
+      "name": { "en": "Kumakh Rural Municipality", "np": "कुमाख गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60903,
+      "district_code": 609,
+      "province_code": 6,
+      "name": {
+        "en": "Banagad Kupinde Urban Municipality",
+        "np": "बनगाड कुपिण्डे नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60904,
+      "district_code": 609,
+      "province_code": 6,
+      "name": {
+        "en": "Siddha Kumakh Rural Municipality",
+        "np": "सिद्ध कुमाख गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60905,
+      "district_code": 609,
+      "province_code": 6,
+      "name": {
+        "en": "Bagachour Urban Municipality",
+        "np": "बागचौर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60906,
+      "district_code": 609,
+      "province_code": 6,
+      "name": {
+        "en": "Chhatreshwori Rural Municipality",
+        "np": "छत्रेश्वरी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60907,
+      "district_code": 609,
+      "province_code": 6,
+      "name": { "en": "Sharada Urban Municipality", "np": "शारदा नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 60908,
+      "district_code": 609,
+      "province_code": 6,
+      "name": {
+        "en": "Kalimati Rural Municipality",
+        "np": "कालीमाटी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60909,
+      "district_code": 609,
+      "province_code": 6,
+      "name": {
+        "en": "Tribeni Rural Municipality",
+        "np": "त्रिवेणी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 60910,
+      "district_code": 609,
+      "province_code": 6,
+      "name": {
+        "en": "Kapurkot Rural Municipality",
+        "np": "कपुरकोट गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 61001,
+      "district_code": 610,
+      "province_code": 6,
+      "name": { "en": "Simta Rural Municipality", "np": "सिम्ता गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 61002,
+      "district_code": 610,
+      "province_code": 6,
+      "name": { "en": "Chingad Rural Municipality", "np": "चिङगाड गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 61003,
+      "district_code": 610,
+      "province_code": 6,
+      "name": {
+        "en": "Lekabeshi Urban Municipality",
+        "np": "लेकबेशी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 61004,
+      "district_code": 610,
+      "province_code": 6,
+      "name": {
+        "en": "Gurbhakot Urban Municipality",
+        "np": "गुर्भाकोट नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 61005,
+      "district_code": 610,
+      "province_code": 6,
+      "name": {
+        "en": "Bheriganga Urban Municipality",
+        "np": "भेरीगंगा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 61006,
+      "district_code": 610,
+      "province_code": 6,
+      "name": {
+        "en": "Birendranagar Urban Municipality",
+        "np": "बीरेन्द्रनगर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 61007,
+      "district_code": 610,
+      "province_code": 6,
+      "name": {
+        "en": "Barahatal Rural Municipality",
+        "np": "बराहताल गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 61008,
+      "district_code": 610,
+      "province_code": 6,
+      "name": {
+        "en": "Panchapuri Urban Municipality",
+        "np": "पञ्चपुरी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 61009,
+      "district_code": 610,
+      "province_code": 6,
+      "name": {
+        "en": "Chaukune Rural Municipality",
+        "np": "चौकुने गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70101,
+      "district_code": 701,
+      "province_code": 7,
+      "name": { "en": "Himali Rural Municipality", "np": "हिमाली गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70102,
+      "district_code": 701,
+      "province_code": 7,
+      "name": { "en": "Gaumul Rural Municipality", "np": "गौमुल गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70103,
+      "district_code": 701,
+      "province_code": 7,
+      "name": {
+        "en": "Budhinanda Urban Municipality",
+        "np": "बुढीनन्दा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70104,
+      "district_code": 701,
+      "province_code": 7,
+      "name": {
+        "en": "Swamikartik Khapar Rural Municipality",
+        "np": "स्वामीकार्तिक खापर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70105,
+      "district_code": 701,
+      "province_code": 7,
+      "name": {
+        "en": "Jagannath Rural Municipality",
+        "np": "जगन्नाथ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70106,
+      "district_code": 701,
+      "province_code": 7,
+      "name": {
+        "en": "Badimalika Urban Municipality",
+        "np": "बडीमालिका नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70107,
+      "district_code": 701,
+      "province_code": 7,
+      "name": {
+        "en": "Khaptad Chhededaha Rural Municipality",
+        "np": "खप्तड छेडेदह गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70108,
+      "district_code": 701,
+      "province_code": 7,
+      "name": {
+        "en": "Budhiganga Urban Municipality",
+        "np": "बुढीगंगा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70109,
+      "district_code": 701,
+      "province_code": 7,
+      "name": {
+        "en": "Tribeni Urban Municipality",
+        "np": "त्रिवेणी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70201,
+      "district_code": 702,
+      "province_code": 7,
+      "name": { "en": "Saipal Rural Municipality", "np": "साइपाल गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70202,
+      "district_code": 702,
+      "province_code": 7,
+      "name": { "en": "Bungal Urban Municipality", "np": "बुंगल नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70203,
+      "district_code": 702,
+      "province_code": 7,
+      "name": { "en": "Surma Rural Municipality", "np": "सूर्मा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70204,
+      "district_code": 702,
+      "province_code": 7,
+      "name": { "en": "Talkot Rural Municipality", "np": "तालकोट गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70205,
+      "district_code": 702,
+      "province_code": 7,
+      "name": { "en": "Masta Rural Municipality", "np": "मष्टा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70206,
+      "district_code": 702,
+      "province_code": 7,
+      "name": {
+        "en": "Jayaprithbi Urban Municipality",
+        "np": "जयपृथ्वी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70207,
+      "district_code": 702,
+      "province_code": 7,
+      "name": {
+        "en": "Chhabis Pathibhara Rural Municipality",
+        "np": "छबिस पाथिभरा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70208,
+      "district_code": 702,
+      "province_code": 7,
+      "name": {
+        "en": "Durgathali Rural Municipality",
+        "np": "दुर्गाथली गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70209,
+      "district_code": 702,
+      "province_code": 7,
+      "name": {
+        "en": "Kedarsyun Rural Municipality",
+        "np": "केदारस्युँ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70210,
+      "district_code": 702,
+      "province_code": 7,
+      "name": {
+        "en": "Bitthadchir Rural Municipality",
+        "np": "बित्थडचिर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70211,
+      "district_code": 702,
+      "province_code": 7,
+      "name": { "en": "Thalara Rural Municipality", "np": "थलारा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70212,
+      "district_code": 702,
+      "province_code": 7,
+      "name": {
+        "en": "Khaptad Chhanna Rural Municipality",
+        "np": "खप्तड छान्ना गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70301,
+      "district_code": 703,
+      "province_code": 7,
+      "name": { "en": "Byas Rural Municipality", "np": "ब्याँस गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70302,
+      "district_code": 703,
+      "province_code": 7,
+      "name": { "en": "Duhun Rural Municipality", "np": "दुहुँ गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70303,
+      "district_code": 703,
+      "province_code": 7,
+      "name": {
+        "en": "Mahakali Urban Municipality",
+        "np": "महाकाली नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70304,
+      "district_code": 703,
+      "province_code": 7,
+      "name": { "en": "Naugad Rural Municipality", "np": "नौगाड गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70305,
+      "district_code": 703,
+      "province_code": 7,
+      "name": {
+        "en": "Apihimal Rural Municipality",
+        "np": "अपिहिमाल गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70306,
+      "district_code": 703,
+      "province_code": 7,
+      "name": { "en": "Marma Rural Municipality", "np": "मार्मा गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70307,
+      "district_code": 703,
+      "province_code": 7,
+      "name": {
+        "en": "Shailyashikhar Urban Municipality",
+        "np": "शैल्यशिखर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70308,
+      "district_code": 703,
+      "province_code": 7,
+      "name": {
+        "en": "Malikarjun Rural Municipality",
+        "np": "मालिकार्जुन गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70309,
+      "district_code": 703,
+      "province_code": 7,
+      "name": { "en": "Lekam Rural Municipality", "np": "लेकम गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70401,
+      "district_code": 704,
+      "province_code": 7,
+      "name": {
+        "en": "Dilasaini Rural Municipality",
+        "np": "डीलासैनी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70402,
+      "district_code": 704,
+      "province_code": 7,
+      "name": {
+        "en": "Dogada Kedar Rural Municipality",
+        "np": "दोगडा केदार गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70403,
+      "district_code": 704,
+      "province_code": 7,
+      "name": {
+        "en": "Puchaundi Urban Municipality",
+        "np": "पुचौँडी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70404,
+      "district_code": 704,
+      "province_code": 7,
+      "name": {
+        "en": "Surnaya Rural Municipality",
+        "np": "सुर्नया गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70405,
+      "district_code": 704,
+      "province_code": 7,
+      "name": {
+        "en": "Dasharathchand Urban Municipality",
+        "np": "दशरथचन्द नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70406,
+      "district_code": 704,
+      "province_code": 7,
+      "name": {
+        "en": "Pancheshwor Rural Municipality",
+        "np": "पञ्चेश्वर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70407,
+      "district_code": 704,
+      "province_code": 7,
+      "name": {
+        "en": "Shivanath Rural Municipality",
+        "np": "शिवनाथ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70408,
+      "district_code": 704,
+      "province_code": 7,
+      "name": { "en": "Melauli Urban Municipality", "np": "मेलौली नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70409,
+      "district_code": 704,
+      "province_code": 7,
+      "name": { "en": "Patan Urban Municipality", "np": "पाटन नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70410,
+      "district_code": 704,
+      "province_code": 7,
+      "name": { "en": "Sigas Rural Municipality", "np": "सिगास गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70501,
+      "district_code": 705,
+      "province_code": 7,
+      "name": {
+        "en": "Nawadurga Rural Municipality",
+        "np": "नवदुर्गा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70502,
+      "district_code": 705,
+      "province_code": 7,
+      "name": {
+        "en": "Amargadhi Urban Municipality",
+        "np": "अमरगढी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70503,
+      "district_code": 705,
+      "province_code": 7,
+      "name": {
+        "en": "Ajayameru Rural Municipality",
+        "np": "अजयमेरु गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70504,
+      "district_code": 705,
+      "province_code": 7,
+      "name": {
+        "en": "Bhageshwor Rural Municipality",
+        "np": "भागेश्वर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70505,
+      "district_code": 705,
+      "province_code": 7,
+      "name": {
+        "en": "Parashuram Urban Municipality",
+        "np": "परशुराम नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70506,
+      "district_code": 705,
+      "province_code": 7,
+      "name": { "en": "Aalital Rural Municipality", "np": "आलीताल गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70507,
+      "district_code": 705,
+      "province_code": 7,
+      "name": {
+        "en": "Ganyapdhura Rural Municipality",
+        "np": "गन्यापधुरा गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70601,
+      "district_code": 706,
+      "province_code": 7,
+      "name": {
+        "en": "Purbichouki Rural Municipality",
+        "np": "पूर्विचौकी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70602,
+      "district_code": 706,
+      "province_code": 7,
+      "name": { "en": "Sayal Rural Municipality", "np": "सायल गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70603,
+      "district_code": 706,
+      "province_code": 7,
+      "name": { "en": "Aadarsha Rural Municipality", "np": "आदर्श गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70604,
+      "district_code": 706,
+      "province_code": 7,
+      "name": { "en": "Shikhar Urban Municipality", "np": "शिखर नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70605,
+      "district_code": 706,
+      "province_code": 7,
+      "name": {
+        "en": "Dipayal Silgadhi Urban Municipality",
+        "np": "दिपायल सिलगढी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70606,
+      "district_code": 706,
+      "province_code": 7,
+      "name": {
+        "en": "K.I. Singh Rural Municipality",
+        "np": "के.आई.सिं. गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70607,
+      "district_code": 706,
+      "province_code": 7,
+      "name": {
+        "en": "Bogatan Phudsil Rural Municipality",
+        "np": "बोगटान फुड्सिल गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70608,
+      "district_code": 706,
+      "province_code": 7,
+      "name": {
+        "en": "Badi Kedar Rural Municipality",
+        "np": "बडीकेदार गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70609,
+      "district_code": 706,
+      "province_code": 7,
+      "name": { "en": "Jorayal Rural Municipality", "np": "जोरायल गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70701,
+      "district_code": 707,
+      "province_code": 7,
+      "name": {
+        "en": "Panchdebal Binayak Urban Municipality",
+        "np": "पञ्चदेवल बिनायक नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70702,
+      "district_code": 707,
+      "province_code": 7,
+      "name": {
+        "en": "Ramaroshan Rural Municipality",
+        "np": "रामारोशन गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70703,
+      "district_code": 707,
+      "province_code": 7,
+      "name": {
+        "en": "Mellekh Rural Municipality",
+        "np": "मेल्लेख गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70704,
+      "district_code": 707,
+      "province_code": 7,
+      "name": {
+        "en": "Sanphebagar Urban Municipality",
+        "np": "साँफेबगर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70705,
+      "district_code": 707,
+      "province_code": 7,
+      "name": {
+        "en": "Chaurpati Rural Municipality",
+        "np": "चौरपाटी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70706,
+      "district_code": 707,
+      "province_code": 7,
+      "name": {
+        "en": "Mangalsen Urban Municipality",
+        "np": "मंगलसेन नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70707,
+      "district_code": 707,
+      "province_code": 7,
+      "name": {
+        "en": "Bannigadhi Jayagadh Rural Municipality",
+        "np": "बान्नीगढी जयगढ गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70708,
+      "district_code": 707,
+      "province_code": 7,
+      "name": {
+        "en": "Kamal Bazar Urban Municipality",
+        "np": "कमलबजार नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70709,
+      "district_code": 707,
+      "province_code": 7,
+      "name": { "en": "Dhakari Rural Municipality", "np": "ढकारी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70710,
+      "district_code": 707,
+      "province_code": 7,
+      "name": {
+        "en": "Turmakhand Rural Municipality",
+        "np": "तुर्माखाँद गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70801,
+      "district_code": 708,
+      "province_code": 7,
+      "name": {
+        "en": "Mohanyal Rural Municipality",
+        "np": "मोहन्याल गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70802,
+      "district_code": 708,
+      "province_code": 7,
+      "name": { "en": "Chure Rural Municipality", "np": "चुरे गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70803,
+      "district_code": 708,
+      "province_code": 7,
+      "name": {
+        "en": "Godawari Urban Municipality",
+        "np": "गोदावरी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70804,
+      "district_code": 708,
+      "province_code": 7,
+      "name": {
+        "en": "Gauriganga Urban Municipality",
+        "np": "गौरीगंगा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70805,
+      "district_code": 708,
+      "province_code": 7,
+      "name": {
+        "en": "Ghodaghodi Urban Municipality",
+        "np": "घोडाघोडी नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70806,
+      "district_code": 708,
+      "province_code": 7,
+      "name": {
+        "en": "Bardagoriya Rural Municipality",
+        "np": "बर्दगोरिया गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70807,
+      "district_code": 708,
+      "province_code": 7,
+      "name": {
+        "en": "Lamki Chuha Urban Municipality",
+        "np": "लम्कीचुहा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70808,
+      "district_code": 708,
+      "province_code": 7,
+      "name": { "en": "Janaki Rural Municipality", "np": "जानकी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70809,
+      "district_code": 708,
+      "province_code": 7,
+      "name": {
+        "en": "Joshipur Rural Municipality",
+        "np": "जोशीपुर गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70810,
+      "district_code": 708,
+      "province_code": 7,
+      "name": { "en": "Tikapur Urban Municipality", "np": "टीकापुर नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70811,
+      "district_code": 708,
+      "province_code": 7,
+      "name": { "en": "Bhajani Urban Municipality", "np": "भजनी नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70812,
+      "district_code": 708,
+      "province_code": 7,
+      "name": { "en": "Kailari Rural Municipality", "np": "कैलारी गाउँपालिका" },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70813,
+      "district_code": 708,
+      "province_code": 7,
+      "name": {
+        "en": "Dhangadhi Sub-Metropolitan City",
+        "np": "धनगढी उपमहानगरपालिका"
+      },
+      "type": "Sub-Metropolitan City"
+    },
+    {
+      "code": 70901,
+      "district_code": 709,
+      "province_code": 7,
+      "name": {
+        "en": "Krishnapur Urban Municipality",
+        "np": "कृष्णपुर नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70902,
+      "district_code": 709,
+      "province_code": 7,
+      "name": {
+        "en": "Shuklaphanta Urban Municipality",
+        "np": "शुक्लाफाँटा नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70903,
+      "district_code": 709,
+      "province_code": 7,
+      "name": { "en": "Bedkot Urban Municipality", "np": "बेदकोट नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70904,
+      "district_code": 709,
+      "province_code": 7,
+      "name": {
+        "en": "Bhimdatta Urban Municipality",
+        "np": "भीमदत्त नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70905,
+      "district_code": 709,
+      "province_code": 7,
+      "name": {
+        "en": "Mahakali Urban Municipality",
+        "np": "महाकाली नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70906,
+      "district_code": 709,
+      "province_code": 7,
+      "name": {
+        "en": "Laljhadi Rural Municipality",
+        "np": "लालझाडी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    },
+    {
+      "code": 70907,
+      "district_code": 709,
+      "province_code": 7,
+      "name": {
+        "en": "Punarbas Urban Municipality",
+        "np": "पुनर्वास नगरपालिका"
+      },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70908,
+      "district_code": 709,
+      "province_code": 7,
+      "name": { "en": "Belouri Urban Municipality", "np": "बेलौरी नगरपालिका" },
+      "type": "Urban Municipality"
+    },
+    {
+      "code": 70909,
+      "district_code": 709,
+      "province_code": 7,
+      "name": {
+        "en": "Beldandi Rural Municipality",
+        "np": "बेलडाँडी गाउँपालिका"
+      },
+      "type": "Rural Municipality"
+    }
+  ]
+}
