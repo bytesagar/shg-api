@@ -4,7 +4,7 @@ import { and, asc, eq, isNull, SQL } from "drizzle-orm";
 
 export class ReferenceDataRepository {
   public async listProvinces() {
-    return db
+    const items = await db
       .select({
         id: provinces.id,
         code: provinces.code,
@@ -13,15 +13,17 @@ export class ReferenceDataRepository {
       .from(provinces)
       .where(isNull(provinces.deletedAt))
       .orderBy(asc(provinces.code));
+
+    return { items };
   }
 
-  public async listDistricts(params: { provinceCode?: number }) {
+  public async listDistricts(params: { provinceId?: string }) {
     const where: SQL[] = [isNull(districts.deletedAt)];
-    if (params.provinceCode != null) {
-      where.push(eq(provinces.code, params.provinceCode));
+    if (params.provinceId != null) {
+      where.push(eq(provinces.id, params.provinceId));
     }
 
-    return db
+    const items = await db
       .select({
         id: districts.id,
         code: districts.code,
@@ -33,15 +35,17 @@ export class ReferenceDataRepository {
       .innerJoin(provinces, eq(provinces.id, districts.provinceId))
       .where(and(...where))
       .orderBy(asc(districts.code));
+
+    return { items };
   }
 
-  public async listMunicipalities(params: { districtCode?: number }) {
+  public async listMunicipalities(params: { districtId?: string }) {
     const where: SQL[] = [isNull(municipalities.deletedAt)];
-    if (params.districtCode != null) {
-      where.push(eq(districts.code, params.districtCode));
+    if (params.districtId != null) {
+      where.push(eq(districts.id, params.districtId));
     }
 
-    return db
+    const items = await db
       .select({
         id: municipalities.id,
         code: municipalities.code,
@@ -54,5 +58,7 @@ export class ReferenceDataRepository {
       .innerJoin(districts, eq(districts.id, municipalities.districtId))
       .where(and(...where))
       .orderBy(asc(municipalities.code));
+
+    return { items };
   }
 }

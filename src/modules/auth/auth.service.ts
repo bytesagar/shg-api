@@ -49,12 +49,38 @@ export class AuthService {
   }
 
   public async getCurrentUser(userId: string) {
-    const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+    const userResult = await db
+      .select({
+        user: users,
+        facility: {
+          id: health_facilities.id,
+          name: health_facilities.name,
+          address: health_facilities.address,
+          phone: health_facilities.phone,
+          email: health_facilities.email,
+          ward: health_facilities.ward,
+          palika: health_facilities.palika,
+          district: health_facilities.district,
+          province: health_facilities.province,
+        },
+      })
+      .from(users)
+      .leftJoin(health_facilities, eq(health_facilities.id, users.facilityId))
+      .where(eq(users.id, userId))
+      .limit(1);
+
+    const user = userResult[0]?.user;
+    const facility = userResult[0]?.facility?.id ? userResult[0].facility : null;
+
     if (!user) {
       throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
     }
+
     return {
-      user: this.sanitizeUser(user),
+      user: {
+        ...this.sanitizeUser(user),
+        facility,
+      },
     };
   }
 
@@ -120,12 +146,27 @@ export class AuthService {
 
   public async login(email: string, password: string) {
     const userResult = await db
-      .select()
+      .select({
+        user: users,
+        facility: {
+          id: health_facilities.id,
+          name: health_facilities.name,
+          address: health_facilities.address,
+          phone: health_facilities.phone,
+          email: health_facilities.email,
+          ward: health_facilities.ward,
+          palika: health_facilities.palika,
+          district: health_facilities.district,
+          province: health_facilities.province,
+        },
+      })
       .from(users)
+      .leftJoin(health_facilities, eq(health_facilities.id, users.facilityId))
       .where(eq(users.email, email))
       .limit(1);
 
-    const foundUser = userResult[0];
+    const foundUser = userResult[0]?.user;
+    const facility = userResult[0]?.facility?.id ? userResult[0].facility : null;
 
     if (!foundUser) {
       throw new AppError("Invalid credentials", HTTP_STATUS.UNAUTHORIZED);
@@ -217,6 +258,7 @@ export class AuthService {
 
     return {
       user: this.sanitizeUser(foundUser),
+      facility,
       accessToken: token,
       expiresInSec: Math.floor(this.accessTokenTtlMs / 1000),
       refreshToken,
@@ -241,11 +283,29 @@ export class AuthService {
       throw new AppError("Refresh session expired", HTTP_STATUS.UNAUTHORIZED);
     }
 
-    const [user] = await db
-      .select()
+    const userRows = await db
+      .select({
+        user: users,
+        facility: {
+          id: health_facilities.id,
+          name: health_facilities.name,
+          address: health_facilities.address,
+          phone: health_facilities.phone,
+          email: health_facilities.email,
+          ward: health_facilities.ward,
+          palika: health_facilities.palika,
+          district: health_facilities.district,
+          province: health_facilities.province,
+        },
+      })
       .from(users)
+      .leftJoin(health_facilities, eq(health_facilities.id, users.facilityId))
       .where(eq(users.id, session.userId))
       .limit(1);
+
+    const user = userRows[0]?.user;
+    const facility = userRows[0]?.facility?.id ? userRows[0].facility : null;
+
     if (!user || !user.facilityId) {
       throw new AppError("Invalid session user", HTTP_STATUS.UNAUTHORIZED);
     }
@@ -288,6 +348,7 @@ export class AuthService {
 
     return {
       user: this.sanitizeUser(user),
+      facility,
       accessToken,
       expiresInSec: Math.floor(this.accessTokenTtlMs / 1000),
       refreshToken: newRefreshToken,

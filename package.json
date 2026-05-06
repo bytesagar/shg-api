@@ -17,7 +17,9 @@
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f postgres",
     "test": "jest",
-    "test:watch": "jest --watchAll"
+    "test:watch": "jest --watchAll",
+    "db:migrate:prod": "drizzle-kit migrate --config=drizzle.config.prod.ts",
+    "db:generate:prod": "drizzle-kit generate --config=drizzle.config.prod.ts"
   },
   "nodemonConfig": {
     "watch": [
@@ -41,6 +43,7 @@
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",
+    "fastest-levenshtein": "^1.0.16",
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^7.0.6",
     "pg": "^8.20.0",

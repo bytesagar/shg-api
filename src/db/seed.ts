@@ -42,8 +42,8 @@ import {
 } from "./schema";
 import * as bcrypt from "bcryptjs";
 import { and, eq, sql } from "drizzle-orm";
+import { distance } from "fastest-levenshtein";
 
-/** Canonical roles for `user_roles`; idempotent by `name`. */
 const DEFAULT_USER_ROLES: { name: string; description: string }[] = [
   { name: "admin", description: "Administrator" },
   { name: "doctor", description: "Doctor" },
@@ -52,6 +52,113 @@ const DEFAULT_USER_ROLES: { name: string; description: string }[] = [
   { name: "municipalityuser", description: "Municipality User" },
   { name: "palika", description: "palika user" },
 ];
+
+const PROVINCE_ALIASES: Record<string, string> = {
+  sudurpashchim: "sudurpashchim",
+  sudurpaschim: "sudurpashchim",
+  sudurpashchimpradesh: "sudurpashchim",
+  sudurpaschimpradesh: "sudurpashchim",
+  sudurpashchimprovince: "sudurpashchim",
+  sudurpaschimprovince: "sudurpashchim",
+  karnali: "karnali",
+  karnalipradesh: "karnali",
+  karnaliprovince: "karnali",
+  lumbini: "lumbini",
+  lumbinipradesh: "lumbini",
+  lumbiniprovince: "lumbini",
+  gandaki: "gandaki",
+  gandakipradesh: "gandaki",
+  gandakiprovince: "gandaki",
+  bagmati: "bagmati",
+  bagamatipradesh: "bagmati",
+  bagmatipradesh: "bagmati",
+  bagmatiprovince: "bagmati",
+  bagamatiprovince: "bagmati",
+  madhesh: "madhesh",
+  madheshpradesh: "madhesh",
+  madheshprovince: "madhesh",
+  koshi: "koshi",
+  koshipradesh: "koshi",
+  koshiprovince: "koshi",
+  provincemumber1: "koshi",
+  provinceno2: "madhesh",
+  provinceno3: "bagmati",
+  provinceno7: "sudurpashchim",
+  provinceno4: "gandaki",
+  provinceno5: "lumbini",
+  provinceno6: "karnali",
+};
+
+function normalizeGeoName(input: unknown): string {
+  const stripped = String(input ?? "")
+    .toLowerCase()
+    .replace(/\(.*?\)/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(
+      /\b(rural municipality|urban municipality|municipality|metropolitan city|sub-metropolitan city|metropolitan|sub-metropolitan|province|pradesh|pradesha|state|district)\b/gi,
+      " ",
+    )
+    .replace(
+      /(गाउँपालिका|नगरपालिका|महानगरपालिका|उपमहानगरपालिका|प्रदेश|जिल्ला)/g,
+      " ",
+    )
+    .replace(/[^a-z0-9\u0900-\u097f]+/g, "")
+    .trim();
+
+  return PROVINCE_ALIASES[stripped] ?? stripped;
+}
+
+function fuzzyMatchMap(
+  query: string,
+  candidates: Map<string, number>,
+  threshold = 3,
+): { code: number; key: string } | null {
+  if (!query || candidates.size === 0) return null;
+
+  let bestCode: number | null = null;
+  let bestKey: string | null = null;
+  let bestDistance = Infinity;
+
+  for (const [key, code] of candidates) {
+    const d = distance(query, key);
+    if (d < bestDistance) {
+      bestDistance = d;
+      bestCode = code;
+      bestKey = key;
+    }
+  }
+
+  if (bestDistance <= threshold && bestCode !== null && bestKey !== null) {
+    return { code: bestCode, key: bestKey };
+  }
+  return null;
+}
+
+function parseProvinceCode(
+  input: unknown,
+  provinceNameToCode: Map<string, number>,
+): number | null {
+  const raw = String(input ?? "").trim();
+  const m = raw.match(/^(\d+)$/);
+  if (m) {
+    const n = Number(m[1]);
+    return Number.isFinite(n) ? n : null;
+  }
+  const key = normalizeGeoName(raw);
+  if (provinceNameToCode.has(key)) return provinceNameToCode.get(key)!;
+
+  const fuzzy = fuzzyMatchMap(key, provinceNameToCode, 2);
+  if (fuzzy) return fuzzy.code;
+  return null;
+}
+
+function readDataJson<T>(relativePath: string): T | null {
+  const filePath = join(__dirname, "../../", relativePath);
+  const raw = readFileSync(filePath, "utf-8");
+  if (!raw.trim()) return null;
+  return JSON.parse(raw) as T;
+}
 
 async function seedUserRoles() {
   console.log("🌱 Seeding user roles...");
@@ -120,30 +227,44 @@ async function seedIcd11Codes() {
   console.log(`✅ ICD-11 codes seeded (${rows.length} rows)`);
 }
 
-function readDataJson<T>(relativePath: string): T | null {
-  const filePath = join(__dirname, "../../", relativePath);
-  const raw = readFileSync(filePath, "utf-8");
-  if (!raw.trim()) return null;
-  return JSON.parse(raw) as T;
-}
-
 async function seedGeography() {
   console.log("🌱 Seeding provinces/districts/municipalities...");
 
-  const provincesJson = readDataJson<{ provinces: { code: number; name: { en: string; np: string } }[] }>(
-    "data/provinces.json",
-  );
-  const districtsJson = readDataJson<{ districts: { code: number; province_code: number; name: { en: string; np: string } }[] }>(
-    "data/districts.json",
-  );
+  const provincesJson = readDataJson<{
+    provinces: { code: number; name: { en: string; np: string } }[];
+  }>("data/provinces.json");
+  const districtsJson = readDataJson<{
+    districts: {
+      code: number;
+      province_code: number;
+      name: { en: string; np: string };
+    }[];
+  }>("data/districts.json");
   const municipalitiesJson = readDataJson<
-    | { municipalities: { code: number; district_code: number; name: { en: string; np: string }; no_of_wards: number }[] }
-    | { muncipalities: { code: number; district_code: number; name: { en: string; np: string }; no_of_wards: number }[] }
+    | {
+        municipalities: {
+          code: number;
+          district_code: number;
+          name: { en: string; np: string };
+          no_of_wards: number;
+        }[];
+      }
+    | {
+        muncipalities: {
+          code: number;
+          district_code: number;
+          name: { en: string; np: string };
+          no_of_wards: number;
+        }[];
+      }
   >("data/muncipalities.json");
 
   const provinceItems = provincesJson?.provinces ?? [];
   if (provinceItems.length) {
-    const byCode = new Map<number, { code: number; name: { en: string; np: string } }>();
+    const byCode = new Map<
+      number,
+      { code: number; name: { en: string; np: string } }
+    >();
     for (const p of provinceItems) byCode.set(p.code, p);
 
     const tuples = [...byCode.values()].map(
@@ -168,7 +289,10 @@ async function seedGeography() {
 
   const districtItems = districtsJson?.districts ?? [];
   if (districtItems.length) {
-    const byCode = new Map<number, { code: number; province_code: number; name: { en: string; np: string } }>();
+    const byCode = new Map<
+      number,
+      { code: number; province_code: number; name: { en: string; np: string } }
+    >();
     for (const d of districtItems) byCode.set(d.code, d);
 
     const tuples = [...byCode.values()].map(
@@ -204,7 +328,12 @@ async function seedGeography() {
 
   if (municipalityItemsRaw.length) {
     const toFiniteNumber = (v: unknown): number | null => {
-      const n = typeof v === "string" && v.trim() ? Number(v) : typeof v === "number" ? v : Number(v);
+      const n =
+        typeof v === "string" && v.trim()
+          ? Number(v)
+          : typeof v === "number"
+            ? v
+            : Number(v);
       return Number.isFinite(n) ? n : null;
     };
 
@@ -215,8 +344,9 @@ async function seedGeography() {
           m.district_code ?? m.districtCode ?? m.district ?? m.district_id,
         );
         const wards =
-          toFiniteNumber(m.no_of_wards ?? m.noOfWards ?? m.no_of_ward ?? m.wards) ??
-          0;
+          toFiniteNumber(
+            m.no_of_wards ?? m.noOfWards ?? m.no_of_ward ?? m.wards,
+          ) ?? 0;
 
         return {
           code,
@@ -226,7 +356,9 @@ async function seedGeography() {
         };
       })
       .filter(
-        (m): m is {
+        (
+          m,
+        ): m is {
           code: number;
           district_code: number;
           name: any;
@@ -267,10 +399,287 @@ async function seedGeography() {
   console.log("✅ Geography seeded");
 }
 
+async function seedHealthFacilitiesFromJson() {
+  console.log("🌱 Seeding health facilities from JSON...");
+
+  const facilitiesJson =
+    readDataJson<any[]>("data/health-facilities.json") ?? [];
+  const provincesJson = readDataJson<{
+    provinces: { code: number; name: { en: string; np: string } }[];
+  }>("data/provinces.json");
+  const districtsJson = readDataJson<{
+    districts: {
+      code: number;
+      province_code: number;
+      name: { en: string; np: string };
+    }[];
+  }>("data/districts.json");
+  const municipalitiesJson = readDataJson<{ municipalities: any[] }>(
+    "data/muncipalities.json",
+  );
+
+  const provinceNameToCode = new Map<string, number>();
+  for (const p of provincesJson?.provinces ?? []) {
+    const enNorm = normalizeGeoName(p.name.en);
+    const npNorm = normalizeGeoName(p.name.np);
+    provinceNameToCode.set(enNorm, p.code);
+    provinceNameToCode.set(npNorm, p.code);
+    const enBase = normalizeGeoName(
+      p.name.en.replace(/province/i, "").replace(/pradesh/i, ""),
+    );
+    if (enBase) provinceNameToCode.set(enBase, p.code);
+  }
+
+  console.log("  ↳ Province map keys:", [...provinceNameToCode.keys()]);
+
+  const districtNameToCode = new Map<string, number>();
+  for (const d of districtsJson?.districts ?? []) {
+    districtNameToCode.set(normalizeGeoName(d.name.en), d.code);
+    districtNameToCode.set(normalizeGeoName(d.name.np), d.code);
+  }
+
+  const municipalityByDistrict = new Map<number, Map<string, number>>();
+  for (const m of municipalitiesJson?.municipalities ?? []) {
+    const districtCode = Number(m.district_code);
+    const code = Number(m.code);
+    if (!Number.isFinite(districtCode) || !Number.isFinite(code)) continue;
+
+    const en = normalizeGeoName(m.name?.en);
+    const np = normalizeGeoName(m.name?.np);
+    const enBase = normalizeGeoName(
+      String(m.name?.en ?? "").replace(
+        /\b(rural municipality|urban municipality|municipality|metropolitan city|sub-metropolitan city)\b/gi,
+        "",
+      ),
+    );
+
+    const map =
+      municipalityByDistrict.get(districtCode) ?? new Map<string, number>();
+    if (en) map.set(en, code);
+    if (np) map.set(np, code);
+    if (enBase && enBase !== en) map.set(enBase, code);
+    municipalityByDistrict.set(districtCode, map);
+  }
+
+  const byHfCode = new Map<
+    string,
+    {
+      hfCode: string;
+      name: string;
+      address: string;
+      phone: string;
+      email: string;
+      ward: string;
+      palika: string;
+      district: string;
+      province: string;
+      inchargeName: string;
+      provinceCode: number | null;
+      districtCode: number | null;
+      municipalityCode: number | null;
+    }
+  >();
+
+  let fuzzyMatchCount = 0;
+  let unresolved = 0;
+
+  console.log(`  ↳ ${facilitiesJson.length} health facilities to process`);
+
+  for (const f of facilitiesJson) {
+    const hfCode = String(f?.hfCode ?? f?.hf_code ?? "").trim();
+    const name = String(f?.name ?? "").trim();
+    if (!hfCode || !name) continue;
+
+    const province = String(f?.province ?? "").trim();
+    const district = String(f?.district ?? "").trim();
+    const palika = String(f?.palika ?? "").trim();
+
+    const provinceNorm = normalizeGeoName(province);
+    let provinceCode = provinceNameToCode.get(provinceNorm) ?? null;
+    if (provinceCode === null) {
+      const fuzzy = fuzzyMatchMap(provinceNorm, provinceNameToCode, 2);
+      if (fuzzy) {
+        console.log(
+          `  ~ fuzzy province: "${province}" → "${fuzzy.key}" (code ${fuzzy.code})`,
+        );
+        provinceCode = fuzzy.code;
+        fuzzyMatchCount++;
+      }
+    }
+
+    const districtNorm = normalizeGeoName(district);
+    let districtCode = districtNameToCode.get(districtNorm) ?? null;
+    if (districtCode === null) {
+      const fuzzy = fuzzyMatchMap(districtNorm, districtNameToCode, 2);
+      if (fuzzy) {
+        console.log(
+          `  ~ fuzzy district: "${district}" → "${fuzzy.key}" (code ${fuzzy.code})`,
+        );
+        districtCode = fuzzy.code;
+        fuzzyMatchCount++;
+      }
+    }
+
+    const palikaKey = normalizeGeoName(palika);
+    const districtMunicipalities =
+      districtCode != null ? municipalityByDistrict.get(districtCode) : null;
+
+    let municipalityCode = districtMunicipalities?.get(palikaKey) ?? null;
+    if (municipalityCode === null && districtMunicipalities) {
+      const fuzzy = fuzzyMatchMap(palikaKey, districtMunicipalities, 3);
+      if (fuzzy) {
+        console.log(
+          `  ~ fuzzy palika:   "${palika}" → "${fuzzy.key}" (code ${fuzzy.code})`,
+        );
+        municipalityCode = fuzzy.code;
+        fuzzyMatchCount++;
+      }
+    }
+
+    if (!provinceCode || !districtCode || !municipalityCode) {
+      unresolved++;
+      console.warn(`  ⚠️  [${hfCode}] ${name}`);
+      if (!provinceCode)
+        console.warn(
+          `       province not found: "${province}" → "${provinceNorm}"`,
+        );
+      if (!districtCode)
+        console.warn(
+          `       district not found: "${district}" → "${districtNorm}"`,
+        );
+      if (districtCode && !municipalityCode) {
+        console.warn(
+          `       palika not found:   "${palika}" → "${palikaKey}" in district ${districtCode}`,
+        );
+        const available = [...(districtMunicipalities?.keys() ?? [])].slice(
+          0,
+          8,
+        );
+        console.warn(`       available keys: ${available.join(", ")}`);
+      }
+    }
+
+    byHfCode.set(hfCode, {
+      hfCode,
+      name,
+      address: String(f?.address ?? "").trim(),
+      phone: String(f?.phone ?? "").trim(),
+      email: String(f?.email ?? "").trim(),
+      ward: String(f?.ward ?? "").trim(),
+      palika,
+      district,
+      province,
+      inchargeName: String(f?.inchargeName ?? "").trim(),
+      provinceCode,
+      districtCode,
+      municipalityCode,
+    });
+  }
+
+  console.log(
+    `  ↳ Fuzzy matches applied: ${fuzzyMatchCount}, Unresolved: ${unresolved}`,
+  );
+
+  const rows = [...byHfCode.values()];
+  if (!rows.length) {
+    console.log("✅ Health facilities JSON has no seedable rows");
+    return;
+  }
+
+  const payload = JSON.stringify(
+    rows.map((r) => ({
+      hf_code: r.hfCode,
+      name: r.name,
+      address: r.address,
+      phone: r.phone,
+      email: r.email,
+      ward: r.ward,
+      palika: r.palika,
+      district: r.district,
+      province: r.province,
+      incharge_name: r.inchargeName,
+      province_code: r.provinceCode,
+      district_code: r.districtCode,
+      municipality_code: r.municipalityCode,
+    })),
+  );
+
+  await db.execute(sql`
+    with v as (
+      select *
+      from jsonb_to_recordset(${payload}::jsonb) as v(
+        hf_code text,
+        name text,
+        address text,
+        phone text,
+        email text,
+        ward text,
+        palika text,
+        district text,
+        province text,
+        incharge_name text,
+        province_code int,
+        district_code int,
+        municipality_code int
+      )
+    )
+    insert into health_facilities (
+      name, address, phone, email, ward, palika, district, province,
+      province_id, district_id, municipality_id, incharge_name, hf_code,
+      created_at, updated_at
+    )
+    select
+      v.name, v.address, v.phone, v.email, v.ward, v.palika, v.district, v.province,
+      p.id, d.id, m.id, v.incharge_name, v.hf_code, now(), now()
+    from v
+    left join provinces p on p.code = v.province_code
+    left join districts d on d.code = v.district_code
+    left join municipalities m on m.code = v.municipality_code
+    where not exists (
+      select 1 from health_facilities hf where hf.hf_code = v.hf_code
+    )
+  `);
+
+  await db.execute(sql`
+    with v as (
+      select *
+      from jsonb_to_recordset(${payload}::jsonb) as v(
+        hf_code text,
+        name text,
+        address text,
+        phone text,
+        email text,
+        ward text,
+        palika text,
+        district text,
+        province text,
+        incharge_name text,
+        province_code int,
+        district_code int,
+        municipality_code int
+      )
+    )
+    update health_facilities hf
+    set
+      name = v.name, address = v.address, phone = v.phone, email = v.email,
+      ward = v.ward, palika = v.palika, district = v.district, province = v.province,
+      province_id = p.id, district_id = d.id, municipality_id = m.id,
+      incharge_name = v.incharge_name, updated_at = now()
+    from v
+    left join provinces p on p.code = v.province_code
+    left join districts d on d.code = v.district_code
+    left join municipalities m on m.code = v.municipality_code
+    where hf.hf_code = v.hf_code
+  `);
+
+  console.log(`✅ Health facilities seeded (${rows.length} rows)`);
+}
+
 async function seed() {
   await seedUserRoles();
   await seedIcd11Codes();
   await seedGeography();
+  await seedHealthFacilitiesFromJson();
 
   console.log("🌱 Seeding health facilities...");
 
@@ -284,7 +693,6 @@ async function seed() {
     district: "Kathmandu",
     province: "Bagmati",
     inchargeName: "Dr. Health",
-    
   };
 
   const [existingFacility] = await db
@@ -303,7 +711,6 @@ async function seed() {
     )[0].id;
 
   console.log(`✅ Facility ${facilityData.name} seeded`);
-
   console.log("🌱 Seeding users...");
 
   const hashedPassword = await bcrypt.hash("password123", 10);
@@ -433,8 +840,8 @@ async function seed() {
           passwordHash: u.passwordHash,
           userType: u.userType,
           phoneNumber: u.phoneNumber,
-          designation: u.designation,
-          specialization: u.specialization,
+          designation: (u as any).designation,
+          specialization: (u as any).specialization,
           facilityId: u.facilityId,
           personId,
         })
@@ -466,7 +873,7 @@ async function seed() {
           .onConflictDoNothing();
       }
 
-      console.log(`✅ User ${u.username} seeded/updated`);
+      console.log(`  ↳ User ${u.username} seeded/updated`);
     }
 
     const doctorId = userIdByEmail.get("doctor@shg.com");

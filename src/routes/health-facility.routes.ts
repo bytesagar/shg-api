@@ -140,6 +140,13 @@ router.post(
 );
 
 router.post(
+  "/:facilityId/doctors/affiliations",
+  authMiddleware,
+  authorize([...FACILITY_MANAGEMENT_ROLES]),
+  healthFacilityController.upsertDoctorAffiliation,
+);
+
+router.post(
   "/:facilityId/doctors/:doctorId/affiliations",
   authMiddleware,
   authorize([...FACILITY_MANAGEMENT_ROLES]),

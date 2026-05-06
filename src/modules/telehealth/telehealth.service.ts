@@ -214,4 +214,60 @@ export class TelehealthService {
       },
     };
   }
+
+  public async updateSessionDuration(params: {
+    appointmentId: string;
+    durationSeconds: number;
+    startedAt: Date | null;
+    endedAt: Date | null;
+  }) {
+    const appt = await this.appointmentRepository.findById(
+      params.appointmentId,
+    );
+    if (!appt) return { error: "APPOINTMENT_NOT_FOUND" as const };
+    if (appt.service !== "telehealth")
+      return { error: "NOT_TELEHEALTH" as const };
+
+    return db.transaction(async (tx) => {
+      const sessionResult = await tx
+        .select()
+        .from(telehealth_sessions)
+        .where(eq(telehealth_sessions.appointmentId, appt.id))
+        .limit(1);
+
+      const session = sessionResult[0];
+      if (!session) {
+        const inserted = (
+          await tx
+            .insert(telehealth_sessions)
+            .values({
+              startedAt: params.startedAt ?? null,
+              endedAt: params.endedAt ?? null,
+              appointmentId: appt.id,
+              provider: "manual",
+              durationSeconds: params.durationSeconds,
+            })
+            .returning()
+        )[0];
+
+        if (!inserted) return { error: "SESSION_NOT_FOUND" as const };
+        return { session: inserted };
+      }
+
+      const updated = (
+        await tx
+          .update(telehealth_sessions)
+          .set({
+            durationSeconds: params.durationSeconds,
+            startedAt: params.startedAt ?? undefined,
+            endedAt: params.endedAt ?? undefined,
+          })
+          .where(eq(telehealth_sessions.id, session.id))
+          .returning()
+      )[0];
+
+      if (!updated) return { error: "SESSION_NOT_FOUND" as const };
+      return { session: updated };
+    });
+  }
 }
