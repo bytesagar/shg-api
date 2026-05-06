@@ -1,1 +1,0 @@
-ALTER TABLE "rosters" DROP COLUMN "status_text";
