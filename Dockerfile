@@ -5,7 +5,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+RUN yarn install 
 
 COPY . .
 RUN yarn build
@@ -18,7 +18,7 @@ WORKDIR /app
 
 # Only copy what's needed to run
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile --production=true
+RUN yarn install 
 
 # Copy built output from builder stage
 COPY --from=builder /app/dist ./dist
@@ -29,4 +29,4 @@ COPY --from=builder /app/drizzle.config.prod.ts ./drizzle.config.prod.ts
 
 EXPOSE 8080
 
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/src/index.js"]
