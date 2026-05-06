@@ -2919,7 +2919,7 @@ dotenv@^17.3.1:
 
 drizzle-kit@^0.31.10:
   version "0.31.10"
-  resolved "https://registry.npmjs.org/drizzle-kit/-/drizzle-kit-0.31.10.tgz"
+  resolved "https://registry.yarnpkg.com/drizzle-kit/-/drizzle-kit-0.31.10.tgz#556b4ba9ecfe089423dc5338634efa9ecd9afc1a"
   integrity sha512-7OZcmQUrdGI+DUNNsKBn1aW8qSoKuTH7d0mYgSP8bAzdFzKoovxEFnoGQp2dVs82EOJeYycqRtciopszwUf8bw==
   dependencies:
     "@drizzle-team/brocli" "^0.10.2"
