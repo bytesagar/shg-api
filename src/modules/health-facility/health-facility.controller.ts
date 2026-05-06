@@ -6,6 +6,8 @@ import { HTTP_STATUS } from "../../config/constants";
 import { HealthFacilityService } from "./health-facility.service";
 import {
   facilityDoctorAffiliationParamsSchema,
+  facilityDoctorAffiliationLegacyParamsSchema,
+  facilityDoctorAffiliationDeactivateParamsSchema,
   facilityDoctorAffiliationUpsertBodySchema,
   healthFacilityCreateSchema,
 } from "./health-facility.validation";
@@ -68,8 +70,15 @@ export class HealthFacilityController extends BaseController {
       const paramsParsed = facilityDoctorAffiliationParamsSchema.safeParse(
         req.params,
       );
-      if (!paramsParsed.success) {
-        throw new AppError("Invalid facilityId or doctorId", HTTP_STATUS.BAD_REQUEST);
+      const legacyParamsParsed =
+        facilityDoctorAffiliationLegacyParamsSchema.safeParse(req.params);
+      const facilityId = paramsParsed.success
+        ? paramsParsed.data.facilityId
+        : legacyParamsParsed.success
+          ? legacyParamsParsed.data.facilityId
+          : null;
+      if (!facilityId) {
+        throw new AppError("Invalid facilityId", HTTP_STATUS.BAD_REQUEST);
       }
 
       const bodyParsed = facilityDoctorAffiliationUpsertBodySchema.safeParse(req.body);
@@ -81,13 +90,13 @@ export class HealthFacilityController extends BaseController {
       }
 
       const service = new HealthFacilityService(context);
-      const row = await service.upsertDoctorAffiliation({
-        facilityId: paramsParsed.data.facilityId,
-        doctorId: paramsParsed.data.doctorId,
+      const result = await service.upsertDoctorAffiliations({
+        facilityId,
+        doctorIds: bodyParsed.data.doctorIds,
         roleId: bodyParsed.data.roleId,
       });
 
-      return this.ok(res, row, "Doctor affiliation saved successfully");
+      return this.ok(res, result, "Doctor affiliation saved successfully");
     },
   );
 
@@ -95,9 +104,8 @@ export class HealthFacilityController extends BaseController {
     async (req: AuthRequest, res: Response) => {
       const context = requireFacilityContext(req);
 
-      const paramsParsed = facilityDoctorAffiliationParamsSchema.safeParse(
-        req.params,
-      );
+      const paramsParsed =
+        facilityDoctorAffiliationDeactivateParamsSchema.safeParse(req.params);
       if (!paramsParsed.success) {
         throw new AppError("Invalid facilityId or doctorId", HTTP_STATUS.BAD_REQUEST);
       }

@@ -36,7 +36,10 @@ export class AuthController extends BaseController {
     const result = await this.authService.login(email, password);
     res.cookie(REFRESH_COOKIE_NAME, result.refreshToken, REFRESH_COOKIE_OPTIONS);
     return res.status(HTTP_STATUS.OK).json({
-      user: result.user,
+      user: {
+        ...result.user,
+        facility: result.facility,
+      },
       accessToken: result.accessToken,
       expiresInSec: result.expiresInSec,
     });
@@ -50,7 +53,10 @@ export class AuthController extends BaseController {
     const result = await this.authService.refresh(refreshToken);
     res.cookie(REFRESH_COOKIE_NAME, result.refreshToken, REFRESH_COOKIE_OPTIONS);
     return res.status(HTTP_STATUS.OK).json({
-      user: result.user,
+      user: {
+        ...result.user,
+        facility: result.facility,
+      },
       accessToken: result.accessToken,
       expiresInSec: result.expiresInSec,
     });

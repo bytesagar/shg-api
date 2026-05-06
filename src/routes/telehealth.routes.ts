@@ -103,4 +103,11 @@ router.post(
   telehealthController.getJoinLink,
 );
 
+router.patch(
+  "/appointments/:id/session-duration",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  telehealthController.updateSessionDuration,
+);
+
 export default router;

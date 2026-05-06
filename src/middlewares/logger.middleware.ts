@@ -22,8 +22,12 @@ export const loggerMiddleware = (req: Request, res: Response, next: NextFunction
 
     const message = `${method} ${originalUrl} ${statusCode} - ${duration}ms`;
 
-    // Only log HTTP requests that aren't for the health check or swagger docs
-    if (!originalUrl.includes("/health") && !originalUrl.includes("/docs")) {
+    // Only store error HTTP logs in DB (prevents flooding)
+    if (
+      !originalUrl.includes("/health") &&
+      !originalUrl.includes("/docs") &&
+      statusCode >= 400
+    ) {
       await LogService.http(req, statusCode, duration, message);
     }
   });

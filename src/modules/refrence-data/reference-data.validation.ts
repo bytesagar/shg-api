@@ -2,13 +2,13 @@ import { z } from "zod";
 
 export const districtsQuerySchema = z
   .object({
-    provinceCode: z.coerce.number().int().positive().optional(),
+    provinceId: z.string().optional(),
   })
   .strict();
 
 export const municipalitiesQuerySchema = z
   .object({
-    districtCode: z.coerce.number().int().positive().optional(),
+    districtId: z.string().optional(),
   })
   .strict();
 

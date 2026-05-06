@@ -1,0 +1,2 @@
+ALTER TABLE "health_facilities" ADD CONSTRAINT "health_facilities_province_id_provinces_id_fk" FOREIGN KEY ("province_id") REFERENCES "public"."provinces"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "health_facilities" ADD CONSTRAINT "health_facilities_district_id_districts_id_fk" FOREIGN KEY ("district_id") REFERENCES "public"."districts"("id") ON DELETE no action ON UPDATE no action;

@@ -8,6 +8,7 @@ import { requireFacilityContext } from "../../utils/request-context";
 import {
   telehealthAppointmentCreateSchema,
   telehealthAppointmentsListQuerySchema,
+  telehealthSessionDurationUpdateSchema,
 } from "../../validations/telehealth.validation";
 import { TelehealthService } from "./telehealth.service";
 import { parseListQuery } from "../../utils/query-parser";
@@ -128,4 +129,47 @@ export class TelehealthController extends BaseController {
 
     return this.ok(res, result, "Join link generated");
   });
+
+  public updateSessionDuration = catchAsync(
+    async (req: AuthRequest, res: Response) => {
+      const context = requireFacilityContext(req);
+      const { id } = req.params as { id: string };
+
+      const validatedData = telehealthSessionDurationUpdateSchema.safeParse(
+        req.body,
+      );
+      if (!validatedData.success) {
+        const errorMessages = validatedData.error.issues
+          .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+          .join(", ");
+        throw new AppError(
+          `Validation failed: ${errorMessages}`,
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+
+      const telehealthService = new TelehealthService(context);
+      const result = await telehealthService.updateSessionDuration({
+        appointmentId: id,
+        durationSeconds: validatedData.data.durationSeconds,
+        startedAt: validatedData.data.startedAt
+          ? new Date(validatedData.data.startedAt)
+          : null,
+        endedAt: validatedData.data.endedAt
+          ? new Date(validatedData.data.endedAt)
+          : null,
+      });
+
+      if ("error" in result) {
+        let status = HTTP_STATUS.BAD_REQUEST;
+        if (result.error === "APPOINTMENT_NOT_FOUND")
+          status = HTTP_STATUS.NOT_FOUND;
+        if (result.error === "SESSION_NOT_FOUND")
+          status = HTTP_STATUS.NOT_FOUND;
+        throw new AppError("Unable to update call duration", status);
+      }
+
+      return this.ok(res, result, "Call duration updated");
+    },
+  );
 }

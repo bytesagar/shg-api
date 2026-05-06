@@ -4,6 +4,8 @@ import { FacilityContext } from "../../context/facility-context";
 import { FacilityRepository } from "../../core/facility-repository";
 import { and, eq, isNull, sql } from "drizzle-orm";
 
+type DbTx = Parameters<Parameters<(typeof db)["transaction"]>[0]>[0];
+
 export class ImmunizationRepository extends FacilityRepository {
   constructor(context: FacilityContext) {
     super(context, child_immunizations.facilityId);
@@ -53,17 +55,22 @@ export class ImmunizationRepository extends FacilityRepository {
     return inserted[0] ?? null;
   }
 
-  public async createImmunizationHistoryForPatient(params: {
-    patientId: string;
-    vaccineName: string;
-    date: Date;
-    vaccinated: number | null;
-    vaccinatedDate: Date | null;
-    aefi?: string | null;
-    createdBy: string;
-    updatedBy: string;
-  }) {
-    const result = await db.execute<
+  public async createImmunizationHistoryForPatient(
+    tx: DbTx,
+    params: {
+      patientId: string;
+      visitId: string;
+      encounterId: string;
+      vaccineName: string;
+      date: Date;
+      vaccinated: number | null;
+      vaccinatedDate: Date | null;
+      aefi?: string | null;
+      createdBy: string;
+      updatedBy: string;
+    },
+  ) {
+    const result = await tx.execute<
       typeof immunization_histories.$inferSelect
     >(sql`
       insert into immunization_histories (
@@ -73,6 +80,8 @@ export class ImmunizationRepository extends FacilityRepository {
         aefi,
         vaccinated_date,
         patient_id,
+        visit_id,
+        encounter_id,
         child_immunization_id,
         created_by,
         updated_by
@@ -84,6 +93,8 @@ export class ImmunizationRepository extends FacilityRepository {
         ${params.aefi ?? null},
         ${params.vaccinatedDate},
         ${params.patientId}::uuid,
+        ${params.visitId}::uuid,
+        ${params.encounterId}::uuid,
         ci.id,
         ${params.createdBy}::uuid,
         ${params.updatedBy}::uuid

@@ -74,6 +74,7 @@ export class PatientController extends BaseController {
       upcomingAppointmentDate: Date | null;
       upcomingAppointmentStatus: string | null;
       upcomingAppointmentDoctorId: string | null;
+      upcomingAppointmentReason: string | null | null;
       upcomingAppointmentDoctorFirstName: string | null;
       upcomingAppointmentDoctorLastName: string | null;
       upcomingAppointmentDoctorPhoneNumber: string | null;
@@ -96,6 +97,7 @@ export class PatientController extends BaseController {
         a.doctor_id as "upcomingAppointmentDoctorId",
         a.doctor_first_name as "upcomingAppointmentDoctorFirstName",
         a.doctor_last_name as "upcomingAppointmentDoctorLastName",
+        a.reason as "upcomingAppointmentReason",
         a.doctor_phone_number as "upcomingAppointmentDoctorPhoneNumber",
         a.doctor_designation as "upcomingAppointmentDoctorDesignation",
         a.service as "upcomingAppointmentService",
@@ -122,6 +124,7 @@ export class PatientController extends BaseController {
           ap.status,
           ap.doctor_id,
           ap.service,
+          ap.reason,
           u.first_name as doctor_first_name,
           u.last_name as doctor_last_name,
           u.phone_number as doctor_phone_number,
@@ -165,6 +168,7 @@ export class PatientController extends BaseController {
           date: row.upcomingAppointmentDate,
           status: row.upcomingAppointmentStatus,
           doctorId: row.upcomingAppointmentDoctorId,
+          reason: row.upcomingAppointmentReason,
           doctor: row.upcomingAppointmentDoctorId
             ? {
                 id: row.upcomingAppointmentDoctorId,

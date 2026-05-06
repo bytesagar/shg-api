@@ -12,10 +12,10 @@ export class ReferenceDataService {
   }
 
   public async listDistricts(query: DistrictsQuery) {
-    return this.repo.listDistricts({ provinceCode: query.provinceCode });
+    return this.repo.listDistricts({ provinceId: query.provinceId });
   }
 
   public async listMunicipalities(query: MunicipalitiesQuery) {
-    return this.repo.listMunicipalities({ districtCode: query.districtCode });
+    return this.repo.listMunicipalities({ districtId: query.districtId });
   }
 }

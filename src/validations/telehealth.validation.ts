@@ -2,6 +2,10 @@ import { z } from "zod";
 import { isoDateString } from "./common.validation";
 import { createListQuerySchema } from "../utils/query-parser";
 
+const isoDateTimeString = z
+  .string()
+  .refine((v) => !Number.isNaN(Date.parse(v)), "Must be ISO date-time");
+
 export const telehealthAppointmentCreateSchema = z.object({
   patientId: z.uuid(),
   doctorId: z.uuid(),
@@ -31,4 +35,14 @@ export const telehealthAppointmentsListQuerySchema = createListQuerySchema({
 
 export type TelehealthAppointmentsListQuery = z.infer<
   typeof telehealthAppointmentsListQuerySchema
+>;
+
+export const telehealthSessionDurationUpdateSchema = z.object({
+  durationSeconds: z.number().int().min(0),
+  startedAt: isoDateTimeString.optional().nullable(),
+  endedAt: isoDateTimeString.optional().nullable(),
+});
+
+export type TelehealthSessionDurationUpdateInput = z.infer<
+  typeof telehealthSessionDurationUpdateSchema
 >;

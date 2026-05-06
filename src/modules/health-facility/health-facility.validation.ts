@@ -25,12 +25,29 @@ export type HealthFacilityCreateInput = z.infer<typeof healthFacilityCreateSchem
 export const facilityDoctorAffiliationParamsSchema = z
   .object({
     facilityId: z.uuid(),
+  })
+  .strict();
+
+export const facilityDoctorAffiliationLegacyParamsSchema = z
+  .object({
+    facilityId: z.uuid(),
+    doctorId: z.uuid(),
+  })
+  .strict();
+
+export const facilityDoctorAffiliationDeactivateParamsSchema = z
+  .object({
+    facilityId: z.uuid(),
     doctorId: z.uuid(),
   })
   .strict();
 
 export const facilityDoctorAffiliationUpsertBodySchema = z
   .object({
+    doctorIds: z.preprocess(
+      (v) => (typeof v === "string" ? [v] : v),
+      z.array(z.uuid()).min(1),
+    ),
     roleId: z.uuid().optional().nullable(),
   })
   .strict();

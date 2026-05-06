@@ -12,12 +12,12 @@ import familyPlanningRoutes from "./family-planning.routes";
 import rosterRoutes from "./roster.routes";
 import attachmentRoutes from "./attachment.routes";
 import icd11CodeRoutes from "./icd11-code.routes";
-import jaasWebhookRoutes from "./jaas-webhook.routes";
 import fhirRoutes from "./fhir.routes";
 import vitalsRoutes from "./vitals.routes";
 import maternalHealthRoutes from "./maternal-health.routes";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { AuthController } from "../modules/auth/auth.controller";
+import referenceDataRoutes from "./reference-data.routes";
 
 const router = Router();
 const authController = new AuthController();
@@ -54,9 +54,9 @@ router.use("/family-plannings", familyPlanningRoutes);
 router.use("/rosters", rosterRoutes);
 router.use("/attachments", attachmentRoutes);
 router.use("/icd11-codes", icd11CodeRoutes);
-router.use("/webhooks/jaas", jaasWebhookRoutes);
 router.use("/fhir", fhirRoutes);
 router.use("/vitals", vitalsRoutes);
 router.use("/maternal-health", maternalHealthRoutes);
+router.use("/reference-data", referenceDataRoutes);
 
 export default router;

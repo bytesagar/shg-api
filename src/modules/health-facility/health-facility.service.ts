@@ -1,7 +1,7 @@
 import { db } from "../../db";
 import { health_facilities, user_facility_affiliations, users } from "../../db/schema";
 import { HealthFacilityCreateInput } from "./health-facility.validation";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { FacilityContext } from "../../context/facility-context";
 import { AppError } from "../../utils/app-error";
 import { HTTP_STATUS } from "../../config/constants";
@@ -329,6 +329,19 @@ export class HealthFacilityService {
     doctorId: string;
     roleId?: string | null;
   }) {
+    const result = await this.upsertDoctorAffiliations({
+      facilityId: params.facilityId,
+      doctorIds: [params.doctorId],
+      roleId: params.roleId ?? null,
+    });
+    return result.items[0] ?? null;
+  }
+
+  public async upsertDoctorAffiliations(params: {
+    facilityId: string;
+    doctorIds: string[];
+    roleId?: string | null;
+  }) {
     if (this.context.role !== "admin" && params.facilityId !== this.context.facilityId) {
       throw new AppError(
         "Forbidden: cross-facility affiliation change denied",
@@ -336,84 +349,111 @@ export class HealthFacilityService {
       );
     }
 
-    const [facility] = await db
-      .select({ id: health_facilities.id })
-      .from(health_facilities)
-      .where(eq(health_facilities.id, params.facilityId))
-      .limit(1);
-    if (!facility) {
-      throw new AppError("Health facility not found", HTTP_STATUS.NOT_FOUND);
+    const doctorIds = [...new Set(params.doctorIds)];
+    if (doctorIds.length === 0) {
+      throw new AppError("doctorIds is required", HTTP_STATUS.BAD_REQUEST);
     }
 
-    const [doctor] = await db
-      .select({ id: users.id, userType: users.userType })
-      .from(users)
-      .where(eq(users.id, params.doctorId))
-      .limit(1);
-    if (!doctor) {
-      throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
-    }
-    if (doctor.userType !== "doctor") {
-      throw new AppError("User is not a doctor", HTTP_STATUS.BAD_REQUEST);
-    }
+    return db.transaction(async (tx) => {
+      const [facility] = await tx
+        .select({ id: health_facilities.id })
+        .from(health_facilities)
+        .where(eq(health_facilities.id, params.facilityId))
+        .limit(1);
+      if (!facility) {
+        throw new AppError("Health facility not found", HTTP_STATUS.NOT_FOUND);
+      }
 
-    const now = new Date();
-    const [existing] = await db
-      .select({
-        id: user_facility_affiliations.id,
-        isActive: user_facility_affiliations.isActive,
-      })
-      .from(user_facility_affiliations)
-      .where(
-        and(
-          eq(user_facility_affiliations.userId, params.doctorId),
-          eq(user_facility_affiliations.facilityId, params.facilityId),
-        ),
-      )
-      .limit(1);
+      const doctors = await tx
+        .select({ id: users.id, userType: users.userType })
+        .from(users)
+        .where(inArray(users.id, doctorIds));
 
-    if (existing) {
-      if (existing.isActive === true) {
+      if (doctors.length !== doctorIds.length) {
+        throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
+      }
+      if (doctors.some((d) => d.userType !== "doctor")) {
+        throw new AppError("User is not a doctor", HTTP_STATUS.BAD_REQUEST);
+      }
+
+      const existing = await tx
+        .select({
+          id: user_facility_affiliations.id,
+          userId: user_facility_affiliations.userId,
+          isActive: user_facility_affiliations.isActive,
+        })
+        .from(user_facility_affiliations)
+        .where(
+          and(
+            eq(user_facility_affiliations.facilityId, params.facilityId),
+            inArray(user_facility_affiliations.userId, doctorIds),
+          ),
+        );
+
+      if (existing.some((e) => e.isActive === true)) {
         throw new AppError(
           "Doctor is already affiliated with this facility",
           HTTP_STATUS.CONFLICT,
         );
       }
-      const updated = await db
-        .update(user_facility_affiliations)
-        .set({
-          isActive: true,
-          roleId: params.roleId ?? null,
-          updatedAt: now,
-        })
-        .where(eq(user_facility_affiliations.id, existing.id))
-        .returning();
-      return updated[0] ?? null;
-    }
 
-    try {
-      const inserted = await db
-        .insert(user_facility_affiliations)
-        .values({
-          userId: params.doctorId,
-          facilityId: params.facilityId,
-          roleId: params.roleId ?? null,
-          isActive: true,
-          createdAt: now,
-          updatedAt: now,
-        })
-        .returning();
-      return inserted[0] ?? null;
-    } catch (err: any) {
-      const code = err?.code;
-      if (code === "23505") {
-        throw new AppError(
-          "Doctor is already affiliated with this facility",
-          HTTP_STATUS.CONFLICT,
-        );
+      const now = new Date();
+      const existingByUserId = new Map(existing.map((e) => [e.userId, e]));
+      const reactivateUserIds = existing
+        .filter((e) => e.isActive === false)
+        .map((e) => e.userId);
+      const insertUserIds = doctorIds.filter((id) => !existingByUserId.has(id));
+
+      const out: Array<typeof user_facility_affiliations.$inferSelect> = [];
+
+      if (reactivateUserIds.length > 0) {
+        const updated = await tx
+          .update(user_facility_affiliations)
+          .set({
+            isActive: true,
+            roleId: params.roleId ?? null,
+            updatedAt: now,
+          })
+          .where(
+            and(
+              eq(user_facility_affiliations.facilityId, params.facilityId),
+              inArray(user_facility_affiliations.userId, reactivateUserIds),
+            ),
+          )
+          .returning();
+        out.push(...updated);
       }
-      throw err;
-    }
+
+      if (insertUserIds.length > 0) {
+        try {
+          const inserted = await tx
+            .insert(user_facility_affiliations)
+            .values(
+              insertUserIds.map((doctorId) => ({
+                userId: doctorId,
+                facilityId: params.facilityId,
+                roleId: params.roleId ?? null,
+                isActive: true,
+                createdAt: now,
+                updatedAt: now,
+              })),
+            )
+            .returning();
+          out.push(...inserted);
+        } catch (err: any) {
+          const code = err?.code;
+          if (code === "23505") {
+            throw new AppError(
+              "Doctor is already affiliated with this facility",
+              HTTP_STATUS.CONFLICT,
+            );
+          }
+          throw err;
+        }
+      }
+
+      return { items: out };
+    });
   }
 
   public async deactivateDoctorAffiliation(params: {

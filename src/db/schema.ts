@@ -237,33 +237,35 @@ export const municipalities = pgTable("municipalities", {
 // HEALTH FACILITY
 // ============================================================
 
-export const health_facilities = pgTable("health_facilities", {
-  id: uuid("id")
-    .primaryKey()
-    .notNull()
-    .default(sql`gen_random_uuid()`),
-  name: varchar("name", { length: 255 }).notNull(),
-  address: text("address").notNull(),
-  phone: varchar("phone", { length: 50 }).notNull(),
-  email: varchar("email", { length: 255 }).notNull(),
-  ward: varchar("ward", { length: 100 }).notNull(),
-  palika: varchar("palika", { length: 255 }).notNull(),
-  district: varchar("district", { length: 255 }).notNull(),
-  province: varchar("province", { length: 255 }).notNull(),
-  provinceId: uuid("province_id"),
-  districtId: uuid("district_id"),
-  municipalityId: uuid("municipality_id").references(() => municipalities.id),
-  inchargeName: varchar("incharge_name", { length: 255 }).notNull(),
-  hfCode: varchar("hf_code", { length: 100 }),
-  authorityLevel: varchar("authority_level", { length: 100 }),
-  authority: varchar("authority", { length: 255 }),
-  ownership: varchar("ownership", { length: 255 }),
-  facilityType: varchar("facility_type", { length: 100 }),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at"),
-  deletedBy: uuid("deleted_by"),
-  deletedAt: timestamp("deleted_at"),
-},
+export const health_facilities = pgTable(
+  "health_facilities",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    name: varchar("name", { length: 255 }).notNull(),
+    address: text("address").notNull(),
+    phone: varchar("phone", { length: 50 }).notNull(),
+    email: varchar("email", { length: 255 }).notNull(),
+    ward: varchar("ward", { length: 100 }).notNull(),
+    palika: varchar("palika", { length: 255 }).notNull(),
+    district: varchar("district", { length: 255 }).notNull(),
+    province: varchar("province", { length: 255 }).notNull(),
+    provinceId: uuid("province_id").references(() => provinces.id),
+    districtId: uuid("district_id").references(() => districts.id),
+    municipalityId: uuid("municipality_id").references(() => municipalities.id),
+    inchargeName: varchar("incharge_name", { length: 255 }).notNull(),
+    hfCode: varchar("hf_code", { length: 100 }),
+    authorityLevel: varchar("authority_level", { length: 100 }),
+    authority: varchar("authority", { length: 255 }),
+    ownership: varchar("ownership", { length: 255 }),
+    facilityType: varchar("facility_type", { length: 100 }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedBy: uuid("deleted_by"),
+    deletedAt: timestamp("deleted_at"),
+  },
   (t) => [
     index("health_facility_hf_code_idx").on(t.hfCode),
     index("health_facility_name_idx").on(t.name),
@@ -1581,6 +1583,8 @@ export const immunization_histories = pgTable(
     patientId: uuid("patient_id")
       .notNull()
       .references(() => patients.id),
+    visitId: uuid("visit_id").references(() => visits.id),
+    encounterId: uuid("encounter_id").references(() => encounters.id),
     childImmunizationId: uuid("child_immunization_id")
       .notNull()
       .references(() => child_immunizations.id),
@@ -1596,6 +1600,8 @@ export const immunization_histories = pgTable(
     index("immunization_history_child_immunization_id_idx").on(
       t.childImmunizationId,
     ),
+    index("immunization_history_visit_id_idx").on(t.visitId),
+    index("immunization_history_encounter_id_idx").on(t.encounterId),
     index("immunization_history_patient_date_idx").on(t.patientId, t.date),
   ],
 );
@@ -2027,6 +2033,14 @@ export const healthFacilitiesRelations = relations(
       fields: [health_facilities.municipalityId],
       references: [municipalities.id],
     }),
+    province: one(provinces, {
+      fields: [health_facilities.provinceId],
+      references: [provinces.id],
+    }),
+    district: one(districts, {
+      fields: [health_facilities.districtId],
+      references: [districts.id],
+    }),
     users: many(users),
     patients: many(patients),
     visits: many(visits),
@@ -2045,6 +2059,7 @@ export const healthFacilityRegistriesRelations = relations(
       fields: [health_facility_registries.municipalityId],
       references: [municipalities.id],
     }),
+
   }),
 );
 
