@@ -11,12 +11,12 @@ export default defineConfig({
 
   dbCredentials: {
     url: process.env.DATABASE_URL!,
-    ssl: true,
-    database: process.env.DATABASE_NAME!,
-    host: process.env.DATABASE_HOST!,
-    port: 5432,
-    user: process.env.DATABASE_USER!,
-    password: process.env.DATABASE_PASSWORD!,
+    // ssl: true,
+    // database: process.env.DATABASE_NAME!,
+    // host: process.env.DATABASE_HOST!,
+    // port: 5432,
+    // user: process.env.DATABASE_USER!,
+    // password: process.env.DATABASE_PASSWORD!,
   },
   verbose: false,
   strict: true,

@@ -1,17 +1,5 @@
 name: Deploy (dev → Azure VPS)
 
-# SSHes into the VPS, pulls latest code, runs migrations,
-# then rebuilds and restarts the API container.
-#
-# Required repository secrets:
-#   AZURE_VPS_HOST       Public IP or DNS of the Azure VPS
-#   AZURE_VPS_USER       SSH user
-#   AZURE_VPS_SSH_KEY    Private key (PEM)
-#
-# Optional repository variables:
-#   AZURE_VPS_PORT       SSH port, defaults to 22
-#   DEPLOY_PATH          Repo location on VPS, defaults to shg-api
-
 on:
   push:
     branches: [dev]
@@ -23,9 +11,7 @@ concurrency:
 
 jobs:
   deploy:
-    name: Build & restart on VPS
     runs-on: ubuntu-latest
-    environment: dev
 
     steps:
       - name: Deploy over SSH
@@ -37,7 +23,7 @@ jobs:
           port: ${{ vars.AZURE_VPS_PORT || 22 }}
           script_stop: true
           command_timeout: 20m
-          envs: GITHUB_SHA
+
           script: |
             set -euo pipefail
 
@@ -45,7 +31,6 @@ jobs:
             REPO_URL="git@github.com:${{ github.repository }}.git"
             BRANCH="dev"
 
-            # First-time clone
             if [ ! -d "$DEPLOY_PATH/.git" ]; then
               mkdir -p "$DEPLOY_PATH"
               git clone --branch "$BRANCH" "$REPO_URL" "$DEPLOY_PATH"
@@ -53,20 +38,20 @@ jobs:
 
             cd "$DEPLOY_PATH"
 
-            # Sync to exactly origin/dev
             git fetch --prune origin "$BRANCH"
             git reset --hard "origin/$BRANCH"
             git clean -fdx -e .env -e .env.*
 
             echo "Deploying commit $(git rev-parse --short HEAD)"
 
-            # Run migrations before restarting API
-            echo "Running database migrations..."
-            docker compose -f docker-compose.dev.yml run --rm api \
-              npx drizzle-kit migrate --config=drizzle.config.prod.ts
+            echo "Building images..."
+            DOCKER_BUILDKIT=1 docker compose -f docker-compose.dev.yml build
 
-            # Rebuild & restart
-            DOCKER_BUILDKIT=1 docker compose -f docker-compose.dev.yml up -d --build --remove-orphans
+            echo "Running migrations..."
+            docker compose -f docker-compose.dev.yml run --rm migrate
 
-            # Cleanup
+            echo "Starting services..."
+            docker compose -f docker-compose.dev.yml up -d --remove-orphans
+
+            echo "Cleaning old images..."
             docker image prune -f

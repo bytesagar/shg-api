@@ -1,29 +1,27 @@
-
-# ---- Stage 1: Build ----
+# ---- Stage 1: Build (includes devDependencies) ----
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
 COPY package.json yarn.lock ./
-RUN yarn install 
+RUN yarn install
 
 COPY . .
 RUN yarn build
 
 
-# ---- Stage 2: Production ----
+# ---- Stage 2: Production (lean runtime) ----
 FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Only copy what's needed to run
 COPY package.json yarn.lock ./
-RUN yarn install 
+RUN yarn install --production
 
-# Copy built output from builder stage
+# Copy built output
 COPY --from=builder /app/dist ./dist
 
-# Copy drizzle migrations and config
+# Copy migrations + config (needed for reference, not execution)
 COPY --from=builder /app/drizzle ./drizzle
 COPY --from=builder /app/drizzle.config.prod.ts ./drizzle.config.prod.ts
 
