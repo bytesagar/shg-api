@@ -5,6 +5,5 @@ dist
 .git
 *.log
 docker-compose*.yml
-drizzle/
 README.md
 docs/
