@@ -8,10 +8,12 @@ services:
       target: runner
     container_name: shg-api-dev
     restart: unless-stopped
-    ports:
-      - "8080:8080"
     env_file:
       - .env.development
+    networks:
+      - shg-net
+    expose:
+      - "8080"
 
   migrate:
     build:
@@ -21,3 +23,6 @@ services:
     command: npx drizzle-kit migrate --config=drizzle.config.prod.ts
     env_file:
       - .env.development
+networks:
+  shg-net:
+    external: true
