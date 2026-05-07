@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { readFileSync } from "fs";
-import { join } from "path";
+import path, { join } from "path";
 import { db } from "./index";
 import {
   appointments,
@@ -154,7 +154,7 @@ function parseProvinceCode(
 }
 
 function readDataJson<T>(relativePath: string): T | null {
-  const filePath = join(__dirname, "../../", relativePath);
+  const filePath = path.join(process.cwd(), "data", relativePath);
   const raw = readFileSync(filePath, "utf-8");
   if (!raw.trim()) return null;
   return JSON.parse(raw) as T;
@@ -232,14 +232,14 @@ async function seedGeography() {
 
   const provincesJson = readDataJson<{
     provinces: { code: number; name: { en: string; np: string } }[];
-  }>("data/provinces.json");
+  }>("provinces.json");
   const districtsJson = readDataJson<{
     districts: {
       code: number;
       province_code: number;
       name: { en: string; np: string };
     }[];
-  }>("data/districts.json");
+  }>("districts.json");
   const municipalitiesJson = readDataJson<
     | {
         municipalities: {
@@ -257,7 +257,7 @@ async function seedGeography() {
           no_of_wards: number;
         }[];
       }
-  >("data/muncipalities.json");
+  >("muncipalities.json");
 
   const provinceItems = provincesJson?.provinces ?? [];
   if (provinceItems.length) {
@@ -402,20 +402,19 @@ async function seedGeography() {
 async function seedHealthFacilitiesFromJson() {
   console.log("🌱 Seeding health facilities from JSON...");
 
-  const facilitiesJson =
-    readDataJson<any[]>("data/health-facilities.json") ?? [];
+  const facilitiesJson = readDataJson<any[]>("health-facilities.json") ?? [];
   const provincesJson = readDataJson<{
     provinces: { code: number; name: { en: string; np: string } }[];
-  }>("data/provinces.json");
+  }>("provinces.json");
   const districtsJson = readDataJson<{
     districts: {
       code: number;
       province_code: number;
       name: { en: string; np: string };
     }[];
-  }>("data/districts.json");
+  }>("districts.json");
   const municipalitiesJson = readDataJson<{ municipalities: any[] }>(
-    "data/muncipalities.json",
+    "muncipalities.json",
   );
 
   const provinceNameToCode = new Map<string, number>();
