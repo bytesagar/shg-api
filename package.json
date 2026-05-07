@@ -13,6 +13,7 @@
     "db:studio": "drizzle-kit studio",
     "db:drop": "drizzle-kit drop",
     "db:seed": "ts-node src/db/seed.ts",
+    "db:seed:prod": "node dist/db/seed.js",
     "db:up": "docker compose -f docker-compose.local.yml up  -d postgres",
     "db:down": "docker compose -f docker-compose.local.yml down",
     "db:logs": "docker compose -f docker-compose.local.yml logs -f postgres",

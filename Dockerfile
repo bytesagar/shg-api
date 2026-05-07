@@ -25,6 +25,9 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/drizzle ./drizzle
 COPY --from=builder /app/drizzle.config.prod.ts ./drizzle.config.prod.ts
 
+# Copy data for migration
+COPY --from=builder /app/data ./data
+
 EXPOSE 8080
 
 CMD ["node", "dist/src/index.js"]
