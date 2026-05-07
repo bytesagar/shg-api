@@ -190,24 +190,25 @@ async function seedUserRoles() {
 
 async function seedIcd11Codes() {
   console.log("🌱 Seeding ICD-11 codes...");
-  const filePath = join(__dirname, "../../data/icd11-nepal-common.json");
-  const raw = readFileSync(filePath, "utf-8");
-  const parsed = JSON.parse(raw) as {
-    metadata?: { source?: string; generated?: string };
-    codes: { code: string; title: string; category: string }[];
-  };
 
-  if (parsed.metadata?.source) {
+  const parsed = readDataJson<{
+    metadata: { source: string; generated: string };
+    codes: { code: string; title: string; category: string }[];
+  }>("icd11-nepal-common.json");
+
+
+  if (parsed?.metadata?.source) {
     console.log(
       `  ↳ ICD-11 metadata: source=${parsed.metadata.source}, generated=${parsed.metadata?.generated ?? "n/a"}`,
     );
   }
 
-  const rows = parsed.codes.map((c) => ({
-    code: c.code,
-    title: c.title,
-    category: c.category,
-  }));
+  const rows =
+    parsed!.codes?.map((c) => ({
+      code: c.code,
+      title: c.title,
+      category: c.category,
+    })) ?? [];
 
   const batchSize = 50;
   for (let i = 0; i < rows.length; i += batchSize) {
