@@ -8,6 +8,7 @@ services:
       target: runner
     container_name: shg-api-dev
     restart: unless-stopped
+    pull_policy: build
     env_file:
       - .env.development
     networks:
