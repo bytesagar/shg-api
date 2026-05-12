@@ -9,6 +9,20 @@ export const patientCreateSchema = z.object({
     z.date().optional().nullable(),
   ),
   gender: z.enum(["male", "female", "other"]).optional().nullable(),
+  bloodGroup: z
+    .enum([
+      "unknown",
+      "a_positive",
+      "a_negative",
+      "b_positive",
+      "b_negative",
+      "ab_positive",
+      "ab_negative",
+      "o_positive",
+      "o_negative",
+    ])
+    .optional()
+    .nullable(),
   phoneNumber: z.string().min(7).max(50).optional().nullable(),
   identifiers: z
     .array(
@@ -28,6 +42,9 @@ export const patientCreateSchema = z.object({
       municipality: z.string().max(255).optional().nullable(),
       district: z.string().max(255).optional().nullable(),
       province: z.string().max(255).optional().nullable(),
+      municipalityId: z.uuid().optional().nullable(),
+      districtId: z.uuid().optional().nullable(),
+      provinceId: z.uuid().optional().nullable(),
       ward: z.number().int().min(1).optional().nullable(),
       postalCode: z.string().max(20).optional().nullable(),
     })

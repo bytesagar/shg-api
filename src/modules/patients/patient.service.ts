@@ -12,6 +12,8 @@ import {
   toSqlWhere,
   type SqlFilter,
 } from "../../utils/sql-filter";
+import { AppError } from "../../utils/app-error";
+import { HTTP_STATUS } from "../../config/constants";
 
 export class PatientService {
   private patientRepository: PatientRepository;
@@ -21,12 +23,38 @@ export class PatientService {
   }
 
   public async createPatient(data: PatientCreateInput) {
+    const birthDate = data.birthDate ? data.birthDate.toISOString().slice(0, 10) : null;
+    const duplicate = await this.patientRepository.findDuplicateCandidate({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      birthDate,
+      phoneNumber: data.phoneNumber ?? null,
+      identifiers: data.identifiers?.map((i) => ({ system: i.system, value: i.value })) ?? null,
+    });
+
+    if (duplicate) {
+      throw new AppError(
+        "Patient already exists with the same details",
+        HTTP_STATUS.CONFLICT,
+      );
+    }
+
     const patientId = await generatePatientId();
-    return this.patientRepository.createWithInitialVisit(data, patientId);
+    try {
+      return await this.patientRepository.createWithInitialVisit(data, patientId);
+    } catch (err: any) {
+      if (err?.code === "23505") {
+        throw new AppError(
+          "Patient already exists with the same details",
+          HTTP_STATUS.CONFLICT,
+        );
+      }
+      throw err;
+    }
   }
 
   public async getPatientById(id: string) {
-    return this.patientRepository.findById(id);
+    return this.patientRepository.findDetailById(id);
   }
 
   public async updateFamilyPlanningProfile(

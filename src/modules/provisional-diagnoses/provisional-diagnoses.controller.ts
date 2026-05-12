@@ -1,0 +1,29 @@
+import { Response } from "express";
+import { BaseController } from "../../core/base.controller";
+import { AuthRequest } from "../../middlewares/auth.middleware";
+import { requireFacilityContext } from "../../utils/request-context";
+import { catchAsync } from "../../utils/catch-async";
+import { parseListQuery } from "../../utils/query-parser";
+import { ProvisionalDiagnosesService } from "./provisional-diagnoses.service";
+import { provisionalDiagnosesListQuerySchema } from "./provisional-diagnoses.validation";
+
+export class ProvisionalDiagnosesController extends BaseController {
+  public getProvisionalDiagnoses = catchAsync(
+    async (req: AuthRequest, res: Response) => {
+      const context = requireFacilityContext(req);
+      const query = parseListQuery(req.query, provisionalDiagnosesListQuerySchema);
+
+      const service = new ProvisionalDiagnosesService(context);
+      const result = await service.listProvisionalDiagnosesByPatientId({
+        patientId: query.patientId,
+        visitId: query.visitId,
+        from: query.from,
+        to: query.to,
+        page: query.page,
+        pageSize: query.pageSize,
+      });
+
+      return this.ok(res, result, "Provisional diagnoses retrieved successfully");
+    },
+  );
+}
