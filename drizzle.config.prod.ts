@@ -2,7 +2,7 @@ import * as dotenv from "dotenv";
 import { defineConfig } from "drizzle-kit";
 
 dotenv.config({
-  path: ".env.production",
+  path: ".env",
   override: true,
 });
 
@@ -26,5 +26,5 @@ export default defineConfig({
     schema: "public",
   },
   verbose: true,
-  strict: false,
+  strict: true,
 });
