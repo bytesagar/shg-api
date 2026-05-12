@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export const visitCreateSchema = z.object({
   patientId: z.string(),
-  date: isoDateString,
+  date: isoDateString.nullable().optional(),
   reason: z.string().min(1, "Reason is required"),
   service: z.string().max(255).optional().nullable(),
   status: z

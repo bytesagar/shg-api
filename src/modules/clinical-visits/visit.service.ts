@@ -38,7 +38,7 @@ export class VisitService {
     return this.visitRepository.create({
       patientId: patient.id,
       facilityId: this.context.facilityId,
-      date: input.date,
+      date: input.date ?? "",
       reason: input.reason,
       service: input.service ?? null,
       status: input.status ?? "planned",

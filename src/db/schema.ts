@@ -37,6 +37,18 @@ export const logLevelEnum = pgEnum("log_level_enum", [
 
 export const genderEnum = pgEnum("gender_enum", ["male", "female", "other"]);
 
+export const bloodGroupEnum = pgEnum("blood_group_enum", [
+  "unknown",
+  "a_positive",
+  "a_negative",
+  "b_positive",
+  "b_negative",
+  "ab_positive",
+  "ab_negative",
+  "o_positive",
+  "o_negative",
+]);
+
 export const casteEnum = pgEnum("caste_enum", [
   "dalit",
   "janajati",
@@ -476,6 +488,7 @@ export const persons = pgTable(
       .notNull()
       .default(sql`gen_random_uuid()`),
     gender: genderEnum("gender"),
+    bloodGroup: bloodGroupEnum("blood_group").default("unknown").notNull(),
     birthDate: timestamp("birth_date"),
     deceasedAt: timestamp("deceased_at"),
     status: personStatusEnum("status").default("active").notNull(),
@@ -578,13 +591,21 @@ export const person_addresses = pgTable(
     municipality: varchar("municipality", { length: 255 }),
     district: varchar("district", { length: 255 }),
     province: varchar("province", { length: 255 }),
+    municipalityId: uuid("municipality_id").references(() => municipalities.id),
+    districtId: uuid("district_id").references(() => districts.id),
+    provinceId: uuid("province_id").references(() => provinces.id),
     ward: integer("ward"),
     postalCode: varchar("postal_code", { length: 20 }),
     isPrimary: boolean("is_primary").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at"),
   },
-  (t) => [index("person_address_person_id_idx").on(t.personId)],
+  (t) => [
+    index("person_address_person_id_idx").on(t.personId),
+    index("person_address_municipality_id_idx").on(t.municipalityId),
+    index("person_address_district_id_idx").on(t.districtId),
+    index("person_address_province_id_idx").on(t.provinceId),
+  ],
 );
 
 export const patients = pgTable(
@@ -2182,6 +2203,18 @@ export const personAddressesRelations = relations(
     person: one(persons, {
       fields: [person_addresses.personId],
       references: [persons.id],
+    }),
+    municipality: one(municipalities, {
+      fields: [person_addresses.municipalityId],
+      references: [municipalities.id],
+    }),
+    district: one(districts, {
+      fields: [person_addresses.districtId],
+      references: [districts.id],
+    }),
+    province: one(provinces, {
+      fields: [person_addresses.provinceId],
+      references: [provinces.id],
     }),
   }),
 );

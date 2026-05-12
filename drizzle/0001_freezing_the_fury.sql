@@ -1,0 +1,2 @@
+CREATE TYPE "public"."blood_group_enum" AS ENUM('unknown', 'a_positive', 'a_negative', 'b_positive', 'b_negative', 'ab_positive', 'ab_negative', 'o_positive', 'o_negative');--> statement-breakpoint
+ALTER TABLE "persons" ADD COLUMN "blood_group" "blood_group_enum" DEFAULT 'unknown' NOT NULL;

@@ -87,6 +87,21 @@ const isoDateParam = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, "Expected YYYY-MM-DD");
 
+/**
+ * Shared filter shape for the clinical child-table list endpoints
+ * (complaints, medications, tests, etc.). Mirrors the Vitals contract
+ * plus visitId / from / to. Endpoints with extra filters (e.g. /tests)
+ * inline their own schema.
+ */
+export const clinicalListFilterShape = {
+  patientId: z.uuid(),
+  visitId: z.uuid().optional(),
+  from: isoDateParam.optional(),
+  to: isoDateParam.optional(),
+} as const;
+
+export const clinicalListQuerySchema = createListQuerySchema(clinicalListFilterShape);
+
 /** When both omitted, roster list returns all rows (still paginated). */
 export const rosterListQuerySchema = createListQuerySchema({
   fromDate: isoDateParam.optional(),
