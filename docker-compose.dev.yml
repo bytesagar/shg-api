@@ -10,7 +10,7 @@ services:
     restart: unless-stopped
     pull_policy: build
     env_file:
-      - .env.production
+      - .env.development
     networks:
       - shg-net
     expose:
@@ -23,7 +23,7 @@ services:
       target: builder
     command: npx drizzle-kit migrate --config=drizzle.config.prod.ts
     env_file:
-      - .env.production
+      - .env.development
     networks:
       - shg-net
 networks:
