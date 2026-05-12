@@ -46,14 +46,17 @@ jobs:
 
             echo "Deploying commit $(git rev-parse --short HEAD)"
 
-            echo "Building images..."
-            DOCKER_BUILDKIT=1 docker compose -f docker-compose.dev.yml build
+            echo "Ensuring external network exists..."
+            docker network inspect shg-net >/dev/null 2>&1 || docker network create shg-net
+
+            echo "Building api image..."
+            DOCKER_BUILDKIT=1 docker compose -f docker-compose.dev.yml build api
 
             echo "Running migrations..."
             docker compose -f docker-compose.dev.yml run --rm migrate
 
-            echo "Starting services..."
-            docker compose -f docker-compose.dev.yml up -d --remove-orphans
+            echo "Starting api..."
+            docker compose -f docker-compose.dev.yml up -d --remove-orphans api
 
             echo "Cleaning old images..."
             docker image prune -f
