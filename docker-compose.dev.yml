@@ -1,11 +1,10 @@
-version: "3.9"
-
 services:
   api:
     build:
       context: .
       dockerfile: Dockerfile
       target: runner
+    image: shg-api:latest
     container_name: shg-api-dev
     restart: unless-stopped
     pull_policy: build
@@ -17,15 +16,15 @@ services:
       - "8080"
 
   migrate:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: builder
-    command: npx drizzle-kit migrate --config=drizzle.config.prod.ts
+    image: shg-api:latest
+    pull_policy: never
+    command: node dist/src/db/migrate.js
     env_file:
       - .env.development
     networks:
       - shg-net
+    restart: "no"
+
 networks:
   shg-net:
     external: true
