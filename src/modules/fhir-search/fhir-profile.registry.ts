@@ -13,6 +13,9 @@ export const FHIR_PROFILE_REGISTRY = {
   MedicationRequest: [
     "https://shg.global/fhir/StructureDefinition/shg-medication-request",
   ],
+  MedicationDispense: [
+    "https://shg.global/fhir/StructureDefinition/shg-medication-dispense",
+  ],
   AllergyIntolerance: [
     "https://shg.global/fhir/StructureDefinition/shg-allergy-intolerance",
   ],
@@ -32,16 +35,20 @@ export const FHIR_PROFILE_REGISTRY = {
 
 export type FhirProfileKey = keyof typeof FHIR_PROFILE_REGISTRY;
 
+export type WithMeta<T> = T & {
+  meta: { profile: readonly string[] } & Record<string, unknown>;
+};
+
 export function withFhirProfile<T extends Record<string, any>>(
   profileKey: FhirProfileKey,
   resource: T,
-): T {
+): WithMeta<T> {
   return {
     ...resource,
     meta: {
       ...(resource.meta ?? {}),
       profile: FHIR_PROFILE_REGISTRY[profileKey],
     },
-  };
+  } as WithMeta<T>;
 }
 

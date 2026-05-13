@@ -122,5 +122,15 @@ export class FhirSearchController extends BaseController {
       return res.status(200).json(bundle);
     },
   );
+
+  public searchMedicationDispense = catchAsync(
+    async (req: AuthRequest, res: Response) => {
+      const context = requireFacilityContext(req);
+      const query = parseFhirSearchQuery(req.query as Record<string, unknown>);
+      const service = new FhirSearchService(context);
+      const bundle = await service.searchMedicationDispense(query);
+      return res.status(200).json(bundle);
+    },
+  );
 }
 

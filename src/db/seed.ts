@@ -43,6 +43,7 @@ import {
 import * as bcrypt from "bcryptjs";
 import { and, eq, sql } from "drizzle-orm";
 import { distance } from "fastest-levenshtein";
+import { seedImnciBookletStub } from "./seeds/imnci/seed-imnci";
 
 const DEFAULT_USER_ROLES: { name: string; description: string }[] = [
   { name: "admin", description: "Administrator" },
@@ -680,6 +681,7 @@ async function seed() {
   await seedIcd11Codes();
   await seedGeography();
   await seedHealthFacilitiesFromJson();
+  await seedImnciBookletStub();
 
   console.log("🌱 Seeding health facilities...");
 

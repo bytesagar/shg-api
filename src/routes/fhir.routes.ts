@@ -85,6 +85,12 @@ router.get(
   authorize([...CLINICAL_READ_ROLES]),
   controller.searchImmunization,
 );
+router.get(
+  "/MedicationDispense",
+  authMiddleware,
+  authorize([...CLINICAL_READ_ROLES]),
+  controller.searchMedicationDispense,
+);
 
 export default router;
 

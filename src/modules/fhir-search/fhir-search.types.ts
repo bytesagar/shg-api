@@ -3,6 +3,7 @@ export type FhirSearchResourceType =
   | "Observation"
   | "Condition"
   | "MedicationRequest"
+  | "MedicationDispense"
   | "Encounter"
   | "AllergyIntolerance"
   | "Appointment"
