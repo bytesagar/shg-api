@@ -9,7 +9,7 @@ import { AuthRequest } from "../../middlewares/auth.middleware";
 const REFRESH_COOKIE_NAME = "shg_rt";
 const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
+  secure: true,
   sameSite: "none" as const,
   domain: process.env.COOKIE_DOMAIN || ".dotelehealth.app",
   path: "/",

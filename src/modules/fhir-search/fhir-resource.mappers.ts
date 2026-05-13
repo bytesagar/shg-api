@@ -74,16 +74,34 @@ export function mapConditionResource(input: {
   description: string;
   verificationStatus: "provisional" | "confirmed";
   icdCode?: string | null;
+  /** Optional FHIR category text (e.g. "imnci-classification"). */
+  category?: string | null;
+  /** Optional severity (mapped to FHIR Condition.severity.text). */
+  severityText?: string | null;
+  /** Optional code system to use when coding is present. */
+  codeSystem?: string;
+  /** Optional code value (e.g. classification code). When set, used as coding[].code. */
+  codeValue?: string | null;
 }) {
+  const codeSystem = input.codeSystem ?? "http://hl7.org/fhir/sid/icd-11";
+  const codingEntries: Array<{ system: string; code: string }> = [];
+  if (input.icdCode && input.icdCode.trim().length > 0) {
+    codingEntries.push({
+      system: "http://hl7.org/fhir/sid/icd-11",
+      code: input.icdCode,
+    });
+  }
+  if (input.codeValue && input.codeValue.trim().length > 0) {
+    codingEntries.push({ system: codeSystem, code: input.codeValue });
+  }
   return withFhirProfile("Condition", {
     resourceType: "Condition",
     id: input.id,
     verificationStatus: { text: input.verificationStatus },
+    category: input.category ? [{ text: input.category }] : [],
+    severity: input.severityText ? { text: input.severityText } : undefined,
     code: {
-      coding:
-        input.icdCode && input.icdCode.trim().length > 0
-          ? [{ system: "http://hl7.org/fhir/sid/icd-11", code: input.icdCode }]
-          : [],
+      coding: codingEntries,
       text: input.description,
     },
     subject: { reference: `Patient/${input.patientId}` },
@@ -91,6 +109,44 @@ export function mapConditionResource(input: {
       ? { reference: `Encounter/${input.encounterId}` }
       : undefined,
     recordedDate: input.recordedDate,
+  });
+}
+
+export function mapMedicationDispenseResource(input: {
+  id: string;
+  patientId?: string | null;
+  performerUserId?: string | null;
+  medicationText: string;
+  medicationCode?: string | null;
+  quantity?: { value: number; unit: string };
+  whenHandedOver: Date;
+  context?: { type: string; id: string } | null;
+  category?: string | null;
+}) {
+  return withFhirProfile("MedicationDispense", {
+    resourceType: "MedicationDispense",
+    id: input.id,
+    status: "completed",
+    category: input.category ? { text: input.category } : undefined,
+    medicationCodeableConcept: {
+      coding: input.medicationCode
+        ? [{ system: "urn:shg:imnci-commodity", code: input.medicationCode }]
+        : [],
+      text: input.medicationText,
+    },
+    subject: input.patientId
+      ? { reference: `Patient/${input.patientId}` }
+      : undefined,
+    performer: input.performerUserId
+      ? [{ actor: { reference: `Practitioner/${input.performerUserId}` } }]
+      : [],
+    quantity: input.quantity
+      ? { value: input.quantity.value, unit: input.quantity.unit }
+      : undefined,
+    whenHandedOver: input.whenHandedOver,
+    context: input.context
+      ? { reference: `${input.context.type}/${input.context.id}` }
+      : undefined,
   });
 }
 

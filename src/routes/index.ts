@@ -27,6 +27,8 @@ import maternalHealthRoutes from "./maternal-health.routes";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { AuthController } from "../modules/auth/auth.controller";
 import referenceDataRoutes from "./reference-data.routes";
+import imnciRoutes from "./imnci.routes";
+import imnciFchvRoutes from "./imnci-fchv.routes";
 
 const router = Router();
 const authController = new AuthController();
@@ -76,5 +78,7 @@ router.use("/histories", historiesRoutes);
 router.use("/search", searchRoutes);
 router.use("/maternal-health", maternalHealthRoutes);
 router.use("/reference-data", referenceDataRoutes);
+router.use("/imnci/fchv", imnciFchvRoutes);
+router.use("/imnci", imnciRoutes);
 
 export default router;

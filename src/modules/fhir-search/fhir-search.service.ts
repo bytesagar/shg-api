@@ -14,6 +14,11 @@ import {
   home_mother_postnatal_cares,
   health_facilities,
   histories,
+  imnci_fchv_commodities_dispensed,
+  imnci_fchv_screenings,
+  imnci_treatment_plan_items,
+  imnci_visit_classifications,
+  imnci_visits,
   immunization_histories,
   medications,
   patient_identifiers,
@@ -44,6 +49,7 @@ import {
   mapEncounterResource,
   mapEpisodeOfCareResource,
   mapImmunizationResource,
+  mapMedicationDispenseResource,
   mapMedicationRequestResource,
   mapObservationResource,
   mapOrganizationResource,
@@ -1077,7 +1083,38 @@ export class FhirSearchService {
         confirmedConditions.push(lte(confirm_diagnoses.createdAt, recordedDateFilter.value));
     }
 
-    const [provisionalRows, confirmedRows] = await Promise.all([
+    // IMNCI classification filter conditions mirror the diagnosis pattern.
+    const imnciConditions: SQL[] = [
+      eq(imnci_visits.facilityId, this.context.facilityId),
+    ];
+    if (patientIdsFilter?.length) {
+      imnciConditions.push(inArray(imnci_visits.patientId, patientIdsFilter));
+    }
+    if (codeFilters.length) {
+      imnciConditions.push(
+        or(
+          ...codeFilters.map((code) =>
+            ilike(imnci_visit_classifications.classificationCode, `%${code}%`),
+          ),
+        )!,
+      );
+    }
+    if (recordedDateFilter) {
+      if (recordedDateFilter.op === "eq")
+        imnciConditions.push(
+          eq(imnci_visit_classifications.createdAt, recordedDateFilter.value),
+        );
+      if (recordedDateFilter.op === "ge" || recordedDateFilter.op === "gt")
+        imnciConditions.push(
+          gte(imnci_visit_classifications.createdAt, recordedDateFilter.value),
+        );
+      if (recordedDateFilter.op === "le" || recordedDateFilter.op === "lt")
+        imnciConditions.push(
+          lte(imnci_visit_classifications.createdAt, recordedDateFilter.value),
+        );
+    }
+
+    const [provisionalRows, confirmedRows, imnciClassificationRows] = await Promise.all([
       db
         .select()
         .from(provisional_diagnoses)
@@ -1089,6 +1126,18 @@ export class FhirSearchService {
         .from(confirm_diagnoses)
         .innerJoin(patients, eq(patients.id, confirm_diagnoses.patientId))
         .where(and(...basePatientScope, ...confirmedConditions))
+        .limit(5000),
+      db
+        .select({
+          classification: imnci_visit_classifications,
+          visit: imnci_visits,
+        })
+        .from(imnci_visit_classifications)
+        .innerJoin(
+          imnci_visits,
+          eq(imnci_visits.id, imnci_visit_classifications.visitId),
+        )
+        .where(and(...imnciConditions))
         .limit(5000),
     ]);
 
@@ -1114,6 +1163,21 @@ export class FhirSearchService {
           description: row.confirm_diagnoses.description,
           verificationStatus: "confirmed",
           icdCode: row.confirm_diagnoses.icdCode,
+        }),
+      })),
+      ...imnciClassificationRows.map((row) => ({
+        patientId: row.visit.patientId,
+        resource: mapConditionResource({
+          id: row.classification.id,
+          patientId: row.visit.patientId,
+          encounterId: row.visit.encounterId,
+          recordedDate: row.classification.createdAt,
+          description: row.classification.classificationCode,
+          verificationStatus: "confirmed",
+          category: "imnci-classification",
+          severityText: row.classification.severity,
+          codeSystem: "urn:shg:imnci-classification",
+          codeValue: row.classification.classificationCode,
         }),
       })),
     ];
@@ -1661,6 +1725,9 @@ export class FhirSearchService {
     const deliveryConditions: SQL[] = [];
     const homeMotherConditions: SQL[] = [];
     const homeBabyConditions: SQL[] = [];
+    const imnciVisitConditions: SQL[] = [
+      eq(imnci_visits.facilityId, this.context.facilityId),
+    ];
 
     const patientValues = query.filters.patient?.map((v) => parseTokenFilter(v).value);
     if (patientValues?.length) {
@@ -1670,6 +1737,7 @@ export class FhirSearchService {
       deliveryConditions.push(inArray(deliveries.patientId, patientValues));
       homeMotherConditions.push(inArray(home_mother_postnatal_cares.patientId, patientValues));
       homeBabyConditions.push(inArray(home_baby_postnatal_cares.patientId, patientValues));
+      imnciVisitConditions.push(inArray(imnci_visits.patientId, patientValues));
     }
 
     const dateToken = query.filters.date?.[0];
@@ -1698,10 +1766,14 @@ export class FhirSearchService {
         deliveryConditions.push(lte(deliveries.deliveryDate, dateOnly));
         homeMotherConditions.push(lte(home_mother_postnatal_cares.visitDate, parsed.value));
         homeBabyConditions.push(lte(home_baby_postnatal_cares.visitDate, parsed.value));
+        imnciVisitConditions.push(lte(imnci_visits.startedAt, parsed.value));
+      }
+      if (parsed.op === "ge" || parsed.op === "gt") {
+        imnciVisitConditions.push(gte(imnci_visits.startedAt, parsed.value));
       }
     }
 
-    const [fpRows, pncRows, ancRows, deliveryRows, homeMotherRows, homeBabyRows] =
+    const [fpRows, pncRows, ancRows, deliveryRows, homeMotherRows, homeBabyRows, imnciVisitRows] =
       await Promise.all([
       db.select().from(family_plannings).where(and(...fpConditions)).limit(5000),
       db
@@ -1729,7 +1801,25 @@ export class FhirSearchService {
         .from(home_baby_postnatal_cares)
         .where(homeBabyConditions.length ? and(...homeBabyConditions) : undefined)
         .limit(5000),
+      db.select().from(imnci_visits).where(and(...imnciVisitConditions)).limit(5000),
     ]);
+
+    // Pull plan items for the IMNCI visits we found, so each CarePlan's
+    // description can list its activities. Skipping the fetch when no visits
+    // matched keeps the empty-result case to a single DB roundtrip.
+    const imnciVisitIds = imnciVisitRows.map((v) => v.id);
+    const imnciPlanItems = imnciVisitIds.length
+      ? await db
+          .select()
+          .from(imnci_treatment_plan_items)
+          .where(inArray(imnci_treatment_plan_items.visitId, imnciVisitIds))
+      : [];
+    const planItemsByVisit = new Map<string, typeof imnciPlanItems>();
+    for (const item of imnciPlanItems) {
+      const list = planItemsByVisit.get(item.visitId) ?? [];
+      list.push(item);
+      planItemsByVisit.set(item.visitId, list);
+    }
 
     const carePlans = [
       ...fpRows.map((row) => ({
@@ -1804,6 +1894,22 @@ export class FhirSearchService {
           createdAt: row.createdAt,
         }),
       })),
+      ...imnciVisitRows.map((row) => {
+        const items = planItemsByVisit.get(row.id) ?? [];
+        const description = summariseImnciPlanItems(items);
+        return {
+          resource: mapCarePlanResource({
+            id: row.id,
+            patientId: row.patientId,
+            status: imnciVisitStatusToCarePlanStatus(row.status),
+            intent: "plan",
+            categoryText: "CB-IMNCI",
+            title: `CB-IMNCI plan (${row.pathway})`,
+            description,
+            createdAt: row.startedAt,
+          }),
+        };
+      }),
     ];
 
     const paged = carePlans.slice(query.offset, query.offset + query.count);
@@ -1897,4 +2003,133 @@ export class FhirSearchService {
       entry: entries,
     };
   }
+
+  public async searchMedicationDispense(
+    query: FhirSearchRequest,
+  ): Promise<FhirSearchBundle<any>> {
+    const conditions: SQL[] = [
+      eq(imnci_fchv_screenings.facilityId, this.context.facilityId),
+    ];
+
+    const patientValues = query.filters.patient?.map((v) => parseTokenFilter(v).value);
+    if (patientValues?.length) {
+      conditions.push(inArray(imnci_fchv_screenings.patientId, patientValues));
+    }
+
+    const codeFilters = query.filters.code?.map((c) => c.toLowerCase()) ?? [];
+    if (codeFilters.length) {
+      conditions.push(
+        or(
+          ...codeFilters.map((c) =>
+            ilike(imnci_fchv_commodities_dispensed.commodity, `%${c}%`),
+          ),
+        )!,
+      );
+    }
+
+    const dateToken =
+      query.filters.whenhandedover?.[0] ?? query.filters.date?.[0];
+    if (dateToken) {
+      const parsed = parseDateFilterToken(dateToken);
+      if (parsed.op === "eq") {
+        conditions.push(eq(imnci_fchv_commodities_dispensed.dispensedAt, parsed.value));
+      } else if (parsed.op === "ge" || parsed.op === "gt") {
+        conditions.push(gte(imnci_fchv_commodities_dispensed.dispensedAt, parsed.value));
+      } else if (parsed.op === "le" || parsed.op === "lt") {
+        conditions.push(lte(imnci_fchv_commodities_dispensed.dispensedAt, parsed.value));
+      }
+    }
+
+    const rows = await db
+      .select({
+        commodity: imnci_fchv_commodities_dispensed,
+        screening: imnci_fchv_screenings,
+      })
+      .from(imnci_fchv_commodities_dispensed)
+      .innerJoin(
+        imnci_fchv_screenings,
+        eq(imnci_fchv_commodities_dispensed.screeningId, imnci_fchv_screenings.id),
+      )
+      .where(and(...conditions))
+      .limit(5000);
+
+    const entries = rows.map((row) => ({
+      resource: mapMedicationDispenseResource({
+        id: row.commodity.id,
+        patientId: row.screening.patientId,
+        performerUserId: row.screening.fchvUserId,
+        medicationText: row.commodity.commodity,
+        medicationCode: row.commodity.commodity,
+        quantity: { value: row.commodity.quantity, unit: row.commodity.unit },
+        whenHandedOver: row.commodity.dispensedAt,
+        context: { type: "EpisodeOfCare", id: row.screening.id },
+        category: "fchv-community-dispense",
+      }),
+    }));
+
+    const paged = entries.slice(query.offset, query.offset + query.count);
+
+    const includeValues = query.filters._include ?? [];
+    if (includeValues.includes("MedicationDispense:subject")) {
+      const ids = rows
+        .map((r) => r.screening.patientId)
+        .filter((id): id is string => Boolean(id));
+      const patientMap = await this.buildPatientResourceMap(ids);
+      for (const patient of patientMap.values()) {
+        paged.push({ resource: patient });
+      }
+    }
+
+    return {
+      resourceType: "Bundle",
+      type: "searchset",
+      total: entries.length,
+      entry: paged,
+    };
+  }
+}
+
+function imnciVisitStatusToCarePlanStatus(
+  status: string,
+): "draft" | "active" | "completed" {
+  switch (status) {
+    case "in_progress":
+      return "draft";
+    case "classified":
+      return "active";
+    case "completed":
+    case "referred":
+      return "completed";
+    default:
+      return "active";
+  }
+}
+
+function summariseImnciPlanItems(
+  items: Array<{
+    classificationCode: string;
+    kind: string;
+    drugCode: string | null;
+    doseAmount: number | null;
+    doseUnit: string | null;
+    durationDays: number | null;
+    counsellingKey: string | null;
+  }>,
+): string | null {
+  if (items.length === 0) return null;
+  return items
+    .map((it) => {
+      const parts: string[] = [`[${it.classificationCode}] ${it.kind}`];
+      if (it.drugCode) {
+        const dose =
+          it.doseAmount != null && it.doseUnit
+            ? ` ${it.doseAmount}${it.doseUnit}`
+            : "";
+        const dur = it.durationDays ? ` × ${it.durationDays}d` : "";
+        parts.push(`drug=${it.drugCode}${dose}${dur}`);
+      }
+      if (it.counsellingKey) parts.push(`counsel=${it.counsellingKey}`);
+      return parts.join(" — ");
+    })
+    .join("; ");
 }

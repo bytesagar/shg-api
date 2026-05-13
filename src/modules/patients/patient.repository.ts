@@ -465,6 +465,7 @@ export class PatientRepository extends FacilityRepository {
           date: format(new Date(), "yyyy-MM-dd"),
           reason: "Patient Registration",
           patientId: newPatient.id,
+          service: data.service,
           facilityId: this.context.facilityId,
         });
       }
