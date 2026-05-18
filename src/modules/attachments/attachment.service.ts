@@ -16,6 +16,7 @@ import { VisitRepository } from "../clinical-visits/visit.repository";
 import { resolveDbParentToFacilityId } from "./attachment-source-registry";
 import { isS3StorageConfigured, S3StorageService } from "./s3-storage.service";
 import { AppError } from "../../utils/app-error";
+import { logger } from "../../utils/logger";
 import {
   buildAttachmentObjectKey,
   isAttachmentKeyForFacility,
@@ -119,6 +120,12 @@ export class AttachmentService {
 
     const maxBytes = getAttachmentMaxBytes();
     if (input.fileSize !== undefined && input.fileSize > maxBytes) {
+      logger.warn("attachment.size_exceeded", {
+        fileSize: input.fileSize,
+        maxBytes,
+        sourceType: input.sourceType,
+        sourceId: input.sourceId,
+      });
       throw new AppError(
         `File exceeds maximum size of ${maxBytes} bytes`,
         HTTP_STATUS.PAYLOAD_TOO_LARGE,
@@ -137,6 +144,14 @@ export class AttachmentService {
     });
 
     const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
+
+    logger.info("attachment.upload_url_issued", {
+      sourceType: input.sourceType,
+      sourceId: input.sourceId,
+      facilityId,
+      fileType: mime,
+      fileSize: input.fileSize,
+    });
 
     return {
       uploadUrl,
@@ -172,7 +187,13 @@ export class AttachmentService {
     let head;
     try {
       head = await s3.headObject(input.fileUrl);
-    } catch {
+    } catch (err) {
+      logger.warn("attachment.object_missing", {
+        fileUrl: input.fileUrl,
+        sourceType: input.sourceType,
+        sourceId: input.sourceId,
+        err,
+      });
       throw new AppError(
         "Object not found in storage. Upload the file before confirming.",
         HTTP_STATUS.BAD_REQUEST,
@@ -206,7 +227,7 @@ export class AttachmentService {
       );
     }
 
-    return this.attachmentRepository.create({
+    const created = await this.attachmentRepository.create({
       sourceType: input.sourceType,
       sourceId: input.sourceId,
       facilityId,
@@ -217,6 +238,14 @@ export class AttachmentService {
       createdBy: this.context.userId,
       updatedBy: this.context.userId,
     });
+    logger.info("attachment.upload_confirmed", {
+      attachmentId: (created as any)?.id,
+      sourceType: input.sourceType,
+      sourceId: input.sourceId,
+      fileSize: size,
+      fileType: mime,
+    });
+    return created;
   }
 
   public async listBySource(

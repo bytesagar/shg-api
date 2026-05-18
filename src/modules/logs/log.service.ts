@@ -2,6 +2,7 @@ import { db } from "../../db";
 import { system_logs } from "../../db/schema";
 import { Request } from "express";
 import { count, desc } from "drizzle-orm";
+import { baseLogger, logger } from "../../utils/logger";
 
 type LogLevel = "info" | "warn" | "error" | "debug";
 
@@ -14,14 +15,29 @@ interface LogParams {
   duration?: number;
 }
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+/**
+ * LogService is the gateway to the `system_logs` table.
+ *
+ * Most application code should call `logger.*` directly (src/utils/logger).
+ * LogService is kept for:
+ *   1. Backwards compatibility: existing `LogService.info/warn/error` calls
+ *      still work — they emit through the new logger and persist on warn/error.
+ *   2. The `GET /api/v1/logs` admin endpoint, which reads from `system_logs`.
+ *   3. `LogService.persist(...)` — the single DB-insert path used by
+ *      `logger.audit(...)` and the HTTP access-log middleware.
+ */
 export class LogService {
-  private static async saveLog(params: LogParams) {
+  /** Insert one row into `system_logs`. Never throws — failures emit via base pino. */
+  public static async persist(params: LogParams): Promise<void> {
     const { level, message, meta, req, statusCode, duration } = params;
 
     const logData: any = {
       level,
       message,
-      meta,
+      meta: meta ?? null,
       statusCode,
       duration,
     };
@@ -34,48 +50,44 @@ export class LogService {
         null;
       logData.method = req.method;
       logData.path = req.originalUrl || req.url;
-      // Assume user id is stored in req.user after auth
       const userId = (req as any).user?.id;
-      // Basic UUID validation to prevent DB errors
-      const uuidRegex =
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-      if (userId && typeof userId === "string" && uuidRegex.test(userId)) {
-        logData.userId = userId;
-      } else {
-        logData.userId = null;
-      }
+      logData.userId =
+        typeof userId === "string" && UUID_RE.test(userId) ? userId : null;
     }
 
     try {
       await db.insert(system_logs).values(logData);
     } catch (err) {
-      // Fallback to console if DB logging fails to avoid losing critical info
-      console.error("❌ Failed to save log to database:", err);
+      // Avoid recursion via logger.error → use base pino directly.
+      baseLogger.error({ err, level, message }, "log.persist_failed");
     }
+  }
 
-    // Also log to console for development visibility
-    const consoleMethod =
-      level === "error" ? "error" : level === "warn" ? "warn" : "log";
-    console[consoleMethod](`[${level.toUpperCase()}] ${message}`, meta || "");
-    if (meta && (meta as any).detail) {
-      console.error("Postgres Detail:", (meta as any).detail);
-    }
+  private static persistOnLevel(level: LogLevel): boolean {
+    return level === "warn" || level === "error";
   }
 
   public static async info(message: string, meta?: any, req?: Request) {
-    await this.saveLog({ level: "info", message, meta, req });
+    logger.info(message, meta);
+    if (this.persistOnLevel("info")) {
+      await this.persist({ level: "info", message, meta, req });
+    }
   }
 
   public static async warn(message: string, meta?: any, req?: Request) {
-    await this.saveLog({ level: "warn", message, meta, req });
+    logger.warn(message, meta);
+    await this.persist({ level: "warn", message, meta, req });
   }
 
   public static async error(message: string, meta?: any, req?: Request) {
-    await this.saveLog({ level: "error", message, meta, req });
+    logger.error(message, meta);
+    await this.persist({ level: "error", message, meta, req });
   }
 
   public static async debug(message: string, meta?: any, req?: Request) {
-    await this.saveLog({ level: "debug", message, meta, req });
+    logger.debug(message, meta);
+    // debug never persists by default
+    if (req) void req; // suppress unused
   }
 
   public static async http(
@@ -84,8 +96,9 @@ export class LogService {
     duration: number,
     message: string = "HTTP Request",
   ) {
-    await this.saveLog({
-      level: statusCode >= 400 ? "warn" : "info",
+    const level: LogLevel = statusCode >= 500 ? "error" : "warn";
+    await this.persist({
+      level,
       message,
       req,
       statusCode,

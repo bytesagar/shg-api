@@ -2,6 +2,7 @@ import "dotenv/config";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "./schema";
+import { baseLogger } from "../utils/logger";
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -13,19 +14,23 @@ export const pool = new Pool({
       : false,
 });
 
-// Logging connection status
+let connectAnnounced = false;
 pool.on("connect", () => {
-  console.log("✅ Database connected successfully");
+  if (!connectAnnounced) {
+    baseLogger.info("db.pool.connect");
+    connectAnnounced = true;
+  } else {
+    baseLogger.debug("db.pool.client_acquired");
+  }
 });
 
 pool.on("error", (err) => {
-  console.error("❌ Database connection error:", err);
+  baseLogger.error({ err }, "db.pool.error");
 });
 
 export const db = drizzle(pool, { schema, casing: "snake_case" });
 
-// To handle disconnection logging, we can check for pool end
 export const closeConnection = async () => {
   await pool.end();
-  console.log("🔌 Database disconnected");
+  baseLogger.info("db.pool.disconnect");
 };

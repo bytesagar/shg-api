@@ -1557,6 +1557,7 @@ async function seed() {
         height: 62,
         muac: 13.4,
         patientId: mchPatient.id,
+        facilityId,
         childImmunizationId,
       });
     }

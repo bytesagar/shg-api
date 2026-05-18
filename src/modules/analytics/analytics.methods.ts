@@ -1,0 +1,33 @@
+export const ANALYTICS_METHODS = [
+  "TOTAL_PATIENTS",
+  "TOTAL_OPD",
+  "TOTAL_IMMUNIZATION",
+  "TOTAL_MATERNAL",
+  "SERVICE_WISE_REFERRALS",
+  "SECTOR_WISE_REFERRALS",
+  "TELEHEALTH_REQUESTS_TOTAL",
+  "TELEHEALTH_REQUESTS_OPD",
+  "TELEHEALTH_REQUESTS_MATERNAL",
+  "TELEHEALTH_REQUESTS_CHILD",
+  "OPD_FOLLOW_UP",
+  "MORBIDITY_TREND",
+  "DEMOGRAPHICS_BY_GENDER",
+  "PATIENTS_BY_ETHNICITY",
+  "PATIENTS_BY_MUNICIPALITY",
+  "PATIENTS_BY_FACILITY",
+  "TOP_DISEASES",
+  "AGE_GENDER_DISTRIBUTION",
+  "CHART_DATA_FOR_MALE_AND_FEMALE_BY_AGE_RANGE",
+  "VISITS_DAILY_TREND",
+  "FACILITY_LEADERBOARD",
+  "SYSTEM_TOTALS",
+] as const;
+
+export type AnalyticsMethod = (typeof ANALYTICS_METHODS)[number];
+
+export function isAnalyticsMethod(value: unknown): value is AnalyticsMethod {
+  return (
+    typeof value === "string" &&
+    (ANALYTICS_METHODS as readonly string[]).includes(value)
+  );
+}

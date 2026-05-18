@@ -1,0 +1,1 @@
+DROP TABLE "jaas_webhook_idempotency" CASCADE;
