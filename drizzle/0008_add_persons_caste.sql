@@ -1,0 +1,1 @@
+ALTER TABLE "persons" ADD COLUMN "caste" "caste_enum";

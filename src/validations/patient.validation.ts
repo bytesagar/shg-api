@@ -23,6 +23,10 @@ export const patientCreateSchema = z.object({
     ])
     .optional()
     .nullable(),
+  caste: z
+    .enum(["dalit", "janajati", "madhesi", "muslim", "brahmin_chhetri", "other"])
+    .optional()
+    .nullable(),
   phoneNumber: z.string().min(7).max(50).optional().nullable(),
   identifiers: z
     .array(

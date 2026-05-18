@@ -57,6 +57,13 @@
       "when": 1779065767513,
       "tag": "0007_drop_jaas_webhook_idempotency",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1779078614495,
+      "tag": "0008_add_persons_caste",
+      "breakpoints": true
     }
   ]
 }

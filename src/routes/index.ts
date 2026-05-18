@@ -33,6 +33,7 @@ import growthRoutes from "./growth.routes";
 import notificationRoutes from "./notification.routes";
 import pusherRoutes from "./pusher.routes";
 import teleAuscultationRoutes from "./tele-auscultation.routes";
+import analyticsRoutes from "./analytics.routes";
 
 const router = Router();
 const authController = new AuthController();
@@ -88,5 +89,6 @@ router.use("/growths", growthRoutes);
 router.use("/notifications", notificationRoutes);
 router.use("/pusher", pusherRoutes);
 router.use("/tele-auscultation", teleAuscultationRoutes);
+router.use("/analytics", analyticsRoutes);
 
 export default router;

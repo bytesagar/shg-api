@@ -489,6 +489,7 @@ export const persons = pgTable(
       .default(sql`gen_random_uuid()`),
     gender: genderEnum("gender"),
     bloodGroup: bloodGroupEnum("blood_group").default("unknown").notNull(),
+    caste: casteEnum("caste"),
     birthDate: timestamp("birth_date"),
     deceasedAt: timestamp("deceased_at"),
     status: personStatusEnum("status").default("active").notNull(),

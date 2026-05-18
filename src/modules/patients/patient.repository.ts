@@ -378,6 +378,7 @@ export class PatientRepository extends FacilityRepository {
         .values({
           gender: data.gender ?? null,
           bloodGroup: data.bloodGroup ?? "unknown",
+          caste: data.caste ?? null,
           birthDate: data.birthDate ?? null,
           status: data.status === "deceased" ? "deceased" : "active",
         })
