@@ -14,6 +14,8 @@ import { signJwt } from "../../utils/jwt";
 import { randomBytes, createHash } from "crypto";
 import { AppError } from "../../utils/app-error";
 import { HTTP_STATUS } from "../../config/constants";
+import { getPermissionsForRole, normalizeRole } from "../../constants/rbac";
+import { logger } from "../../utils/logger";
 
 type AuthUserPayload = Omit<typeof users.$inferSelect, "passwordHash">;
 
@@ -76,11 +78,15 @@ export class AuthService {
       throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
     }
 
+    const role = normalizeRole(await this.resolveRole(user.id, user.userType));
+
     return {
       user: {
         ...this.sanitizeUser(user),
         facility,
       },
+      role,
+      permissions: getPermissionsForRole(role),
     };
   }
 
@@ -169,6 +175,7 @@ export class AuthService {
     const facility = userResult[0]?.facility?.id ? userResult[0].facility : null;
 
     if (!foundUser) {
+      logger.audit("auth.login.failed", { email, reason: "unknown_email" });
       throw new AppError("Invalid credentials", HTTP_STATUS.UNAUTHORIZED);
     }
 
@@ -177,6 +184,12 @@ export class AuthService {
       foundUser.lockedUntil &&
       foundUser.lockedUntil > new Date()
     ) {
+      logger.audit("auth.login.failed", {
+        userId: foundUser.id,
+        email,
+        reason: "account_locked",
+        lockedUntil: foundUser.lockedUntil.toISOString(),
+      });
       throw new AppError(
         "Account is temporarily locked",
         HTTP_STATUS.UNAUTHORIZED,
@@ -187,15 +200,28 @@ export class AuthService {
 
     if (!isPasswordValid) {
       const attempts = (foundUser.failedLoginAttempts ?? 0) + 1;
+      const willLock = attempts >= 5;
       await db
         .update(users)
         .set({
           failedLoginAttempts: attempts,
-          lockedUntil: attempts >= 5 ? new Date(Date.now() + 15 * 60 * 1000) : null,
-          accountStatus: attempts >= 5 ? "locked" : foundUser.accountStatus,
+          lockedUntil: willLock ? new Date(Date.now() + 15 * 60 * 1000) : null,
+          accountStatus: willLock ? "locked" : foundUser.accountStatus,
           updatedAt: new Date(),
         })
         .where(eq(users.id, foundUser.id));
+      logger.audit("auth.login.failed", {
+        userId: foundUser.id,
+        email,
+        reason: "bad_password",
+        attempts,
+      });
+      if (willLock) {
+        logger.audit("auth.account.locked", {
+          userId: foundUser.id,
+          attempts,
+        });
+      }
       throw new AppError("Invalid credentials", HTTP_STATUS.UNAUTHORIZED);
     }
 
@@ -256,9 +282,19 @@ export class AuthService {
       facilityId: foundUser.facilityId,
     });
 
+    logger.audit("auth.login.success", {
+      userId: foundUser.id,
+      email: foundUser.email,
+      facilityId: foundUser.facilityId,
+      sessionId,
+    });
+
+    const normalizedRole = normalizeRole(resolvedRole);
     return {
       user: this.sanitizeUser(foundUser),
       facility,
+      role: normalizedRole,
+      permissions: getPermissionsForRole(normalizedRole),
       accessToken: token,
       expiresInSec: Math.floor(this.accessTokenTtlMs / 1000),
       refreshToken,
@@ -336,6 +372,11 @@ export class AuthService {
       { expiresIn: `${Math.floor(this.accessTokenTtlMs / 1000)}s` },
     );
 
+    logger.audit("auth.token.refreshed", {
+      userId: user.id,
+      sessionId: session.id,
+    });
+
     await db.insert(audit_events).values({
       actorUserId: user.id,
       actorPersonId: user.personId,
@@ -346,9 +387,12 @@ export class AuthService {
       facilityId: user.facilityId,
     });
 
+    const normalizedRole = normalizeRole(resolvedRole);
     return {
       user: this.sanitizeUser(user),
       facility,
+      role: normalizedRole,
+      permissions: getPermissionsForRole(normalizedRole),
       accessToken,
       expiresInSec: Math.floor(this.accessTokenTtlMs / 1000),
       refreshToken: newRefreshToken,

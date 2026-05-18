@@ -7,6 +7,8 @@ import { getPermissionsForRole, normalizeRole } from "../constants/rbac";
 import { db } from "../db";
 import { user_facility_affiliations } from "../db/schema";
 import { and, eq } from "drizzle-orm";
+import { logger } from "../utils/logger";
+import { setRequestContext } from "../utils/request-context";
 
 // Extend Express Request type to include user payload
 export interface AuthRequest extends Request {
@@ -120,14 +122,30 @@ export const authMiddleware = (
           .limit(1);
 
         if (!rows[0]) {
+          logger.audit("auth.cross_facility.denied", {
+            userId: decoded.id,
+            requestedFacilityId,
+            reason: "no_affiliation",
+          });
           throw new AppError(
             "Forbidden: user is not affiliated with the requested facility",
             HTTP_STATUS.FORBIDDEN,
           );
         }
+        logger.audit("auth.cross_facility.granted", {
+          userId: decoded.id,
+          fromFacilityId: decoded.facilityId,
+          toFacilityId: requestedFacilityId,
+        });
         return requestedFacilityId;
       }
 
+      logger.audit("auth.cross_facility.denied", {
+        userId: decoded.id,
+        requestedFacilityId,
+        reason: "role_not_allowed",
+        role: normalizedRole,
+      });
       throw new AppError(
         "Forbidden: cross-facility access denied",
         HTTP_STATUS.FORBIDDEN,
@@ -148,11 +166,21 @@ export const authMiddleware = (
         role: normalizedRole,
         userType: decoded.userType,
       };
+      // Hydrate ALS so all downstream logs include user/facility.
+      setRequestContext({
+        userId: decoded.id,
+        facilityId,
+        role: normalizedRole,
+        userType: decoded.userType,
+      });
       next();
     };
 
     setContext().catch(next);
   } catch (err) {
+    logger.warn("auth.invalid_token", {
+      reason: (err as Error)?.message ?? "verify_failed",
+    });
     return next(
       new AppError("Unauthorized: Invalid token", HTTP_STATUS.UNAUTHORIZED),
     );

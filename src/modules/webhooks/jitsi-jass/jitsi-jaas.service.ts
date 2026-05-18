@@ -1,4 +1,5 @@
 import { signJwt } from "../../../utils/jwt";
+import { logger } from "../../../utils/logger";
 
 type JaasUser = {
   id: string;
@@ -37,7 +38,10 @@ export class JitsiJaasService {
 
   public createToken(room: string, user: JaasUser, expiresIn: string = "2h") {
     const cfg = getJaasConfig();
-    if (!cfg) return null;
+    if (!cfg) {
+      logger.warn("jaas.config_missing", { room, userId: user.id });
+      return null;
+    }
 
     const payload = {
       aud: "jitsi",
@@ -54,7 +58,7 @@ export class JitsiJaasService {
       },
     };
 
-    return signJwt(
+    const token = signJwt(
       payload,
       {
         algorithm: "RS256",
@@ -63,5 +67,14 @@ export class JitsiJaasService {
       },
       cfg.privateKey,
     );
+
+    logger.info("jaas.token.minted", {
+      room,
+      userId: user.id,
+      moderator: user.moderator,
+      expiresIn,
+    });
+
+    return token;
   }
 }

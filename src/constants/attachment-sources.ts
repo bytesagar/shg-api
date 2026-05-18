@@ -9,6 +9,7 @@ export const ATTACHMENT_SOURCES = [
   "Laboratory",
   "Radiology",
   "StaffIdentity",
+  "AuscultationSession",
 ] as const;
 
 export type AttachmentSourceType = (typeof ATTACHMENT_SOURCES)[number];
@@ -26,4 +27,5 @@ export const ATTACHMENT_SOURCES_FACILITY_EXPLICIT_ONLY =
     "Laboratory",
     "Radiology",
     "StaffIdentity",
+    "AuscultationSession",
   ]);

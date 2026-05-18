@@ -6,6 +6,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { getS3AttachmentsBucket } from "../../config/attachment-storage";
+import { logger } from "../../utils/logger";
 
 const UPLOAD_EXPIRES_SEC = 15 * 60;
 const DOWNLOAD_EXPIRES_SEC = 5 * 60;
@@ -46,6 +47,7 @@ export class S3StorageService {
     contentType: string;
     contentLength?: number;
   }): Promise<{ uploadUrl: string; expiresIn: number }> {
+    const startedAt = Date.now();
     const cmd = new PutObjectCommand({
       Bucket: this.bucket,
       Key: params.key,
@@ -54,32 +56,74 @@ export class S3StorageService {
         ? { ContentLength: params.contentLength }
         : {}),
     });
-    const uploadUrl = await getSignedUrl(getClient(), cmd, {
-      expiresIn: UPLOAD_EXPIRES_SEC,
-    });
-    return { uploadUrl, expiresIn: UPLOAD_EXPIRES_SEC };
+    try {
+      const uploadUrl = await getSignedUrl(getClient(), cmd, {
+        expiresIn: UPLOAD_EXPIRES_SEC,
+      });
+      logger.debug("s3.presign_put.ok", {
+        key: params.key,
+        durationMs: Date.now() - startedAt,
+      });
+      return { uploadUrl, expiresIn: UPLOAD_EXPIRES_SEC };
+    } catch (err) {
+      logger.error("s3.presign_put.failed", {
+        key: params.key,
+        durationMs: Date.now() - startedAt,
+        err,
+      });
+      throw err;
+    }
   }
 
   public async presignGetObject(params: {
     key: string;
   }): Promise<{ downloadUrl: string; expiresIn: number }> {
+    const startedAt = Date.now();
     const cmd = new GetObjectCommand({
       Bucket: this.bucket,
       Key: params.key,
     });
-    const downloadUrl = await getSignedUrl(getClient(), cmd, {
-      expiresIn: DOWNLOAD_EXPIRES_SEC,
-    });
-    return { downloadUrl, expiresIn: DOWNLOAD_EXPIRES_SEC };
+    try {
+      const downloadUrl = await getSignedUrl(getClient(), cmd, {
+        expiresIn: DOWNLOAD_EXPIRES_SEC,
+      });
+      logger.debug("s3.presign_get.ok", {
+        key: params.key,
+        durationMs: Date.now() - startedAt,
+      });
+      return { downloadUrl, expiresIn: DOWNLOAD_EXPIRES_SEC };
+    } catch (err) {
+      logger.error("s3.presign_get.failed", {
+        key: params.key,
+        durationMs: Date.now() - startedAt,
+        err,
+      });
+      throw err;
+    }
   }
 
   public async headObject(key: string) {
-    return getClient().send(
-      new HeadObjectCommand({
-        Bucket: this.bucket,
-        Key: key,
-      }),
-    );
+    const startedAt = Date.now();
+    try {
+      const result = await getClient().send(
+        new HeadObjectCommand({
+          Bucket: this.bucket,
+          Key: key,
+        }),
+      );
+      logger.debug("s3.head.ok", {
+        key,
+        durationMs: Date.now() - startedAt,
+      });
+      return result;
+    } catch (err) {
+      logger.warn("s3.head.failed", {
+        key,
+        durationMs: Date.now() - startedAt,
+        err,
+      });
+      throw err;
+    }
   }
 }
 

@@ -29,6 +29,10 @@ import { AuthController } from "../modules/auth/auth.controller";
 import referenceDataRoutes from "./reference-data.routes";
 import imnciRoutes from "./imnci.routes";
 import imnciFchvRoutes from "./imnci-fchv.routes";
+import growthRoutes from "./growth.routes";
+import notificationRoutes from "./notification.routes";
+import pusherRoutes from "./pusher.routes";
+import teleAuscultationRoutes from "./tele-auscultation.routes";
 
 const router = Router();
 const authController = new AuthController();
@@ -80,5 +84,9 @@ router.use("/maternal-health", maternalHealthRoutes);
 router.use("/reference-data", referenceDataRoutes);
 router.use("/imnci/fchv", imnciFchvRoutes);
 router.use("/imnci", imnciRoutes);
+router.use("/growths", growthRoutes);
+router.use("/notifications", notificationRoutes);
+router.use("/pusher", pusherRoutes);
+router.use("/tele-auscultation", teleAuscultationRoutes);
 
 export default router;

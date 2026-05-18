@@ -41,6 +41,8 @@ export class AuthController extends BaseController {
         ...result.user,
         facility: result.facility,
       },
+      role: result.role,
+      permissions: result.permissions,
       accessToken: result.accessToken,
       expiresInSec: result.expiresInSec,
     });
@@ -58,6 +60,8 @@ export class AuthController extends BaseController {
         ...result.user,
         facility: result.facility,
       },
+      role: result.role,
+      permissions: result.permissions,
       accessToken: result.accessToken,
       expiresInSec: result.expiresInSec,
     });

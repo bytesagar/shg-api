@@ -8,9 +8,15 @@ import {
   TelehealthAppointmentsListQuery,
 } from "../../validations/telehealth.validation";
 import { JitsiJaasService } from "../webhooks/jitsi-jass/jitsi-jaas.service";
-import { EmailService } from "../email/email.service";
+import { NotificationService } from "../notifications/notification.service";
+import { logger } from "../../utils/logger";
 import { db } from "../../db";
-import { telehealth_sessions } from "../../db/schema";
+import {
+  patients,
+  persons,
+  telehealth_sessions,
+  users,
+} from "../../db/schema";
 import { eq } from "drizzle-orm";
 import {
   RosterService,
@@ -22,14 +28,24 @@ export class TelehealthService {
   private patientRepository: PatientRepository;
   private userRepository: UserRepository;
   private jitsi: JitsiJaasService;
-  private email: EmailService;
+  private notifications: NotificationService;
 
   constructor(private readonly context: FacilityContext) {
     this.appointmentRepository = new AppointmentRepository(context);
     this.patientRepository = new PatientRepository(context);
     this.userRepository = new UserRepository(context);
     this.jitsi = new JitsiJaasService();
-    this.email = new EmailService();
+    this.notifications = new NotificationService(context.userId);
+  }
+
+  private async findUserIdsForPatient(patientId: string): Promise<string[]> {
+    const rows = await db
+      .select({ userId: users.id })
+      .from(users)
+      .innerJoin(persons, eq(persons.id, users.personId))
+      .innerJoin(patients, eq(patients.personId, persons.id))
+      .where(eq(patients.id, patientId));
+    return rows.map((r) => r.userId);
   }
 
   public async listAppointments(query: TelehealthAppointmentsListQuery) {
@@ -62,9 +78,19 @@ export class TelehealthService {
         scheduledAt: input.scheduledAt,
       });
     if (dayConflict === "DOCTOR_DAY_TAKEN") {
+      logger.warn("telehealth.booking.conflict", {
+        reason: "doctor_day_taken",
+        doctorId: doctor.id,
+        scheduledAt: input.scheduledAt,
+      });
       return { error: "TELEHEALTH_DOCTOR_DAY_TAKEN" as const };
     }
     if (dayConflict === "PATIENT_DAY_TAKEN") {
+      logger.warn("telehealth.booking.conflict", {
+        reason: "patient_day_taken",
+        patientId: patient.id,
+        scheduledAt: input.scheduledAt,
+      });
       return { error: "TELEHEALTH_PATIENT_DAY_TAKEN" as const };
     }
 
@@ -110,17 +136,32 @@ export class TelehealthService {
         .returning()
     )[0];
 
-    let emailSent = false;
-    let emailError: string | undefined = undefined;
-    if (doctor.email) {
-      const result = await this.email.send({
-        to: doctor.email,
-        subject: "New telehealth appointment booked",
-        body: `A telehealth appointment has been booked.\n\nPatient: ${patientName}\nScheduled At: ${input.scheduledAt}\n\nTo join the video call, open this appointment in the app and use the Join button (a secure link is generated when you join).\n`,
-      });
-      emailSent = result.success;
-      emailError = result.error;
-    }
+    const patientUserIds = await this.findUserIdsForPatient(patient.id);
+    const recipientUserIds = Array.from(
+      new Set([doctor.id, ...patientUserIds]),
+    );
+
+    logger.audit("telehealth.appointment.booked", {
+      appointmentId: appointment.id,
+      doctorId: doctor.id,
+      patientId: patient.id,
+      scheduledAt: input.scheduledAt,
+      facilityId: this.context.facilityId,
+    });
+
+    await this.notifications.publish({
+      kind: "telehealth.appointment.booked",
+      recipientUserIds,
+      data: {
+        appointmentId: appointment.id,
+        doctorUserId: doctor.id,
+        patientUserId: patientUserIds[0] ?? null,
+        doctorName,
+        patientName,
+        scheduledAt: input.scheduledAt,
+        moduleId: appointment.id,
+      },
+    });
 
     return {
       appointment,
@@ -128,8 +169,6 @@ export class TelehealthService {
         provider: "jitsi_jaas" as const,
         room: session.roomName,
       },
-      emailSent,
-      emailError,
     };
   }
 
@@ -205,6 +244,11 @@ export class TelehealthService {
     }
 
     const joinUrl = token ? `${meetingUrl}?jwt=${token}` : meetingUrl;
+    logger.info("telehealth.join_link.minted", {
+      appointmentId: appt.id,
+      as: params.as,
+      room,
+    });
     return {
       meeting: {
         provider: "jitsi_jaas" as const,
@@ -228,7 +272,7 @@ export class TelehealthService {
     if (appt.service !== "telehealth")
       return { error: "NOT_TELEHEALTH" as const };
 
-    return db.transaction(async (tx) => {
+    const result = await db.transaction(async (tx) => {
       const sessionResult = await tx
         .select()
         .from(telehealth_sessions)
@@ -269,5 +313,23 @@ export class TelehealthService {
       if (!updated) return { error: "SESSION_NOT_FOUND" as const };
       return { session: updated };
     });
+
+    if ("session" in result && params.endedAt) {
+      logger.info("telehealth.session.ended", {
+        appointmentId: appt.id,
+        durationSeconds: params.durationSeconds,
+      });
+      await this.notifications.publish({
+        kind: "telehealth.session.ended",
+        recipientUserIds: [],
+        data: {
+          appointmentId: appt.id,
+          durationSeconds: params.durationSeconds,
+          moduleId: appt.id,
+        },
+      });
+    }
+
+    return result;
   }
 }

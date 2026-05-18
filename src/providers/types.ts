@@ -22,3 +22,14 @@ export interface EmailProvider {
 export interface SmsProvider {
   send(sms: Sms): Promise<NotificationResult>;
 }
+
+export interface RealtimeAuth {
+  auth: string;
+  channel_data?: string;
+  shared_secret?: string;
+}
+
+export interface RealtimeProvider {
+  trigger(channels: string[], event: string, data: any): Promise<void>;
+  authorize(socketId: string, channel: string, userData?: any): RealtimeAuth;
+}

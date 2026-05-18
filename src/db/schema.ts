@@ -1641,6 +1641,9 @@ export const growths = pgTable(
     patientId: uuid("patient_id")
       .notNull()
       .references(() => patients.id),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
     childImmunizationId: uuid("child_immunization_id").references(
       () => child_immunizations.id,
     ),
@@ -1653,6 +1656,12 @@ export const growths = pgTable(
   },
   (t) => [
     index("growth_patient_id_idx").on(t.patientId),
+    index("growth_facility_patient_idx").on(t.facilityId, t.patientId),
+    index("growth_facility_patient_date_idx").on(
+      t.facilityId,
+      t.patientId,
+      t.date,
+    ),
   ],
 );
 
@@ -1710,11 +1719,56 @@ export const telehealth_sessions = pgTable("telehealth_sessions", {
   jaasSessionId: varchar("jaas_session_id", { length: 255 }),
 });
 
-/** Dedupe JaaS webhook deliveries (same idempotencyKey = duplicate). */
-export const jaas_webhook_idempotency = pgTable("jaas_webhook_idempotency", {
-  idempotencyKey: text("idempotency_key").primaryKey().notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+export const auscultation_sessions = pgTable(
+  "auscultation_sessions",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
+    patientId: uuid("patient_id")
+      .notNull()
+      .references(() => patients.id),
+    doctorId: uuid("doctor_id")
+      .notNull()
+      .references(() => users.id),
+    encounterId: uuid("encounter_id").references(() => encounters.id),
+    visitId: uuid("visit_id").references(() => visits.id),
+    appointmentId: uuid("appointment_id").references(() => appointments.id),
+    provider: varchar("provider", { length: 50 })
+      .notNull()
+      .default("jitsi_jaas"),
+    roomName: varchar("room_name", { length: 255 }).notNull(),
+    status: varchar("status", { length: 20 }).notNull().default("pending"),
+    startedAt: timestamp("started_at"),
+    endedAt: timestamp("ended_at"),
+    durationSeconds: integer("duration_seconds").notNull().default(0),
+    recordingAttachmentId: uuid("recording_attachment_id").references(
+      () => attachments.id,
+    ),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedBy: uuid("deleted_by"),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [
+    index("auscultation_session_facility_idx").on(t.facilityId),
+    index("auscultation_session_facility_patient_idx").on(
+      t.facilityId,
+      t.patientId,
+    ),
+    index("auscultation_session_facility_doctor_idx").on(
+      t.facilityId,
+      t.doctorId,
+    ),
+    index("auscultation_session_appointment_idx").on(t.appointmentId),
+  ],
+);
 
 export const notifications = pgTable(
   "notifications",
@@ -2520,6 +2574,40 @@ export const telehealthSessionsRelations = relations(
     appointment: one(appointments, {
       fields: [telehealth_sessions.appointmentId],
       references: [appointments.id],
+    }),
+  }),
+);
+
+export const auscultationSessionsRelations = relations(
+  auscultation_sessions,
+  ({ one }) => ({
+    facility: one(health_facilities, {
+      fields: [auscultation_sessions.facilityId],
+      references: [health_facilities.id],
+    }),
+    patient: one(patients, {
+      fields: [auscultation_sessions.patientId],
+      references: [patients.id],
+    }),
+    doctor: one(users, {
+      fields: [auscultation_sessions.doctorId],
+      references: [users.id],
+    }),
+    encounter: one(encounters, {
+      fields: [auscultation_sessions.encounterId],
+      references: [encounters.id],
+    }),
+    visit: one(visits, {
+      fields: [auscultation_sessions.visitId],
+      references: [visits.id],
+    }),
+    appointment: one(appointments, {
+      fields: [auscultation_sessions.appointmentId],
+      references: [appointments.id],
+    }),
+    recording: one(attachments, {
+      fields: [auscultation_sessions.recordingAttachmentId],
+      references: [attachments.id],
     }),
   }),
 );
