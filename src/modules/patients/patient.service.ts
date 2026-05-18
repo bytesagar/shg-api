@@ -45,7 +45,7 @@ export class PatientService {
       );
     }
 
-    const patientId = await generatePatientId();
+    const patientId = await generatePatientId(data.address?.districtId ?? undefined);
     let newPatient;
     try {
       newPatient = await this.patientRepository.createWithInitialVisit(data, patientId);
