@@ -5,7 +5,7 @@ import {
 } from "../../validations/patient.validation";
 import { FacilityContext } from "../../context/facility-context";
 import { PatientRepository } from "./patient.repository";
-import { patients } from "../../db/schema";
+import { health_facilities, patients } from "../../db/schema";
 import {
   andFilter,
   orFilter,
@@ -14,12 +14,18 @@ import {
 } from "../../utils/sql-filter";
 import { AppError } from "../../utils/app-error";
 import { HTTP_STATUS } from "../../config/constants";
+import { NotificationService } from "../notifications/notification.service";
+import { db } from "../../db";
+import { eq } from "drizzle-orm";
+import { logger } from "../../utils/logger";
 
 export class PatientService {
   private patientRepository: PatientRepository;
+  private notifications: NotificationService;
 
   constructor(private readonly context: FacilityContext) {
     this.patientRepository = new PatientRepository(context);
+    this.notifications = new NotificationService(context.userId);
   }
 
   public async createPatient(data: PatientCreateInput) {
@@ -40,8 +46,9 @@ export class PatientService {
     }
 
     const patientId = await generatePatientId();
+    let newPatient;
     try {
-      return await this.patientRepository.createWithInitialVisit(data, patientId);
+      newPatient = await this.patientRepository.createWithInitialVisit(data, patientId);
     } catch (err: any) {
       if (err?.code === "23505") {
         throw new AppError(
@@ -50,6 +57,42 @@ export class PatientService {
         );
       }
       throw err;
+    }
+
+    await this.publishPatientRegistered(newPatient, data);
+    return newPatient;
+  }
+
+  private async publishPatientRegistered(
+    newPatient: typeof patients.$inferSelect,
+    data: PatientCreateInput,
+  ) {
+    try {
+      const patientName = [data.firstName, data.middleName, data.lastName]
+        .filter(Boolean)
+        .join(" ");
+
+      const [facility] = await db
+        .select({ name: health_facilities.name })
+        .from(health_facilities)
+        .where(eq(health_facilities.id, this.context.facilityId))
+        .limit(1);
+
+      await this.notifications.publish({
+        kind: "system.patient.registered",
+        recipientUserIds: [],
+        data: {
+          patientName,
+          facilityName: facility?.name ?? this.context.facilityId,
+          facilityId: this.context.facilityId,
+          service: newPatient.service,
+          patientId: newPatient.id,
+          moduleId: newPatient.id,
+          occurredAt: new Date().toISOString(),
+        },
+      });
+    } catch (err) {
+      logger.error("patients.activity_push_failed", { err });
     }
   }
 
