@@ -65,4 +65,90 @@ router.get(
   maternalHealthController.listPostnatalCares,
 );
 
+// ---- HMIS 2082 endpoints ----
+
+router.post(
+  "/pregnancies/:pregnancyId/previous-pregnancies",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  maternalHealthController.createPreviousPregnancies,
+);
+
+router.patch(
+  "/pregnancies/:pregnancyId/screenings",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  maternalHealthController.patchScreening,
+);
+
+router.patch(
+  "/pregnancies/:pregnancyId/td-doses",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  maternalHealthController.patchTdDoses,
+);
+
+router.post(
+  "/pregnancies/:pregnancyId/complications",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  maternalHealthController.createComplication,
+);
+
+router.patch(
+  "/pregnancies/:pregnancyId/aama-incentive",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  maternalHealthController.patchAamaIncentive,
+);
+
+router.post(
+  "/maternal-deaths",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  maternalHealthController.createMaternalDeath,
+);
+
+router.post(
+  "/newborn-deaths",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  maternalHealthController.createNewbornDeath,
+);
+
+router.post(
+  "/safe-abortions",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  maternalHealthController.createSafeAbortion,
+);
+
+router.post(
+  "/safe-abortions/:safeAbortionId/complications",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  maternalHealthController.createSafeAbortionComplication,
+);
+
+router.post(
+  "/post-abortion-cares",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  maternalHealthController.createPostAbortionCare,
+);
+
+router.get(
+  "/population-targets",
+  authMiddleware,
+  authorize([...CLINICAL_READ_ROLES]),
+  maternalHealthController.listPopulationTargets,
+);
+
+router.post(
+  "/population-targets",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  maternalHealthController.upsertPopulationTarget,
+);
+
 export default router;

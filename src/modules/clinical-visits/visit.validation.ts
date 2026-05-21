@@ -1,11 +1,13 @@
 import { isoDateString } from "@/validations/common.validation";
+import { VISIT_TYPES } from "@/constants/visit-types";
 import { z } from "zod";
 
 export const visitCreateSchema = z.object({
   patientId: z.string(),
   date: isoDateString.nullable().optional(),
   reason: z.string().min(1, "Reason is required"),
-  service: z.string().max(255).optional().nullable(),
+  // Conventional visit type — the clinical service the patient came for.
+  service: z.enum(VISIT_TYPES).optional().nullable(),
   status: z
     .enum(["planned", "arrived", "in_progress", "finished", "cancelled"])
     .optional()

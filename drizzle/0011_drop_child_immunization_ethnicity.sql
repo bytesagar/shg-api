@@ -1,0 +1,1 @@
+ALTER TABLE "child_immunizations" DROP COLUMN "hmis_ethnic_code";
