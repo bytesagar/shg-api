@@ -190,4 +190,25 @@ router.post(
   immunizationController.createImmunizationHistory,
 );
 
+router.get(
+  "/:patientId/immunizations/schedule",
+  authMiddleware,
+  authorizePermission("immunization:read"),
+  immunizationController.getPatientSchedule,
+);
+
+router.put(
+  "/:patientId/feeding-milestones",
+  authMiddleware,
+  authorizePermission("immunization:create"),
+  immunizationController.upsertFeedingMilestones,
+);
+
+router.get(
+  "/:patientId/feeding-milestones",
+  authMiddleware,
+  authorizePermission("immunization:read"),
+  immunizationController.getFeedingMilestones,
+);
+
 export default router;

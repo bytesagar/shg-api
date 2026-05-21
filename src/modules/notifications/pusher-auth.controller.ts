@@ -16,6 +16,7 @@ import {
   persons,
   users,
 } from "../../db/schema";
+import { RBAC_ROLES, normalizeRole } from "../../constants/rbac";
 
 function parseChannelId(channel: string, prefix: string): string | null {
   if (!channel.startsWith(prefix)) return null;
@@ -42,7 +43,12 @@ export class PusherAuthController extends BaseController {
     }
     const { socket_id: socketId, channel_name: channelName } = body.data;
 
-    const allowed = await isAllowed(channelName, context.userId, context.facilityId);
+    const allowed = await isAllowed(
+      channelName,
+      context.userId,
+      context.facilityId,
+      context.role,
+    );
     if (!allowed) {
       throw new AppError("Forbidden", HTTP_STATUS.FORBIDDEN);
     }
@@ -56,7 +62,12 @@ async function isAllowed(
   channel: string,
   userId: string,
   facilityId: string,
+  role: string,
 ): Promise<boolean> {
+  if (channel === "private-admins-activity") {
+    return normalizeRole(role) === RBAC_ROLES.ADMIN;
+  }
+
   const userScoped = parseChannelId(channel, "private-user-");
   if (userScoped !== null) {
     return userScoped === userId;

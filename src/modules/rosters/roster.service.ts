@@ -1,6 +1,7 @@
 import { FacilityContext } from "../../context/facility-context";
 import { RosterRepository } from "./roster.repository";
 import { UserRepository } from "../users/user.repository";
+import { NotificationService } from "../notifications/notification.service";
 import {
   RosterBatchCreateInput,
   RosterCreateInput,
@@ -13,6 +14,14 @@ import {
   utcIsoDateFromInstant,
 } from "../../utils/roster-time";
 import type { PaginationQuery } from "../../utils/query-parser";
+import { logger } from "../../utils/logger";
+
+type RosterShiftSummary = {
+  date: string;
+  fromTime: string;
+  toTime: string;
+  service: string;
+};
 
 /** Stored on roster rows and required for telehealth booking checks. */
 export const TELEHEALTH_ROSTER_SERVICE = "telehealth";
@@ -22,10 +31,31 @@ export const TELEHEALTH_ROSTER_SERVICE = "telehealth";
 export class RosterService {
   private rosterRepository: RosterRepository;
   private userRepository: UserRepository;
+  private notifications: NotificationService;
 
   constructor(private readonly context: FacilityContext) {
     this.rosterRepository = new RosterRepository(context);
     this.userRepository = new UserRepository(context);
+    this.notifications = new NotificationService(context.userId);
+  }
+
+  private async publishShiftsAdded(
+    recipientUserId: string,
+    shifts: RosterShiftSummary[],
+    moduleId: string | undefined,
+  ) {
+    try {
+      await this.notifications.publish({
+        kind: "roster.shifts.added",
+        recipientUserIds: [recipientUserId],
+        data: { shifts, moduleId },
+      });
+    } catch (err) {
+      logger.error("rosters.notification_failed", {
+        err,
+        userId: recipientUserId,
+      });
+    }
   }
 
   /** Returns true if provider has an active roster covering scheduled time and service. */
@@ -80,7 +110,7 @@ export class RosterService {
       return { error: "USER_NOT_IN_FACILITY" as const };
     }
 
-    return this.rosterRepository.create({
+    const created = await this.rosterRepository.create({
       userId: input.userId,
       facilityId: this.context.facilityId,
       date: input.date,
@@ -91,6 +121,23 @@ export class RosterService {
       createdBy: this.context.userId,
       updatedBy: this.context.userId,
     });
+
+    if (created) {
+      await this.publishShiftsAdded(
+        input.userId,
+        [
+          {
+            date: input.date,
+            fromTime: input.fromTime,
+            toTime: input.toTime,
+            service: input.service,
+          },
+        ],
+        created.id,
+      );
+    }
+
+    return created;
   }
 
   /**
@@ -152,6 +199,20 @@ export class RosterService {
     }
 
     const items = await this.rosterRepository.createMany(rows);
+
+    if (items.length) {
+      await this.publishShiftsAdded(
+        input.userId,
+        input.entries.map((e) => ({
+          date: e.date,
+          fromTime: e.fromTime,
+          toTime: e.toTime,
+          service: e.service,
+        })),
+        items[0]?.id,
+      );
+    }
+
     return { items };
   }
 

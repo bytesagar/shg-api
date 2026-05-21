@@ -93,6 +93,37 @@ export const NOTIFICATION_EVENTS = {
     channels: (_d, recipients) =>
       recipients.map((id) => `private-user-${id}`),
   },
+  "system.patient.registered": {
+    persist: false,
+    email: false,
+    module: "system",
+    title: (d) => `New patient registered: ${d.patientName ?? "Unknown"}`,
+    description: (d) =>
+      `${d.patientName ?? "A patient"} registered at ${d.facilityName ?? "a facility"} (${d.service ?? "general"})`,
+    channels: () => ["private-admins-activity"],
+  },
+  "roster.shifts.added": {
+    persist: true,
+    email: true,
+    module: "rosters",
+    title: (d) =>
+      (d.shifts?.length ?? 0) > 1
+        ? "New shifts added to your roster"
+        : "New shift added to your roster",
+    description: (d) => {
+      const shifts = d.shifts ?? [];
+      if (shifts.length === 1) {
+        const s = shifts[0];
+        return `A new shift has been added to your roster: ${s.date} from ${s.fromTime} to ${s.toTime} (${s.service}).`;
+      }
+      const lines = shifts
+        .map((s: any) => `- ${s.date} ${s.fromTime}-${s.toTime} (${s.service})`)
+        .join("\n");
+      return `${shifts.length} new shifts have been added to your roster:\n${lines}`;
+    },
+    channels: (_d, recipients) =>
+      recipients.map((id) => `private-user-${id}`),
+  },
 } satisfies Record<string, EventConfig>;
 
 export function getEventConfig(kind: NotificationEventKind): EventConfig {

@@ -128,6 +128,184 @@ export const pregnancyStatusEnum = pgEnum("pregnancy_status_enum", [
   "ended",
 ]);
 
+// ---- HMIS 2082 maternal-health enums ----
+
+export const hmisEthnicCodeEnum = pgEnum("hmis_ethnic_code_enum", [
+  "01_dalit",
+  "02_janajati",
+  "03_madhesi",
+  "04_muslim",
+  "05_brahmin_chhetri",
+  "06_other",
+]);
+
+export const ecologicalZoneEnum = pgEnum("ecological_zone_enum", [
+  "mountain",
+  "hill",
+  "terai",
+]);
+
+export const ancProtocolVisitEnum = pgEnum("anc_protocol_visit_enum", [
+  "ANC1",
+  "ANC2",
+  "ANC3",
+  "ANC4",
+  "ANC5",
+  "ANC6",
+  "ANC7",
+  "ANC8",
+]);
+
+export const pncProtocolVisitEnum = pgEnum("pnc_protocol_visit_enum", [
+  "PNC1",
+  "PNC2",
+  "PNC3",
+  "PNC4",
+]);
+
+export const laborTypeEnum = pgEnum("labor_type_enum", [
+  "spontaneous",
+  "augmented",
+  "induced",
+]);
+
+export const deliveryModeEnum = pgEnum("delivery_mode_enum", [
+  "spontaneous",
+  "vacuum",
+  "forceps",
+  "cs",
+]);
+
+export const fetalPresentationEnum = pgEnum("fetal_presentation_enum", [
+  "cephalic",
+  "breech",
+  "shoulder",
+]);
+
+export const birthAttendantEnum = pgEnum("birth_attendant_enum", [
+  "sba_anm",
+  "shp",
+  "other",
+]);
+
+export const neonatalStatusEnum = pgEnum("neonatal_status_enum", [
+  "normal",
+  "infection",
+  "asphyxia",
+  "hypothermia",
+  "jaundice",
+  "congenital_syphilis",
+]);
+
+export const maternalOutcomeEnum = pgEnum("maternal_outcome_enum", [
+  "recovered",
+  "stable",
+  "referred",
+  "lama",
+  "absconded",
+  "died",
+]);
+
+export const testResultEnum = pgEnum("test_result_enum", [
+  "reactive",
+  "non_reactive",
+  "positive",
+  "negative",
+  "pending",
+]);
+
+export const complicationStageEnum = pgEnum("complication_stage_enum", [
+  "anc",
+  "delivery",
+  "pnc",
+  "abortion",
+]);
+
+export const complicationManagementEnum = pgEnum(
+  "complication_management_enum",
+  ["treated", "referred"],
+);
+
+export const abortionProcedureEnum = pgEnum("abortion_procedure_enum", [
+  "mva",
+  "eva",
+  "medication",
+  "manual_induction",
+  "d_and_e",
+  "misoprostol",
+]);
+
+export const pacIndicationEnum = pgEnum("pac_indication_enum", [
+  "incomplete_induced",
+  "incomplete_spontaneous",
+  "septic",
+  "other",
+]);
+
+export const maternalDeathStageEnum = pgEnum("maternal_death_stage_enum", [
+  "pregnant",
+  "delivery",
+  "postnatal_42d",
+]);
+
+export const deliveryPlaceEnum = pgEnum("delivery_place_enum", [
+  "home",
+  "this_facility",
+  "other_facility",
+  "enroute",
+]);
+
+export const familyPlanningPostpartumTypeEnum = pgEnum(
+  "family_planning_postpartum_type_enum",
+  ["iucd", "implant", "btl", "depo", "none"],
+);
+
+// ---- HMIS 2082 child immunization enums ----
+
+export const vaccineRouteEnum = pgEnum("vaccine_route_enum", [
+  "im",
+  "sc",
+  "id",
+  "po",
+  "nasal",
+  "other",
+]);
+
+export const vaccineSiteEnum = pgEnum("vaccine_site_enum", [
+  "left_arm",
+  "right_arm",
+  "left_thigh",
+  "right_thigh",
+  "oral",
+  "other",
+]);
+
+export const immunizationModeEnum = pgEnum("immunization_mode_enum", [
+  "routine",
+  "campaign",
+  "school",
+  "catch_up",
+  "outbreak_response",
+]);
+
+export const aefiSeverityEnum = pgEnum("aefi_severity_enum", [
+  "mild",
+  "severe",
+]);
+
+export const aefiOutcomeEnum = pgEnum("aefi_outcome_enum", [
+  "recovered",
+  "recovering",
+  "referred",
+  "died",
+  "unknown",
+]);
+
+export const vaccineCategoryEnum = pgEnum("vaccine_category_enum", [
+  "vaccine",
+  "nutrition",
+]);
+
 export const appointmentStatusEnum = pgEnum("appointment_status_enum", [
   "scheduled",
   "confirmed",
@@ -273,6 +451,7 @@ export const health_facilities = pgTable(
     authority: varchar("authority", { length: 255 }),
     ownership: varchar("ownership", { length: 255 }),
     facilityType: varchar("facility_type", { length: 100 }),
+    ecologicalZone: ecologicalZoneEnum("ecological_zone"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at"),
     deletedBy: uuid("deleted_by"),
@@ -1262,6 +1441,49 @@ export const pregnancies = pgTable(
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
     assignedFchvId: uuid("assigned_fchv_id").references(() => users.id),
+
+    // ---- HMIS 2082 extensions ----
+    // Ethnicity snapshot so historical aggregates stay stable.
+    hmisEthnicCode: hmisEthnicCodeEnum("hmis_ethnic_code"),
+
+    // Structured obstetric history (free-text gravida/para kept above).
+    gravidaNum: integer("gravida_num"),
+    paraNum: integer("para_num"),
+    abortionsNum: integer("abortions_num"),
+    livingChildrenNum: integer("living_children_num"),
+
+    // One-time screenings during pregnancy.
+    rousgFirstDate: date("rousg_first_date", { mode: "string" }),
+    hivTestDate: date("hiv_test_date", { mode: "string" }),
+    hivResult: testResultEnum("hiv_result"),
+    hivTreatmentOrReferral: text("hiv_treatment_or_referral"),
+    hbsagTestDate: date("hbsag_test_date", { mode: "string" }),
+    hbsagResult: testResultEnum("hbsag_result"),
+    hbsagTreatmentOrReferral: text("hbsag_treatment_or_referral"),
+    syphilisTreponemalDate: date("syphilis_treponemal_date", { mode: "string" }),
+    syphilisTreponemalResult: testResultEnum("syphilis_treponemal_result"),
+    syphilisNontreponemalDate: date("syphilis_nontreponemal_date", {
+      mode: "string",
+    }),
+    syphilisNontreponemalResult: testResultEnum("syphilis_nontreponemal_result"),
+    syphilisTreatmentOrReferral: text("syphilis_treatment_or_referral"),
+    tbSputumTestDate: date("tb_sputum_test_date", { mode: "string" }),
+    dewormingDate: date("deworming_date", { mode: "string" }),
+
+    // TD vaccine doses.
+    td1Date: date("td1_date", { mode: "string" }),
+    td2Date: date("td2_date", { mode: "string" }),
+    td2plusDate: date("td2plus_date", { mode: "string" }),
+
+    // Aama ANC encouragement (NPR 800 if 4-visit protocol completed).
+    ancIncentiveEligible: boolean("anc_incentive_eligible"),
+    ancIncentiveReceived: boolean("anc_incentive_received"),
+    ancIncentiveAmount: integer("anc_incentive_amount"),
+    ancIncentiveReasonIfNot: text("anc_incentive_reason_if_not"),
+    ancIncentivePaidAt: date("anc_incentive_paid_at", { mode: "string" }),
+
+    // Flips true when schema-completeness checks pass (drives HMIS analytics).
+    hmisCompliant: boolean("hmis_compliant").default(false).notNull(),
   },
   (t) => [
     index("pregnancy_patient_id_idx").on(t.patientId),
@@ -1327,12 +1549,27 @@ export const antenatal_cares = pgTable(
     updatedAt: timestamp("updated_at"),
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
+
+    // ---- HMIS 2082 extensions ----
+    protocolVisitNumber: ancProtocolVisitEnum("protocol_visit_number"),
+    protocolWindowViolation: boolean("protocol_window_violation")
+      .default(false)
+      .notNull(),
+    gestationalAgeWeeks: integer("gestational_age_weeks"),
+    anaemiaPresent: boolean("anaemia_present"),
+    edemaLocation: varchar("edema_location", { length: 20 }),
+    motherHeightCm: real("mother_height_cm"),
+    bmi: real("bmi"),
   },
   (t) => [
     index("antenatal_care_patient_id_idx").on(t.patientId),
     index("antenatal_care_pregnancy_id_idx").on(t.pregnancyId),
     index("antenatal_care_visit_id_idx").on(t.visitId),
     index("antenatal_care_encounter_id_idx").on(t.encounterId),
+    index("antenatal_care_protocol_visit_idx").on(
+      t.pregnancyId,
+      t.protocolVisitNumber,
+    ),
   ],
 );
 
@@ -1379,12 +1616,49 @@ export const deliveries = pgTable(
     updatedAt: timestamp("updated_at"),
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
+
+    // ---- HMIS 2082 extensions ----
+    admissionAt: timestamp("admission_at"),
+    deliveryAt: timestamp("delivery_at"),
+    dischargeAt: timestamp("discharge_at"),
+    laborType: laborTypeEnum("labor_type"),
+    fetalPresentation: fetalPresentationEnum("fetal_presentation"),
+    deliveryMode: deliveryModeEnum("delivery_mode"),
+    placeCode: deliveryPlaceEnum("place_code"),
+    otherFacilityName: varchar("other_facility_name", { length: 255 }),
+    birthAttendant: birthAttendantEnum("birth_attendant"),
+
+    noOfLiveTermBabies: integer("no_of_live_term_babies"),
+    noOfLivePretermBabies: integer("no_of_live_preterm_babies"),
+    noOfStillIntrapartum: integer("no_of_still_intrapartum"),
+    noOfStillAntepartum: integer("no_of_still_antepartum"),
+
+    oxytocinGiven: boolean("oxytocin_given"),
+    kmcGiven: boolean("kmc_given"),
+    earlyBreastfeedingWithin1h: boolean("early_breastfeeding_within_1h"),
+    antiDGiven: boolean("anti_d_given"),
+    warmBagDistributed: boolean("warm_bag_distributed"),
+    warmBagReasonIfNot: text("warm_bag_reason_if_not"),
+    bloodTransfusionPints: integer("blood_transfusion_pints").default(0),
+    cabinUsed: boolean("cabin_used"),
+
+    maternalOutcome: maternalOutcomeEnum("maternal_outcome"),
+    referredToFacilityId: uuid("referred_to_facility_id").references(
+      () => health_facilities.id,
+    ),
+
+    transportIncentiveEligible: boolean("transport_incentive_eligible"),
+    transportIncentiveReceived: boolean("transport_incentive_received"),
+    transportIncentiveAmount: integer("transport_incentive_amount"),
+    transportIncentiveReasonIfNot: text("transport_incentive_reason_if_not"),
   },
   (t) => [
     index("delivery_patient_id_idx").on(t.patientId),
     index("delivery_pregnancy_id_idx").on(t.pregnancyId),
     index("delivery_visit_id_idx").on(t.visitId),
     index("delivery_encounter_id_idx").on(t.encounterId),
+    index("delivery_mode_idx").on(t.deliveryMode),
+    index("delivery_place_idx").on(t.placeCode),
   ],
 );
 
@@ -1414,6 +1688,17 @@ export const delivery_children = pgTable(
     updatedAt: timestamp("updated_at"),
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
+
+    // ---- HMIS 2082 extensions ----
+    sex: genderEnum("sex"),
+    neonatalStatus: neonatalStatusEnum("neonatal_status"),
+    isTerm: boolean("is_term"),
+    congenitalAnomalyMajor: boolean("congenital_anomaly_major"),
+    congenitalAnomalyMinor: boolean("congenital_anomaly_minor"),
+    congenitalAnomalyOtherCount: integer("congenital_anomaly_other_count"),
+    congenitalAnomalyIcdCode: varchar("congenital_anomaly_icd_code", {
+      length: 50,
+    }),
   },
   (t) => [
     index("delivery_children_delivery_id_idx").on(t.deliveryId),
@@ -1467,6 +1752,19 @@ export const postnatal_cares = pgTable(
     updatedAt: timestamp("updated_at"),
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
+
+    // ---- HMIS 2082 extensions ----
+    protocolVisitNumber: pncProtocolVisitEnum("protocol_visit_number"),
+    locationCode: varchar("location_code", { length: 20 }), // facility | home
+    familyPlanningServiceType: familyPlanningPostpartumTypeEnum(
+      "family_planning_service_type",
+    ),
+    fpGivenWithin48h: boolean("fp_given_within_48h"),
+    fpGivenWithin42d: boolean("fp_given_within_42d"),
+    vitaminKDate: date("vitamin_k_date", { mode: "string" }),
+    postnatalBloodTransfusionPints: integer(
+      "postnatal_blood_transfusion_pints",
+    ).default(0),
   },
   (t) => [
     index("postnatal_care_patient_id_idx").on(t.patientId),
@@ -1474,6 +1772,10 @@ export const postnatal_cares = pgTable(
     index("postnatal_care_patient_visit_date_idx").on(t.patientId, t.visitDate),
     index("postnatal_care_visit_id_idx").on(t.visitId),
     index("postnatal_care_encounter_id_idx").on(t.encounterId),
+    index("postnatal_care_protocol_visit_idx").on(
+      t.pregnancyId,
+      t.protocolVisitNumber,
+    ),
   ],
 );
 
@@ -1562,8 +1864,397 @@ export const home_baby_postnatal_cares = pgTable(
 );
 
 // ============================================================
+// HMIS 2082 — STRUCTURED COMPLICATIONS, HISTORY, DEATHS, AAMA
+// ============================================================
+
+export const facility_population_targets = pgTable(
+  "facility_population_targets",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
+    fiscalYear: integer("fiscal_year").notNull(),
+    expectedPregnancies: integer("expected_pregnancies").notNull(),
+    expectedDeliveries: integer("expected_deliveries").notNull(),
+    targetSetBy: uuid("target_set_by").references(() => users.id),
+    targetSetAt: timestamp("target_set_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedBy: uuid("deleted_by"),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [
+    uniqueIndex("facility_population_target_unique").on(
+      t.facilityId,
+      t.fiscalYear,
+    ),
+  ],
+);
+
+export const pregnancy_complications = pgTable(
+  "pregnancy_complications",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    pregnancyId: uuid("pregnancy_id")
+      .notNull()
+      .references(() => pregnancies.id),
+    stage: complicationStageEnum("stage").notNull(),
+    icd11Code: varchar("icd11_code", { length: 50 }),
+    icd11Title: text("icd11_title"),
+    management: complicationManagementEnum("management"),
+    referredToFacilityId: uuid("referred_to_facility_id").references(
+      () => health_facilities.id,
+    ),
+    notes: text("notes"),
+    recordedAt: timestamp("recorded_at").defaultNow().notNull(),
+    recordedAtAncId: uuid("recorded_at_anc_id").references(
+      () => antenatal_cares.id,
+    ),
+    recordedAtDeliveryId: uuid("recorded_at_delivery_id").references(
+      () => deliveries.id,
+    ),
+    recordedAtPncId: uuid("recorded_at_pnc_id").references(
+      () => postnatal_cares.id,
+    ),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedBy: uuid("deleted_by"),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [
+    index("pregnancy_complication_pregnancy_idx").on(t.pregnancyId),
+    index("pregnancy_complication_stage_icd_idx").on(t.stage, t.icd11Code),
+    index("pregnancy_complication_facility_recorded_at_idx").on(
+      t.facilityId,
+      t.recordedAt,
+    ),
+  ],
+);
+
+export const previous_pregnancies = pgTable(
+  "previous_pregnancies",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    pregnancyId: uuid("pregnancy_id")
+      .notNull()
+      .references(() => pregnancies.id),
+    ordinal: integer("ordinal").notNull(),
+    year: integer("year"),
+    outcome: varchar("outcome", { length: 40 }),
+    deliveryMode: deliveryModeEnum("delivery_mode"),
+    complicationIcd11Code: varchar("complication_icd11_code", { length: 50 }),
+    liveBirth: boolean("live_birth"),
+    stillBirth: boolean("still_birth"),
+    preterm: boolean("preterm"),
+    twin: boolean("twin"),
+    abortion: boolean("abortion"),
+    tdDoseReceived: boolean("td_dose_received"),
+    childSex: genderEnum("child_sex"),
+    childCurrentAgeMonths: integer("child_current_age_months"),
+    notes: text("notes"),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedBy: uuid("deleted_by"),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [
+    index("previous_pregnancy_pregnancy_idx").on(t.pregnancyId),
+  ],
+);
+
+export const maternal_deaths = pgTable(
+  "maternal_deaths",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    patientId: uuid("patient_id")
+      .notNull()
+      .references(() => patients.id),
+    pregnancyId: uuid("pregnancy_id").references(() => pregnancies.id),
+    deathDate: date("death_date", { mode: "string" }).notNull(),
+    place: varchar("place", { length: 30 }), // home | facility | other
+    placeDetail: text("place_detail"),
+    stage: maternalDeathStageEnum("stage").notNull(),
+    causeIcd11Code: varchar("cause_icd11_code", { length: 50 }),
+    causeText: text("cause_text"),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedBy: uuid("deleted_by"),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [
+    index("maternal_death_patient_idx").on(t.patientId),
+    index("maternal_death_facility_date_idx").on(t.facilityId, t.deathDate),
+  ],
+);
+
+export const newborn_deaths = pgTable(
+  "newborn_deaths",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    deliveryId: uuid("delivery_id").references(() => deliveries.id),
+    deliveryChildId: uuid("delivery_child_id").references(
+      () => delivery_children.id,
+    ),
+    patientId: uuid("patient_id")
+      .notNull()
+      .references(() => patients.id),
+    deathDate: date("death_date", { mode: "string" }).notNull(),
+    ageAtDeathHours: integer("age_at_death_hours"),
+    causeIcd11Code: varchar("cause_icd11_code", { length: 50 }),
+    causeText: text("cause_text"),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedBy: uuid("deleted_by"),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [
+    index("newborn_death_facility_date_idx").on(t.facilityId, t.deathDate),
+    index("newborn_death_patient_idx").on(t.patientId),
+  ],
+);
+
+export const safe_abortions = pgTable(
+  "safe_abortions",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    patientId: uuid("patient_id")
+      .notNull()
+      .references(() => patients.id),
+    procedureDate: date("procedure_date", { mode: "string" }).notNull(),
+    hmisEthnicCode: hmisEthnicCodeEnum("hmis_ethnic_code"),
+    age: integer("age"),
+    education: varchar("education", { length: 50 }),
+    gravidaNum: integer("gravida_num"),
+    livingChildrenNum: integer("living_children_num"),
+    gestationByLmpWeeks: integer("gestation_by_lmp_weeks"),
+    gestationByExamWeeks: integer("gestation_by_exam_weeks"),
+    procedure: abortionProcedureEnum("procedure").notNull(),
+    painManagementGiven: boolean("pain_management_given"),
+    visitId: uuid("visit_id").references(() => visits.id),
+    encounterId: uuid("encounter_id").references(() => encounters.id),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedBy: uuid("deleted_by"),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [
+    index("safe_abortion_patient_idx").on(t.patientId),
+    index("safe_abortion_facility_date_idx").on(t.facilityId, t.procedureDate),
+  ],
+);
+
+export const safe_abortion_complications = pgTable(
+  "safe_abortion_complications",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    safeAbortionId: uuid("safe_abortion_id")
+      .notNull()
+      .references(() => safe_abortions.id),
+    icd11Code: varchar("icd11_code", { length: 50 }),
+    icd11Title: text("icd11_title"),
+    complicationKind: varchar("complication_kind", { length: 60 }),
+    // incomplete_repeat | heavy_bleeding | uterine_injury | infection
+    // | ongoing_pregnancy | ectopic | other
+    management: complicationManagementEnum("management"),
+    notes: text("notes"),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedBy: uuid("deleted_by"),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [
+    index("safe_abortion_complication_abortion_idx").on(t.safeAbortionId),
+  ],
+);
+
+export const post_abortion_cares = pgTable(
+  "post_abortion_cares",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    safeAbortionId: uuid("safe_abortion_id").references(() => safe_abortions.id),
+    patientId: uuid("patient_id")
+      .notNull()
+      .references(() => patients.id),
+    indication: pacIndicationEnum("indication").notNull(),
+    careDate: date("care_date", { mode: "string" }).notNull(),
+    fpServiceProvided: varchar("fp_service_provided", { length: 40 }),
+    notes: text("notes"),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedBy: uuid("deleted_by"),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [
+    index("pac_facility_date_idx").on(t.facilityId, t.careDate),
+    index("pac_patient_idx").on(t.patientId),
+  ],
+);
+
+export const aama_monthly_aggregates = pgTable(
+  "aama_monthly_aggregates",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
+    year: integer("year").notNull(),
+    month: integer("month").notNull(),
+    hmisEthnicCode: hmisEthnicCodeEnum("hmis_ethnic_code"),
+
+    ancIncentiveEligibleCount: integer("anc_incentive_eligible_count")
+      .default(0)
+      .notNull(),
+    ancIncentivePaidCount: integer("anc_incentive_paid_count")
+      .default(0)
+      .notNull(),
+    transportEligibleCount: integer("transport_eligible_count")
+      .default(0)
+      .notNull(),
+    transportPaidCount: integer("transport_paid_count").default(0).notNull(),
+
+    deliveriesSpontaneous: integer("deliveries_spontaneous").default(0).notNull(),
+    deliveriesVacuum: integer("deliveries_vacuum").default(0).notNull(),
+    deliveriesForceps: integer("deliveries_forceps").default(0).notNull(),
+    deliveriesCs: integer("deliveries_cs").default(0).notNull(),
+    deliveriesTotal: integer("deliveries_total").default(0).notNull(),
+
+    breechCount: integer("breech_count").default(0).notNull(),
+    shoulderCount: integer("shoulder_count").default(0).notNull(),
+    multiplePregnancyCount: integer("multiple_pregnancy_count")
+      .default(0)
+      .notNull(),
+    referredIn: integer("referred_in").default(0).notNull(),
+    referredOut: integer("referred_out").default(0).notNull(),
+    complicationsManaged: integer("complications_managed").default(0).notNull(),
+    antiDGiven: integer("anti_d_given").default(0).notNull(),
+    bloodPintsTotal: integer("blood_pints_total").default(0).notNull(),
+    cabinUsageCount: integer("cabin_usage_count").default(0).notNull(),
+
+    computedAt: timestamp("computed_at").defaultNow().notNull(),
+  },
+  (t) => [
+    uniqueIndex("aama_monthly_unique").on(
+      t.facilityId,
+      t.year,
+      t.month,
+      t.hmisEthnicCode,
+    ),
+  ],
+);
+
+// ============================================================
 // CHILD IMMUNIZATION
 // ============================================================
+
+// HMIS 2082 vaccine catalog — seeded with the Nepal EPI schedule.
+// `code` is the stable join key (e.g. 'BCG', 'PENTA', 'OPV', 'PCV', 'ROTA',
+// 'FIPV', 'MR', 'JE', 'TCV', 'HPV', 'TD', 'VITA_A', 'DEWORM', 'BAALVITA').
+export const vaccines = pgTable(
+  "vaccines",
+  {
+    code: varchar("code", { length: 40 }).primaryKey(),
+    label: jsonb("label").notNull(), // { en: string, np: string }
+    totalDoses: integer("total_doses").notNull(),
+    defaultRoute: vaccineRouteEnum("default_route"),
+    defaultSite: vaccineSiteEnum("default_site"),
+    category: vaccineCategoryEnum("category").notNull().default("vaccine"),
+    isHpv: boolean("is_hpv").default(false).notNull(),
+    displayOrder: integer("display_order"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+  },
+  (t) => [index("vaccines_display_order_idx").on(t.displayOrder)],
+);
+
+export const vaccine_doses = pgTable(
+  "vaccine_doses",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    vaccineCode: varchar("vaccine_code", { length: 40 })
+      .notNull()
+      .references(() => vaccines.code),
+    doseNumber: integer("dose_number").notNull(),
+    label: jsonb("label").notNull(), // { en, np }
+    targetAgeMinDays: integer("target_age_min_days"),
+    targetAgeMaxDays: integer("target_age_max_days"),
+    // milestone tags: at_birth | week_6 | week_10 | week_14 | month_9
+    //   | month_12 | month_15 | campaign | school | round_1 | round_2 | round_3.
+    milestone: varchar("milestone", { length: 40 }),
+    displayOrder: integer("display_order"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+  },
+  (t) => [
+    uniqueIndex("vaccine_doses_unique").on(t.vaccineCode, t.doseNumber),
+    index("vaccine_doses_milestone_idx").on(t.milestone),
+  ],
+);
 
 export const child_immunizations = pgTable(
   "child_immunizations",
@@ -1583,6 +2274,19 @@ export const child_immunizations = pgTable(
     updatedAt: timestamp("updated_at"),
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
+
+    // ---- HMIS 2082 extensions ----
+    // Note: ethnicity is NOT duplicated here — it is derived from the
+    // patient's person.caste. See immunization analytics.
+    birthOrder: integer("birth_order"),
+    delayedScheduleStartedAtMonths: integer(
+      "delayed_schedule_started_at_months",
+    ),
+    outOfCatchment: boolean("out_of_catchment").default(false).notNull(),
+    serviceRegistrationNumber: varchar("service_registration_number", {
+      length: 50,
+    }),
+    enrolledFiscalYear: integer("enrolled_fiscal_year"),
   },
   (t) => [
     index("child_immunization_patient_id_idx").on(t.patientId),
@@ -1616,6 +2320,25 @@ export const immunization_histories = pgTable(
     updatedAt: timestamp("updated_at"),
     deletedBy: uuid("deleted_by"),
     deletedAt: timestamp("deleted_at"),
+
+    // ---- HMIS 2082 extensions ----
+    // Logical FK to vaccines.code; null only for legacy/back-fill rows.
+    vaccineCode: varchar("vaccine_code", { length: 40 }),
+    doseNumber: integer("dose_number"),
+    mode: immunizationModeEnum("mode").default("routine").notNull(),
+    campaignId: uuid("campaign_id"), // FK declared after table to avoid cycle
+    hpvSessionId: uuid("hpv_session_id"), // FK declared after table
+    batchNumber: varchar("batch_number", { length: 60 }),
+    diluentBatchNumber: varchar("diluent_batch_number", { length: 60 }),
+    lotNumber: varchar("lot_number", { length: 60 }),
+    expiryDate: date("expiry_date", { mode: "string" }),
+    site: vaccineSiteEnum("site"),
+    route: vaccineRouteEnum("route"),
+    administeredBy: uuid("administered_by").references(() => users.id),
+    administeredAt: timestamp("administered_at"),
+    nextDoseDueDate: date("next_dose_due_date", { mode: "string" }),
+    sourceFacilityName: varchar("source_facility_name", { length: 255 }),
+    facilityId: uuid("facility_id").references(() => health_facilities.id),
   },
   (t) => [
     index("immunization_history_patient_id_idx").on(t.patientId),
@@ -1625,6 +2348,167 @@ export const immunization_histories = pgTable(
     index("immunization_history_visit_id_idx").on(t.visitId),
     index("immunization_history_encounter_id_idx").on(t.encounterId),
     index("immunization_history_patient_date_idx").on(t.patientId, t.date),
+    uniqueIndex("immunization_history_patient_vaccine_dose_unique").on(
+      t.patientId,
+      t.vaccineCode,
+      t.doseNumber,
+    ),
+    index("immunization_history_facility_date_idx").on(
+      t.facilityId,
+      t.administeredAt,
+    ),
+  ],
+);
+
+// HMIS 2.2.5 — campaign / outbreak-response immunization sessions.
+export const immunization_campaigns = pgTable(
+  "immunization_campaigns",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
+    vaccineCode: varchar("vaccine_code", { length: 40 }).notNull(),
+    roundNumber: integer("round_number"),
+    // 'national' (regular NIC round) | 'outbreak_response' (ORI).
+    campaignKind: varchar("campaign_kind", { length: 30 }),
+    startDate: date("start_date", { mode: "string" }).notNull(),
+    endDate: date("end_date", { mode: "string" }),
+    targetAgeMinMonths: integer("target_age_min_months"),
+    targetAgeMaxMonths: integer("target_age_max_months"),
+    targetPopulation: integer("target_population"),
+    notes: text("notes"),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedBy: uuid("deleted_by"),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [
+    index("immunization_campaign_facility_start_idx").on(
+      t.facilityId,
+      t.startDate,
+    ),
+    index("immunization_campaign_vaccine_round_idx").on(
+      t.vaccineCode,
+      t.roundNumber,
+    ),
+  ],
+);
+
+// HMIS 2.2.7 — HPV school-based sessions (grades 6-10 girls).
+export const hpv_school_sessions = pgTable(
+  "hpv_school_sessions",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
+    schoolName: varchar("school_name", { length: 255 }),
+    sessionDate: date("session_date", { mode: "string" }).notNull(),
+    // '6'..'10' or 'out_of_school' (10-14yo girls not in school).
+    grade: varchar("grade", { length: 20 }),
+    notes: text("notes"),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedBy: uuid("deleted_by"),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [
+    index("hpv_school_session_facility_date_idx").on(
+      t.facilityId,
+      t.sessionDate,
+    ),
+  ],
+);
+
+// HMIS 2.2.6 — AEFI (Adverse Event Following Immunization) register.
+export const aefi_events = pgTable(
+  "aefi_events",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    immunizationHistoryId: uuid("immunization_history_id")
+      .notNull()
+      .references(() => immunization_histories.id),
+    patientId: uuid("patient_id")
+      .notNull()
+      .references(() => patients.id),
+    childImmunizationId: uuid("child_immunization_id")
+      .notNull()
+      .references(() => child_immunizations.id),
+    parentName: varchar("parent_name", { length: 255 }),
+    parentContact: varchar("parent_contact", { length: 50 }),
+    aefiRegisteredAt: date("aefi_registered_at", { mode: "string" }).notNull(),
+    vaccineCode: varchar("vaccine_code", { length: 40 }).notNull(),
+    vaccineBatch: varchar("vaccine_batch", { length: 60 }),
+    diluentBatch: varchar("diluent_batch", { length: 60 }),
+    vaccinatedAt: timestamp("vaccinated_at"),
+    vaccinationPlace: text("vaccination_place"),
+    symptomOnsetAt: timestamp("symptom_onset_at"),
+    symptoms: text("symptoms"),
+    severity: aefiSeverityEnum("severity").notNull(),
+    outcome: aefiOutcomeEnum("outcome"),
+    management: text("management"),
+    referredToFacilityId: uuid("referred_to_facility_id").references(
+      () => health_facilities.id,
+    ),
+    notes: text("notes"),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedBy: uuid("deleted_by"),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [
+    index("aefi_patient_idx").on(t.patientId),
+    index("aefi_facility_registered_at_idx").on(t.facilityId, t.aefiRegisteredAt),
+    index("aefi_immunization_history_idx").on(t.immunizationHistoryId),
+  ],
+);
+
+// HMIS 2.1 — feeding milestones section (one row per child immunization profile).
+export const child_feeding_milestones = pgTable(
+  "child_feeding_milestones",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    childImmunizationId: uuid("child_immunization_id")
+      .notNull()
+      .references(() => child_immunizations.id),
+    breastfedWithin1h: boolean("breastfed_within_1h"),
+    exclusiveBfMonths: integer("exclusive_bf_months"),
+    complementaryFeedingStartAgeMonths: integer(
+      "complementary_feeding_start_age_months",
+    ),
+    notes: text("notes"),
+    recordedAt: timestamp("recorded_at").defaultNow().notNull(),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedBy: uuid("deleted_by"),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [
+    uniqueIndex("child_feeding_milestones_unique").on(t.childImmunizationId),
   ],
 );
 

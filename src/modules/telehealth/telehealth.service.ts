@@ -49,12 +49,21 @@ export class TelehealthService {
   }
 
   public async listAppointments(query: TelehealthAppointmentsListQuery) {
+    let fromDate = query.fromDate;
+    let toDate = query.toDate;
+    if (query.date) {
+      fromDate = query.date;
+      const next = new Date(`${query.date}T00:00:00Z`);
+      next.setUTCDate(next.getUTCDate() + 1);
+      toDate = next.toISOString().slice(0, 10);
+    }
+
     return this.appointmentRepository.findMany({
       patientId: query.patientId,
-      doctorId: query.doctorId,
+      doctorId: query.assignedDoctorId ?? query.doctorId,
       status: query.status,
-      fromDate: query.fromDate,
-      toDate: query.toDate,
+      fromDate,
+      toDate,
       limit: query.pageSize,
       offset: (query.page - 1) * query.pageSize,
     });

@@ -17,6 +17,8 @@ import {
   histories,
   icd11_codes,
   immunization_histories,
+  vaccines,
+  vaccine_doses,
   medications,
   municipalities,
   patient_identifiers,
@@ -676,12 +678,449 @@ async function seedHealthFacilitiesFromJson() {
   console.log(`✅ Health facilities seeded (${rows.length} rows)`);
 }
 
+/**
+ * Nepal HMIS 2082 EPI catalog. Seeds the immunization schedule plus the
+ * non-vaccine preventive interventions (Vitamin A, deworming, BAAL VITA)
+ * that share the same per-visit record shape. Idempotent — keyed on
+ * `vaccines.code` and `(vaccine_code, dose_number)`.
+ */
+async function seedVaccineCatalog() {
+  console.log("🌱 Seeding vaccine catalog (HMIS 2082)...");
+
+  type DoseSpec = {
+    doseNumber: number;
+    en: string;
+    np: string;
+    targetAgeMinDays?: number;
+    targetAgeMaxDays?: number;
+    milestone?: string;
+  };
+
+  type VaccineSpec = {
+    code: string;
+    en: string;
+    np: string;
+    totalDoses: number;
+    defaultRoute?:
+      | "im"
+      | "sc"
+      | "id"
+      | "po"
+      | "nasal"
+      | "other";
+    defaultSite?:
+      | "left_arm"
+      | "right_arm"
+      | "left_thigh"
+      | "right_thigh"
+      | "oral"
+      | "other";
+    category: "vaccine" | "nutrition";
+    isHpv?: boolean;
+    displayOrder: number;
+    doses: DoseSpec[];
+  };
+
+  const catalog: VaccineSpec[] = [
+    {
+      code: "BCG",
+      en: "BCG",
+      np: "बी.सी.जी.",
+      totalDoses: 1,
+      defaultRoute: "id",
+      defaultSite: "left_arm",
+      category: "vaccine",
+      displayOrder: 1,
+      doses: [
+        {
+          doseNumber: 1,
+          en: "BCG",
+          np: "बी.सी.जी.",
+          targetAgeMinDays: 0,
+          targetAgeMaxDays: 14,
+          milestone: "at_birth",
+        },
+      ],
+    },
+    {
+      code: "ROTA",
+      en: "Rotavirus",
+      np: "रोटा",
+      totalDoses: 2,
+      defaultRoute: "po",
+      defaultSite: "oral",
+      category: "vaccine",
+      displayOrder: 2,
+      doses: [
+        {
+          doseNumber: 1,
+          en: "Rota 1",
+          np: "रोटा १",
+          targetAgeMinDays: 42,
+          targetAgeMaxDays: 56,
+          milestone: "week_6",
+        },
+        {
+          doseNumber: 2,
+          en: "Rota 2",
+          np: "रोटा २",
+          targetAgeMinDays: 70,
+          targetAgeMaxDays: 84,
+          milestone: "week_10",
+        },
+      ],
+    },
+    {
+      code: "OPV",
+      en: "OPV (bOPV)",
+      np: "ओ.पी.भी.",
+      totalDoses: 3,
+      defaultRoute: "po",
+      defaultSite: "oral",
+      category: "vaccine",
+      displayOrder: 3,
+      doses: [
+        {
+          doseNumber: 1,
+          en: "OPV 1",
+          np: "ओ.पी.भी. १",
+          targetAgeMinDays: 42,
+          targetAgeMaxDays: 56,
+          milestone: "week_6",
+        },
+        {
+          doseNumber: 2,
+          en: "OPV 2",
+          np: "ओ.पी.भी. २",
+          targetAgeMinDays: 70,
+          targetAgeMaxDays: 84,
+          milestone: "week_10",
+        },
+        {
+          doseNumber: 3,
+          en: "OPV 3",
+          np: "ओ.पी.भी. ३",
+          targetAgeMinDays: 98,
+          targetAgeMaxDays: 112,
+          milestone: "week_14",
+        },
+      ],
+    },
+    {
+      code: "PCV",
+      en: "PCV",
+      np: "पी.सी.भी.",
+      totalDoses: 3,
+      defaultRoute: "im",
+      defaultSite: "right_thigh",
+      category: "vaccine",
+      displayOrder: 4,
+      doses: [
+        {
+          doseNumber: 1,
+          en: "PCV 1",
+          np: "पी.सी.भी. १",
+          targetAgeMinDays: 42,
+          targetAgeMaxDays: 56,
+          milestone: "week_6",
+        },
+        {
+          doseNumber: 2,
+          en: "PCV 2",
+          np: "पी.सी.भी. २",
+          targetAgeMinDays: 70,
+          targetAgeMaxDays: 84,
+          milestone: "week_10",
+        },
+        {
+          doseNumber: 3,
+          en: "PCV 3",
+          np: "पी.सी.भी. ३",
+          targetAgeMinDays: 273,
+          targetAgeMaxDays: 305,
+          milestone: "month_9",
+        },
+      ],
+    },
+    {
+      code: "PENTA",
+      en: "Pentavalent (DPT-HepB-Hib)",
+      np: "डी.पी.टी.-हेप बी-हिब",
+      totalDoses: 3,
+      defaultRoute: "im",
+      defaultSite: "left_thigh",
+      category: "vaccine",
+      displayOrder: 5,
+      doses: [
+        {
+          doseNumber: 1,
+          en: "Penta 1",
+          np: "पेन्टा १",
+          targetAgeMinDays: 42,
+          targetAgeMaxDays: 56,
+          milestone: "week_6",
+        },
+        {
+          doseNumber: 2,
+          en: "Penta 2",
+          np: "पेन्टा २",
+          targetAgeMinDays: 70,
+          targetAgeMaxDays: 84,
+          milestone: "week_10",
+        },
+        {
+          doseNumber: 3,
+          en: "Penta 3",
+          np: "पेन्टा ३",
+          targetAgeMinDays: 98,
+          targetAgeMaxDays: 112,
+          milestone: "week_14",
+        },
+      ],
+    },
+    {
+      code: "FIPV",
+      en: "fIPV",
+      np: "एफ.आई.पी.भी.",
+      totalDoses: 2,
+      defaultRoute: "id",
+      defaultSite: "right_arm",
+      category: "vaccine",
+      displayOrder: 6,
+      doses: [
+        {
+          doseNumber: 1,
+          en: "fIPV 1",
+          np: "एफ.आई.पी.भी. १",
+          targetAgeMinDays: 98,
+          targetAgeMaxDays: 112,
+          milestone: "week_14",
+        },
+        {
+          doseNumber: 2,
+          en: "fIPV 2",
+          np: "एफ.आई.पी.भी. २",
+          targetAgeMinDays: 273,
+          targetAgeMaxDays: 305,
+          milestone: "month_9",
+        },
+      ],
+    },
+    {
+      code: "MR",
+      en: "Measles-Rubella",
+      np: "दादुरा-रुबेला",
+      totalDoses: 2,
+      defaultRoute: "sc",
+      defaultSite: "right_arm",
+      category: "vaccine",
+      displayOrder: 7,
+      doses: [
+        {
+          doseNumber: 1,
+          en: "MR 1",
+          np: "दादुरा-रुबेला १",
+          targetAgeMinDays: 273,
+          targetAgeMaxDays: 365,
+          milestone: "month_9",
+        },
+        {
+          doseNumber: 2,
+          en: "MR 2",
+          np: "दादुरा-रुबेला २",
+          targetAgeMinDays: 455,
+          targetAgeMaxDays: 700,
+          milestone: "month_15",
+        },
+      ],
+    },
+    {
+      code: "JE",
+      en: "Japanese Encephalitis",
+      np: "जापानी इन्सेफलाइटिस",
+      totalDoses: 1,
+      defaultRoute: "sc",
+      defaultSite: "left_arm",
+      category: "vaccine",
+      displayOrder: 8,
+      doses: [
+        {
+          doseNumber: 1,
+          en: "JE",
+          np: "जे.ई.",
+          targetAgeMinDays: 365,
+          targetAgeMaxDays: 455,
+          milestone: "month_12",
+        },
+      ],
+    },
+    {
+      code: "TCV",
+      en: "Typhoid (TCV)",
+      np: "टाइफाइड (टी.सी.भी.)",
+      totalDoses: 1,
+      defaultRoute: "im",
+      defaultSite: "left_arm",
+      category: "vaccine",
+      displayOrder: 9,
+      doses: [
+        {
+          doseNumber: 1,
+          en: "TCV",
+          np: "टी.सी.भी.",
+          targetAgeMinDays: 455,
+          targetAgeMaxDays: 700,
+          milestone: "month_15",
+        },
+      ],
+    },
+    {
+      code: "HPV",
+      en: "HPV",
+      np: "एच.पी.भी.",
+      totalDoses: 2,
+      defaultRoute: "im",
+      defaultSite: "left_arm",
+      category: "vaccine",
+      isHpv: true,
+      displayOrder: 10,
+      doses: [
+        {
+          doseNumber: 1,
+          en: "HPV 1",
+          np: "एच.पी.भी. १",
+          milestone: "school",
+        },
+        {
+          doseNumber: 2,
+          en: "HPV 2",
+          np: "एच.पी.भी. २",
+          milestone: "school",
+        },
+      ],
+    },
+    {
+      code: "TD",
+      en: "Tetanus-Diphtheria (TD)",
+      np: "टी.डी.",
+      totalDoses: 3,
+      defaultRoute: "im",
+      defaultSite: "left_arm",
+      category: "vaccine",
+      displayOrder: 11,
+      doses: [
+        { doseNumber: 1, en: "TD 1", np: "टी.डी. १" },
+        { doseNumber: 2, en: "TD 2", np: "टी.डी. २" },
+        { doseNumber: 3, en: "TD 2+", np: "टी.डी. २+" },
+      ],
+    },
+    {
+      code: "VITA_A",
+      en: "Vitamin A",
+      np: "भिटामिन ए",
+      totalDoses: 10,
+      category: "nutrition",
+      displayOrder: 12,
+      doses: Array.from({ length: 10 }, (_, i) => ({
+        doseNumber: i + 1,
+        en: `Vitamin A round ${i + 1}`,
+        np: `भिटामिन ए राउण्ड ${i + 1}`,
+      })),
+    },
+    {
+      code: "DEWORM",
+      en: "Deworming (Albendazole)",
+      np: "जुकाको औषधी (अल्बेन्डाजोल)",
+      totalDoses: 10,
+      category: "nutrition",
+      displayOrder: 13,
+      doses: Array.from({ length: 10 }, (_, i) => ({
+        doseNumber: i + 1,
+        en: `Deworming round ${i + 1}`,
+        np: `जुका राउण्ड ${i + 1}`,
+      })),
+    },
+    {
+      code: "BAALVITA",
+      en: "BAAL VITA (MNP)",
+      np: "बालविटा",
+      totalDoses: 3,
+      category: "nutrition",
+      displayOrder: 14,
+      doses: [
+        {
+          doseNumber: 1,
+          en: "BAAL VITA round 1 (6-11 mo)",
+          np: "बालविटा १",
+        },
+        {
+          doseNumber: 2,
+          en: "BAAL VITA round 2 (12-17 mo)",
+          np: "बालविटा २",
+        },
+        {
+          doseNumber: 3,
+          en: "BAAL VITA round 3 (18-23 mo)",
+          np: "बालविटा ३",
+        },
+      ],
+    },
+  ];
+
+  for (const spec of catalog) {
+    const existing = await db
+      .select({ code: vaccines.code })
+      .from(vaccines)
+      .where(eq(vaccines.code, spec.code))
+      .limit(1);
+    if (existing.length === 0) {
+      await db.insert(vaccines).values({
+        code: spec.code,
+        label: { en: spec.en, np: spec.np },
+        totalDoses: spec.totalDoses,
+        defaultRoute: spec.defaultRoute ?? null,
+        defaultSite: spec.defaultSite ?? null,
+        category: spec.category,
+        isHpv: spec.isHpv ?? false,
+        displayOrder: spec.displayOrder,
+      });
+    }
+
+    for (const dose of spec.doses) {
+      const existingDose = await db
+        .select({ id: vaccine_doses.id })
+        .from(vaccine_doses)
+        .where(
+          and(
+            eq(vaccine_doses.vaccineCode, spec.code),
+            eq(vaccine_doses.doseNumber, dose.doseNumber),
+          ),
+        )
+        .limit(1);
+      if (existingDose.length === 0) {
+        await db.insert(vaccine_doses).values({
+          vaccineCode: spec.code,
+          doseNumber: dose.doseNumber,
+          label: { en: dose.en, np: dose.np },
+          targetAgeMinDays: dose.targetAgeMinDays ?? null,
+          targetAgeMaxDays: dose.targetAgeMaxDays ?? null,
+          milestone: dose.milestone ?? null,
+          displayOrder: dose.doseNumber,
+        });
+      }
+    }
+  }
+
+  console.log(`✅ Vaccine catalog seeded (${catalog.length} vaccines).`);
+}
+
 async function seed() {
   await seedUserRoles();
   await seedIcd11Codes();
   await seedGeography();
   await seedHealthFacilitiesFromJson();
   await seedImnciBookletStub();
+  await seedVaccineCatalog();
 
   console.log("🌱 Seeding health facilities...");
 

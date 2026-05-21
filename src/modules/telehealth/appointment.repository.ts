@@ -1,5 +1,11 @@
 import { db } from "../../db";
-import { appointments, patients, person_names, users } from "../../db/schema";
+import {
+  appointments,
+  patients,
+  person_names,
+  telehealth_sessions,
+  users,
+} from "../../db/schema";
 import { FacilityContext } from "../../context/facility-context";
 import { FacilityRepository } from "../../core/facility-repository";
 import { utcDayBounds } from "../../utils/date-utils";
@@ -66,6 +72,10 @@ export class AppointmentRepository extends FacilityRepository {
         patientGiven: person_names.given,
         patientMiddle: person_names.middle,
         patientFamily: person_names.family,
+        sessionId: telehealth_sessions.id,
+        sessionStartedAt: telehealth_sessions.startedAt,
+        sessionEndedAt: telehealth_sessions.endedAt,
+        sessionDurationSeconds: telehealth_sessions.durationSeconds,
       })
       .from(appointments)
       .where(where)
@@ -80,6 +90,10 @@ export class AppointmentRepository extends FacilityRepository {
           eq(person_names.personId, patients.personId),
           eq(person_names.isPrimary, true),
         ),
+      )
+      .leftJoin(
+        telehealth_sessions,
+        eq(telehealth_sessions.appointmentId, appointments.id),
       )
       .orderBy(desc(appointments.date), desc(appointments.createdAt))
       .limit(params.limit)
@@ -110,6 +124,13 @@ export class AppointmentRepository extends FacilityRepository {
         patientName: [row.patientGiven, row.patientMiddle, row.patientFamily]
           .filter(Boolean)
           .join(" "),
+        session: row.sessionId
+          ? {
+              startedAt: row.sessionStartedAt,
+              endedAt: row.sessionEndedAt,
+              durationSeconds: row.sessionDurationSeconds ?? 0,
+            }
+          : null,
       })),
       total,
     };

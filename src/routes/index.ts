@@ -34,6 +34,8 @@ import notificationRoutes from "./notification.routes";
 import pusherRoutes from "./pusher.routes";
 import teleAuscultationRoutes from "./tele-auscultation.routes";
 import analyticsRoutes from "./analytics.routes";
+import hmisAnalyticsRoutes from "./hmis-analytics.routes";
+import immunizationRoutes from "./immunization.routes";
 
 const router = Router();
 const authController = new AuthController();
@@ -90,5 +92,7 @@ router.use("/notifications", notificationRoutes);
 router.use("/pusher", pusherRoutes);
 router.use("/tele-auscultation", teleAuscultationRoutes);
 router.use("/analytics", analyticsRoutes);
+router.use("/hmis-analytics", hmisAnalyticsRoutes);
+router.use("/immunizations", immunizationRoutes);
 
 export default router;

@@ -28,7 +28,9 @@ const appointmentStatusSchema = z.enum([
 export const telehealthAppointmentsListQuerySchema = createListQuerySchema({
   patientId: z.uuid().optional(),
   doctorId: z.uuid().optional(),
+  assignedDoctorId: z.uuid().optional(),
   status: appointmentStatusSchema.optional(),
+  date: isoDateString.optional(),
   fromDate: isoDateString.optional(),
   toDate: isoDateString.optional(),
 });
