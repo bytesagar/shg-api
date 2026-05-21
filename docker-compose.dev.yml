@@ -17,7 +17,6 @@ services:
   api:
     image: shg-api:latest
     pull_policy: never
-    container_name: shg-api
     restart: unless-stopped
     depends_on:
       migrate:
