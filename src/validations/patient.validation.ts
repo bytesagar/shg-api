@@ -59,15 +59,94 @@ export const patientCreateSchema = z.object({
   status: z
     .enum(["active", "inactive", "deceased", "discharged", "referred"])
     .default("active"),
+  // Family planning service-specific fields (persisted on the patient row).
   education: z.string().min(1).max(255).optional().nullable(),
   occupation: z.string().min(1).max(255).optional().nullable(),
   occupationOther: z.string().max(255).optional().nullable(),
   spouseName: z.string().max(255).optional().nullable(),
   childrenMale: z.number().int().min(0).max(10).optional().nullable(),
   childrenFemale: z.number().int().min(0).max(10).optional().nullable(),
+
+  // Maternal health service-specific fields → create a `pregnancies` row.
+  firstVisit: z.string().max(20).optional().nullable(),
+  gravida: z.union([z.string(), z.number()]).optional().nullable(),
+  para: z.union([z.string(), z.number()]).optional().nullable(),
+  lastMenstruationPeriod: z.string().max(20).optional().nullable(),
+  expectedDeliveryDate: z.string().max(20).optional().nullable(),
+  assignedFchvId: z.uuid().optional().nullable(),
+
+  // Immunization service-specific fields → create a `child_immunizations` row.
+  mothersName: z.string().max(255).optional().nullable(),
+  fathersName: z.string().max(255).optional().nullable(),
+  weightAtBirth: z.number().positive().optional().nullable(),
 });
 
 export type PatientCreateInput = z.infer<typeof patientCreateSchema>;
+
+/**
+ * PATCH /patients/:id. Every field optional (partial update). `undefined` means
+ * "leave as-is"; an explicit value (including `null` on nullable fields) is
+ * applied. Only covers the demographic / contact / address / admin data that
+ * survives registration — service-specific clinical seeding (pregnancy, child
+ * immunization profile) is managed from its own tabs, not re-run on edit.
+ */
+export const patientUpdateSchema = z.object({
+  firstName: z.string().min(1, "First name is required").max(255).optional(),
+  middleName: z.string().max(255).optional().nullable(),
+  lastName: z.string().min(1, "Last name is required").max(255).optional(),
+  birthDate: z.preprocess(
+    (val) => (typeof val === "string" ? new Date(val) : val),
+    z.date().optional().nullable(),
+  ),
+  gender: z.enum(["male", "female", "other"]).optional().nullable(),
+  bloodGroup: z
+    .enum([
+      "unknown",
+      "a_positive",
+      "a_negative",
+      "b_positive",
+      "b_negative",
+      "ab_positive",
+      "ab_negative",
+      "o_positive",
+      "o_negative",
+    ])
+    .optional()
+    .nullable(),
+  caste: z
+    .enum(["dalit", "janajati", "madhesi", "muslim", "brahmin_chhetri", "other"])
+    .optional()
+    .nullable(),
+  phoneNumber: z.string().min(7).max(50).optional().nullable(),
+  address: z
+    .object({
+      line1: z.string().max(255).optional().nullable(),
+      line2: z.string().max(255).optional().nullable(),
+      municipality: z.string().max(255).optional().nullable(),
+      district: z.string().max(255).optional().nullable(),
+      province: z.string().max(255).optional().nullable(),
+      municipalityId: z.uuid().optional().nullable(),
+      districtId: z.uuid().optional().nullable(),
+      provinceId: z.uuid().optional().nullable(),
+      ward: z.number().int().min(1).optional().nullable(),
+      postalCode: z.string().max(20).optional().nullable(),
+    })
+    .optional()
+    .nullable(),
+  service: z.string().min(1).max(255).optional(),
+  assignedUserId: z.uuid().optional().nullable(),
+  status: z
+    .enum(["active", "inactive", "deceased", "discharged", "referred"])
+    .optional(),
+  education: z.string().max(255).optional().nullable(),
+  occupation: z.string().max(255).optional().nullable(),
+  occupationOther: z.string().max(255).optional().nullable(),
+  spouseName: z.string().max(255).optional().nullable(),
+  childrenMale: z.number().int().min(0).max(10).optional().nullable(),
+  childrenFemale: z.number().int().min(0).max(10).optional().nullable(),
+});
+
+export type PatientUpdateInput = z.infer<typeof patientUpdateSchema>;
 
 export const patientFamilyPlanningProfileSchema = z
   .object({

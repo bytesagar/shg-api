@@ -1,0 +1,2 @@
+ALTER TABLE "tests" ADD COLUMN "attachment_id" uuid;--> statement-breakpoint
+ALTER TABLE "tests" ADD CONSTRAINT "tests_attachment_id_attachments_id_fk" FOREIGN KEY ("attachment_id") REFERENCES "public"."attachments"("id") ON DELETE no action ON UPDATE no action;

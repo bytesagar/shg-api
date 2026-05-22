@@ -74,4 +74,14 @@ export class AttachmentController extends BaseController {
       return this.ok(res, data, "Download URL issued successfully");
     },
   );
+
+  public deleteAttachment = catchAsync(
+    async (req: AuthRequest, res: Response) => {
+      const context = requireFacilityContext(req);
+      const { attachmentId } = req.params;
+      const service = new AttachmentService(context);
+      const data = await service.deleteAttachment(attachmentId as string);
+      return this.ok(res, data, "Attachment deleted successfully");
+    },
+  );
 }

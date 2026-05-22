@@ -82,4 +82,22 @@ router.post(
   attachmentController.createAttachment,
 );
 
+/**
+ * @openapi
+ * /attachments/{attachmentId}:
+ *   delete:
+ *     tags:
+ *       - Attachments
+ *     summary: Soft-delete an attachment
+ *     operationId: deleteAttachment
+ *     security:
+ *       - bearerAuth: []
+ */
+router.delete(
+  "/:attachmentId",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  attachmentController.deleteAttachment,
+);
+
 export default router;

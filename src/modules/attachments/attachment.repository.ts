@@ -42,4 +42,23 @@ export class AttachmentRepository extends FacilityRepository {
     const inserted = await db.insert(attachments).values(data).returning();
     return inserted[0];
   }
+
+  /** Find by id regardless of soft-delete state (used by hard delete so it can
+   * also clean up rows that were previously soft-deleted). */
+  public async findByIdAny(id: string) {
+    const result = await db
+      .select()
+      .from(attachments)
+      .where(this.withFacilityScope(eq(attachments.id, id)))
+      .limit(1);
+    return result[0];
+  }
+
+  public async hardDelete(id: string) {
+    const deleted = await db
+      .delete(attachments)
+      .where(this.withFacilityScope(eq(attachments.id, id)))
+      .returning();
+    return deleted[0];
+  }
 }

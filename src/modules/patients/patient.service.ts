@@ -2,6 +2,7 @@ import { generatePatientId } from "../../utils/id-generator";
 import {
   PatientCreateInput,
   PatientFamilyPlanningProfileInput,
+  PatientUpdateInput,
 } from "../../validations/patient.validation";
 import { FacilityContext } from "../../context/facility-context";
 import { PatientRepository } from "./patient.repository";
@@ -98,6 +99,20 @@ export class PatientService {
 
   public async getPatientById(id: string) {
     return this.patientRepository.findDetailById(id);
+  }
+
+  public async updatePatient(id: string, data: PatientUpdateInput) {
+    try {
+      return await this.patientRepository.updatePatient(id, data);
+    } catch (err: any) {
+      if (err?.code === "23505") {
+        throw new AppError(
+          "Another patient already exists with the same details",
+          HTTP_STATUS.CONFLICT,
+        );
+      }
+      throw err;
+    }
   }
 
   public async updateFamilyPlanningProfile(

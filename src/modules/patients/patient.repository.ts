@@ -1,5 +1,6 @@
 import { db } from "../../db";
 import {
+  child_immunizations,
   patients,
   patient_identifiers,
   person_addresses,
@@ -7,11 +8,15 @@ import {
   person_identifiers,
   person_names,
   persons,
+  pregnancies,
   visits,
 } from "../../db/schema";
 import { FacilityRepository } from "../../core/facility-repository";
 import { FacilityContext } from "../../context/facility-context";
-import { PatientCreateInput } from "../../validations/patient.validation";
+import {
+  PatientCreateInput,
+  PatientUpdateInput,
+} from "../../validations/patient.validation";
 import { SQL, and, count, desc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { format } from "date-fns";
 import { flattenEntityDetail } from "../../utils/entity-detail";
@@ -103,6 +108,7 @@ export class PatientRepository extends FacilityRepository {
         // persons
         personGender: persons.gender,
         personBloodGroup: persons.bloodGroup,
+        personCaste: persons.caste,
         personBirthDate: persons.birthDate,
         personDeceasedAt: persons.deceasedAt,
         personStatus: persons.status,
@@ -139,6 +145,7 @@ export class PatientRepository extends FacilityRepository {
         id: parent.personId,
         gender: parent.personGender,
         bloodGroup: parent.personBloodGroup,
+        caste: parent.personCaste,
         birthDate: parent.personBirthDate ? parent.personBirthDate.toISOString() : null,
         deceasedAt: parent.personDeceasedAt ? parent.personDeceasedAt.toISOString() : null,
         status: parent.personStatus,
@@ -287,6 +294,180 @@ export class PatientRepository extends FacilityRepository {
     if (!row) return null;
     const [hydrated] = await this.hydratePatients([row]);
     return hydrated;
+  }
+
+  /**
+   * Partial update of an existing patient. Touches `persons`, the primary
+   * `person_names`, the primary phone `person_contacts`, the primary
+   * `person_addresses`, and the `patients` row — all under facility scope, in a
+   * single transaction. Only keys present in `data` are written (PATCH
+   * semantics). Returns the re-hydrated patient, or `null` if not found.
+   */
+  public async updatePatient(id: string, data: PatientUpdateInput) {
+    // Resolve + access-gate the patient via facility scope first.
+    const existing = await db
+      .select({ id: patients.id, personId: patients.personId })
+      .from(patients)
+      .where(
+        this.withFacilityScope(
+          and(eq(patients.id, id), isNull(patients.deletedAt)),
+        ),
+      )
+      .limit(1);
+
+    const patient = existing[0];
+    if (!patient) return null;
+    const personId = patient.personId;
+
+    await db.transaction(async (tx) => {
+      // 1) persons — gender / bloodGroup / caste / birthDate / status.
+      const personSet: Partial<typeof persons.$inferInsert> = {};
+      if (data.gender !== undefined) personSet.gender = data.gender;
+      if (data.bloodGroup !== undefined)
+        personSet.bloodGroup = data.bloodGroup ?? "unknown";
+      if (data.caste !== undefined) personSet.caste = data.caste;
+      if (data.birthDate !== undefined) personSet.birthDate = data.birthDate;
+      if (data.status !== undefined) {
+        personSet.status = data.status === "deceased" ? "deceased" : "active";
+      }
+      if (Object.keys(personSet).length > 0) {
+        personSet.updatedAt = new Date();
+        await tx.update(persons).set(personSet).where(eq(persons.id, personId));
+      }
+
+      // 2) person_names — primary official name.
+      const nameSet: Partial<typeof person_names.$inferInsert> = {};
+      if (data.firstName !== undefined) nameSet.given = data.firstName;
+      if (data.middleName !== undefined) nameSet.middle = data.middleName ?? null;
+      if (data.lastName !== undefined) nameSet.family = data.lastName;
+      if (Object.keys(nameSet).length > 0) {
+        const [primaryName] = await tx
+          .select({ id: person_names.id })
+          .from(person_names)
+          .where(
+            and(
+              eq(person_names.personId, personId),
+              eq(person_names.isPrimary, true),
+            ),
+          )
+          .limit(1);
+        if (primaryName) {
+          await tx
+            .update(person_names)
+            .set(nameSet)
+            .where(eq(person_names.id, primaryName.id));
+        } else {
+          await tx.insert(person_names).values({
+            personId,
+            use: "official",
+            given: nameSet.given ?? null,
+            middle: nameSet.middle ?? null,
+            family: nameSet.family ?? null,
+            isPrimary: true,
+          });
+        }
+      }
+
+      // 3) person_contacts — primary phone (upsert).
+      if (data.phoneNumber !== undefined) {
+        const [primaryPhone] = await tx
+          .select({ id: person_contacts.id })
+          .from(person_contacts)
+          .where(
+            and(
+              eq(person_contacts.personId, personId),
+              eq(person_contacts.isPrimary, true),
+              eq(person_contacts.system, "phone"),
+            ),
+          )
+          .limit(1);
+        if (data.phoneNumber) {
+          if (primaryPhone) {
+            await tx
+              .update(person_contacts)
+              .set({ value: data.phoneNumber })
+              .where(eq(person_contacts.id, primaryPhone.id));
+          } else {
+            await tx.insert(person_contacts).values({
+              personId,
+              system: "phone",
+              use: "mobile",
+              value: data.phoneNumber,
+              isPrimary: true,
+            });
+          }
+        }
+      }
+
+      // 4) person_addresses — primary home address (upsert).
+      if (data.address !== undefined && data.address !== null) {
+        const addr = data.address;
+        const [primaryAddress] = await tx
+          .select({ id: person_addresses.id })
+          .from(person_addresses)
+          .where(
+            and(
+              eq(person_addresses.personId, personId),
+              eq(person_addresses.isPrimary, true),
+            ),
+          )
+          .limit(1);
+        const addressValues = {
+          line1: addr.line1 ?? null,
+          line2: addr.line2 ?? null,
+          municipality: addr.municipality ?? null,
+          district: addr.district ?? null,
+          province: addr.province ?? null,
+          municipalityId: addr.municipalityId ?? null,
+          districtId: addr.districtId ?? null,
+          provinceId: addr.provinceId ?? null,
+          ward: addr.ward ?? null,
+          postalCode: addr.postalCode ?? null,
+        };
+        if (primaryAddress) {
+          await tx
+            .update(person_addresses)
+            .set(addressValues)
+            .where(eq(person_addresses.id, primaryAddress.id));
+        } else {
+          await tx.insert(person_addresses).values({
+            personId,
+            use: "home",
+            isPrimary: true,
+            ...addressValues,
+          });
+        }
+      }
+
+      // 5) patients — service / status / assignment / FP profile columns.
+      const patientSet: Partial<typeof patients.$inferInsert> = {};
+      if (data.service !== undefined) patientSet.service = data.service;
+      if (data.status !== undefined) patientSet.status = data.status;
+      if (data.assignedUserId !== undefined)
+        patientSet.assignedUserId = data.assignedUserId ?? null;
+      if (data.education !== undefined)
+        patientSet.education = data.education ?? null;
+      if (data.occupation !== undefined)
+        patientSet.occupation = data.occupation ?? null;
+      if (data.occupationOther !== undefined)
+        patientSet.occupationOther = data.occupationOther ?? null;
+      if (data.spouseName !== undefined)
+        patientSet.spouseName = data.spouseName ?? null;
+      if (data.childrenMale !== undefined)
+        patientSet.childrenMale = data.childrenMale ?? null;
+      if (data.childrenFemale !== undefined)
+        patientSet.childrenFemale = data.childrenFemale ?? null;
+
+      patientSet.updatedAt = new Date();
+      patientSet.updatedBy = this.context.userId;
+      await tx
+        .update(patients)
+        .set(patientSet)
+        .where(this.withFacilityScope(eq(patients.id, id)));
+    });
+
+    const updated = await this.findById(id);
+    return updated ?? null;
   }
 
   public async findDuplicateCandidate(params: {
@@ -461,13 +642,56 @@ export class PatientRepository extends FacilityRepository {
         isPrimary: true,
       });
 
-      if (data.service.toLowerCase() !== "family-planning") {
-        await tx.insert(visits).values({
-          date: format(new Date(), "yyyy-MM-dd"),
-          reason: "Patient Registration",
+      const service = data.service.toLowerCase();
+
+      // A registration visit gives the patient an active visit of the chosen
+      // type (drives the patient-detail section gating). Family planning is the
+      // one service that doesn't open a clinical visit at registration.
+      let registrationVisitId: string | null = null;
+      if (service !== "family_planning" && service !== "family-planning") {
+        const [visit] = await tx
+          .insert(visits)
+          .values({
+            date: format(new Date(), "yyyy-MM-dd"),
+            reason: "Patient Registration",
+            patientId: newPatient.id,
+            service: data.service,
+            status: "in_progress",
+            facilityId: this.context.facilityId,
+          })
+          .returning();
+        registrationVisitId = visit?.id ?? null;
+      }
+
+      // Maternal health → seed an active pregnancy from the registration data.
+      if (
+        (service === "maternal_health" || service === "maternal health") &&
+        (data.gravida != null || data.lastMenstruationPeriod || data.firstVisit)
+      ) {
+        await tx.insert(pregnancies).values({
           patientId: newPatient.id,
-          service: data.service,
           facilityId: this.context.facilityId,
+          visitId: registrationVisitId,
+          firstVisit:
+            data.firstVisit ?? format(new Date(), "yyyy-MM-dd"),
+          gravida: data.gravida != null ? String(data.gravida) : "1",
+          para: data.para != null ? String(data.para) : null,
+          lastMenstruationPeriod: data.lastMenstruationPeriod ?? null,
+          expectedDeliveryDate: data.expectedDeliveryDate ?? null,
+          assignedFchvId: data.assignedFchvId ?? null,
+          createdBy: this.context.userId,
+          updatedBy: this.context.userId,
+        });
+      }
+
+      // Immunization → seed the child immunization profile.
+      if (service === "immunization") {
+        await tx.insert(child_immunizations).values({
+          patientId: newPatient.id,
+          facilityId: this.context.facilityId,
+          mothersName: data.mothersName ?? null,
+          fathersName: data.fathersName ?? null,
+          weightAtBirth: data.weightAtBirth ?? null,
         });
       }
 

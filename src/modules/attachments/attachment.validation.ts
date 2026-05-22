@@ -1,7 +1,9 @@
 import { z } from "zod";
 import { ATTACHMENT_SOURCES } from "../../constants/attachment-sources";
+import { ATTACHMENT_CATEGORIES } from "../../constants/attachment-categories";
 
 const attachmentSourceSchema = z.enum(ATTACHMENT_SOURCES);
+const attachmentCategorySchema = z.enum(ATTACHMENT_CATEGORIES);
 
 export const attachmentGenerateUploadUrlSchema = z.object({
   fileName: z.string().min(1).max(500),
@@ -29,6 +31,7 @@ export const attachmentCreateSchema = z.object({
   fileSize: z.number().int().nonnegative().optional().nullable(),
   fileType: z.string().min(1).max(255),
   facilityId: z.uuid().optional(),
+  category: attachmentCategorySchema.optional().nullable(),
 });
 
 export type AttachmentCreateInput = z.infer<typeof attachmentCreateSchema>;
