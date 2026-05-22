@@ -169,6 +169,38 @@ router.get(
   patientController.getPatient,
 );
 
+/**
+ * @openapi
+ * /patients/{id}:
+ *   patch:
+ *     tags:
+ *       - Patients
+ *     summary: Update an existing patient
+ *     operationId: updatePatient
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Patient updated
+ *       400:
+ *         description: Validation failed
+ *       404:
+ *         description: Patient not found
+ */
+router.patch(
+  "/:id",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  patientController.updatePatient,
+);
+
 router.patch(
   "/:id/family-planning-profile",
   authMiddleware,

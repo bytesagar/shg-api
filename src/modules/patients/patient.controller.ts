@@ -4,6 +4,7 @@ import { PatientService } from "./patient.service";
 import {
   patientCreateSchema,
   patientFamilyPlanningProfileSchema,
+  patientUpdateSchema,
 } from "../../validations/patient.validation";
 import { catchAsync } from "../../utils/catch-async";
 import { AppError } from "../../utils/app-error";
@@ -206,6 +207,30 @@ export class PatientController extends BaseController {
       immunization,
     };
     return this.ok(res, responseData, "Patient retrieved successfully");
+  });
+
+  public updatePatient = catchAsync(async (req: AuthRequest, res: Response) => {
+    const context = requireFacilityContext(req);
+    const { id } = req.params as { id: string };
+
+    const validatedData = patientUpdateSchema.safeParse(req.body);
+    if (!validatedData.success) {
+      const errorMessages = validatedData.error.issues
+        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+        .join(", ");
+      throw new AppError(
+        `Validation failed: ${errorMessages}`,
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    const patientService = new PatientService(context);
+    const updated = await patientService.updatePatient(id, validatedData.data);
+    if (!updated) {
+      throw new AppError("Patient not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    return this.ok(res, updated, "Patient updated successfully");
   });
 
   public updateFamilyPlanningProfile = catchAsync(

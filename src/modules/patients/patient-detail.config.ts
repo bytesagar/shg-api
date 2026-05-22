@@ -191,6 +191,7 @@ export interface PatientPerson {
   id: string;
   gender: (typeof persons.$inferSelect)["gender"];
   bloodGroup: (typeof persons.$inferSelect)["bloodGroup"];
+  caste: (typeof persons.$inferSelect)["caste"];
   /** ISO 8601 string. */
   birthDate: string | null;
   /** ISO 8601 string. */

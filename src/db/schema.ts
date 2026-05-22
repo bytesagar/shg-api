@@ -1249,6 +1249,9 @@ export const tests = pgTable(
       .notNull()
       .references(() => visits.id),
     encounterId: uuid("encounter_id").references(() => encounters.id),
+    attachmentId: uuid("attachment_id").references(() => attachments.id, {
+      onDelete: "set null",
+    }),
     createdBy: uuid("created_by").references(() => users.id),
     updatedBy: uuid("updated_by").references(() => users.id),
     deletedBy: uuid("deleted_by").references(() => users.id),
@@ -1372,6 +1375,8 @@ export const attachments = pgTable(
       .notNull()
       .references(() => health_facilities.id),
     name: varchar("name", { length: 500 }).notNull(),
+    /** Application-level type tag: lab | imaging | other | document. */
+    category: varchar("category", { length: 50 }),
     fileUrl: text("file_url").notNull(),
     fileSize: integer("file_size"),
     fileType: varchar("file_type", { length: 255 }),
@@ -2568,6 +2573,11 @@ export const appointments = pgTable(
       .notNull()
       .references(() => patients.id),
     facilityId: uuid("facility_id").references(() => health_facilities.id),
+    // Optional link to the clinical visit this appointment was delivered
+    // through. Nullable: an appointment may be scheduled before (or without) a
+    // visit being created. Set once the consultation is tied to a visit so
+    // analytics can correlate telehealth appointments with their encounter.
+    visitId: uuid("visit_id").references(() => visits.id),
     date: date("date").notNull(),
     status: appointmentStatusEnum("status").default("scheduled").notNull(),
     service: varchar("service", { length: 255 }),
@@ -2583,6 +2593,7 @@ export const appointments = pgTable(
   (t) => [
     index("appointment_doctor_id_idx").on(t.doctorId),
     index("appointment_patient_id_idx").on(t.patientId),
+    index("appointment_visit_id_idx").on(t.visitId),
     index("appointment_date_idx").on(t.date),
   ],
 );
@@ -2633,6 +2644,7 @@ export const auscultation_sessions = pgTable(
     durationSeconds: integer("duration_seconds").notNull().default(0),
     recordingAttachmentId: uuid("recording_attachment_id").references(
       () => attachments.id,
+      { onDelete: "set null" },
     ),
     createdBy: uuid("created_by").references(() => users.id),
     updatedBy: uuid("updated_by").references(() => users.id),
@@ -3292,6 +3304,7 @@ export const visitsRelations = relations(visits, ({ one, many }) => ({
   tests: many(tests),
   treatments: many(treatments),
   medications: many(medications),
+  appointments: many(appointments),
 }));
 
 export const encountersRelations = relations(encounters, ({ one, many }) => ({
@@ -3446,6 +3459,10 @@ export const appointmentsRelations = relations(appointments, ({ one }) => ({
   facility: one(health_facilities, {
     fields: [appointments.facilityId],
     references: [health_facilities.id],
+  }),
+  visit: one(visits, {
+    fields: [appointments.visitId],
+    references: [visits.id],
   }),
   telehealthSession: one(telehealth_sessions, {
     fields: [appointments.id],

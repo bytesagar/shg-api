@@ -1,6 +1,8 @@
 import {
+  DeleteObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
@@ -102,7 +104,43 @@ export class S3StorageService {
     }
   }
 
+  public async getObjectInfo(
+    key: string,
+  ): Promise<{ exists: boolean; size: number }> {
+    const startedAt = Date.now();
+    try {
+      const result = await getClient().send(
+        new ListObjectsV2Command({
+          Bucket: this.bucket,
+          Prefix: key,
+          MaxKeys: 1,
+        }),
+      );
+      const match = (result.Contents ?? []).find((obj) => obj.Key === key);
+      logger.debug("s3.object_info.ok", {
+        key,
+        exists: Boolean(match),
+        durationMs: Date.now() - startedAt,
+      });
+      return {
+        exists: Boolean(match),
+        size: Number(match?.Size ?? 0),
+      };
+    } catch (err) {
+      logger.warn("s3.object_info.failed", {
+        key,
+        durationMs: Date.now() - startedAt,
+        err,
+      });
+      throw err;
+    }
+  }
+
   public async headObject(key: string) {
+    logger.warn("attachment.head_attempt", {
+      fileUrl: key,
+      bucket: this.bucket,
+    });
     const startedAt = Date.now();
     try {
       const result = await getClient().send(
@@ -118,6 +156,25 @@ export class S3StorageService {
       return result;
     } catch (err) {
       logger.warn("s3.head.failed", {
+        key,
+        durationMs: Date.now() - startedAt,
+        err,
+      });
+      throw err;
+    }
+  }
+
+  /** Permanently removes the object. S3 DeleteObject is idempotent (no error
+   * if the key is already gone). */
+  public async deleteObject(key: string): Promise<void> {
+    const startedAt = Date.now();
+    try {
+      await getClient().send(
+        new DeleteObjectCommand({ Bucket: this.bucket, Key: key }),
+      );
+      logger.debug("s3.delete.ok", { key, durationMs: Date.now() - startedAt });
+    } catch (err) {
+      logger.warn("s3.delete.failed", {
         key,
         durationMs: Date.now() - startedAt,
         err,

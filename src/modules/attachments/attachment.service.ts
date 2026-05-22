@@ -184,11 +184,11 @@ export class AttachmentService {
     const maxBytes = getAttachmentMaxBytes();
 
     const s3 = this.s3();
-    let head;
+     let objectInfo;
     try {
-      head = await s3.headObject(input.fileUrl);
+      objectInfo = await s3.getObjectInfo(input.fileUrl);
     } catch (err) {
-      logger.warn("attachment.object_missing", {
+      logger.warn("attachment.object_check_failed", {
         fileUrl: input.fileUrl,
         sourceType: input.sourceType,
         sourceId: input.sourceId,
@@ -200,7 +200,19 @@ export class AttachmentService {
       );
     }
 
-    const size = Number(head.ContentLength ?? 0);
+    if (!objectInfo.exists) {
+      logger.warn("attachment.object_missing", {
+        fileUrl: input.fileUrl,
+        sourceType: input.sourceType,
+        sourceId: input.sourceId,
+      });
+      throw new AppError(
+        "Object not found in storage. Upload the file before confirming.",
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    const size = objectInfo.size;
     if (size > maxBytes) {
       throw new AppError(
         `Uploaded object exceeds maximum size of ${maxBytes} bytes`,
@@ -219,19 +231,13 @@ export class AttachmentService {
       );
     }
 
-    const headMime = head.ContentType?.split(";")[0]?.trim().toLowerCase();
-    if (headMime && headMime !== mime) {
-      throw new AppError(
-        "File type does not match uploaded object",
-        HTTP_STATUS.BAD_REQUEST,
-      );
-    }
 
     const created = await this.attachmentRepository.create({
       sourceType: input.sourceType,
       sourceId: input.sourceId,
       facilityId,
       name: input.name,
+      category: input.category ?? null,
       fileUrl: input.fileUrl,
       fileSize: size,
       fileType: mime,
@@ -262,6 +268,38 @@ export class AttachmentService {
       sourceType,
       sourceId,
     });
+  }
+
+  public async deleteAttachment(attachmentId: string) {
+    const row = await this.attachmentRepository.findByIdAny(attachmentId);
+    if (!row) {
+      throw new AppError("Attachment not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    // Remove the object from storage first (idempotent — succeeds even if the
+    // key is already gone). Any tests/recordings referencing this row are
+    // auto-nulled by the FK (ON DELETE SET NULL).
+    try {
+      await this.s3().deleteObject(row.fileUrl);
+    } catch (err) {
+      logger.error("attachment.s3_delete_failed", {
+        attachmentId,
+        fileUrl: row.fileUrl,
+        err,
+      });
+      throw new AppError(
+        "Failed to delete file from storage",
+        HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    await this.attachmentRepository.hardDelete(attachmentId);
+    logger.info("attachment.deleted", {
+      attachmentId,
+      sourceType: row.sourceType,
+      sourceId: row.sourceId,
+    });
+    return { id: attachmentId };
   }
 
   public async getDownloadUrl(attachmentId: string) {

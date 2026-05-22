@@ -92,6 +92,7 @@ export const testCreateSchema = z.object({
   testName: z.string().min(1).max(255),
   testResult: z.string().optional().nullable(),
   testCategory: z.enum(["lab", "imaging", "other"]),
+  attachmentId: z.uuid().optional().nullable(),
 });
 
 export type TestCreateInput = z.infer<typeof testCreateSchema>;
