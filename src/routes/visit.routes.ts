@@ -495,6 +495,13 @@ router.post(
   visitController.addTest,
 );
 
+router.patch(
+  "/:visitId/tests/:testId",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  visitController.updateTest,
+);
+
 /**
  * @openapi
  * /visits/{visitId}/treatments:
@@ -602,6 +609,29 @@ router.post(
   authMiddleware,
   authorize([...CLINICAL_WRITE_ROLES]),
   visitController.addMedication,
+);
+
+/**
+ * @openapi
+ * /visits/{visitId}/{resource}/{id}:
+ *   patch:
+ *     tags: [Visits]
+ *     summary: Update a visit-scoped encounter record (complaints, provisional/confirm diagnoses, medications, treatments, physical-examinations, histories)
+ *     responses:
+ *       200:
+ *         description: Record updated
+ *       404:
+ *         description: Record not found
+ *
+ * Generic encounter-record updater. Registered last so the dedicated
+ * `/:visitId/tests/:testId` PATCH above keeps handling tests; every other
+ * resource slug is dispatched here by `:resource`.
+ */
+router.patch(
+  "/:visitId/:resource/:id",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  visitController.updateEncounterRecord,
 );
 
 export default router;

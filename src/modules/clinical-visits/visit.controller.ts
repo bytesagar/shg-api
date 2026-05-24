@@ -5,6 +5,7 @@ import { AppError } from "../../utils/app-error";
 import { HTTP_STATUS } from "../../config/constants";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import {
+  ENCOUNTER_UPDATE_SCHEMAS,
   complaintCreateSchema,
   confirmDiagnosisCreateSchema,
   historyCreateSchema,
@@ -12,6 +13,7 @@ import {
   physicalExaminationCreateSchema,
   provisionalDiagnosisCreateSchema,
   testCreateSchema,
+  testUpdateSchema,
   treatmentCreateSchema,
   visitCreateSchema,
   visitStatusUpdateSchema,
@@ -293,6 +295,82 @@ export class VisitController extends BaseController {
     }
     return this.created(res, record, "Test encounter recorded successfully");
   });
+
+  public updateTest = catchAsync(async (req: AuthRequest, res: Response) => {
+    const context = requireFacilityContext(req);
+    const validatedData = testUpdateSchema.safeParse(req.body);
+    if (!validatedData.success) {
+      const errorMessages = validatedData.error.issues
+        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+        .join(", ");
+      throw new AppError(
+        `Validation failed: ${errorMessages}`,
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    const { visitId, testId } = req.params;
+    const recordService = new VisitRecordService(context);
+    const record = await recordService.updateTest(
+      visitId as string,
+      testId as string,
+      validatedData.data,
+    );
+    if (!record) {
+      throw new AppError("Test not found", HTTP_STATUS.NOT_FOUND);
+    }
+    return this.ok(res, record, "Test updated successfully");
+  });
+
+  /**
+   * Generic update for a visit-scoped encounter detail record:
+   *   PATCH /visits/:visitId/:resource/:id
+   * `:resource` is the URL slug (complaints, medications, …) and selects both
+   * the validation schema and the target table. Tests keep their own route.
+   */
+  public updateEncounterRecord = catchAsync(
+    async (req: AuthRequest, res: Response) => {
+      const context = requireFacilityContext(req);
+      const { visitId, resource, id } = req.params;
+
+      const schema =
+        ENCOUNTER_UPDATE_SCHEMAS[
+          resource as keyof typeof ENCOUNTER_UPDATE_SCHEMAS
+        ];
+      if (!schema) {
+        throw new AppError(
+          `Unknown encounter resource: ${resource}`,
+          HTTP_STATUS.NOT_FOUND,
+        );
+      }
+
+      const validatedData = schema.safeParse(req.body);
+      if (!validatedData.success) {
+        const errorMessages = validatedData.error.issues
+          .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+          .join(", ");
+        throw new AppError(
+          `Validation failed: ${errorMessages}`,
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+
+      const recordService = new VisitRecordService(context);
+      const record = await recordService.updateEncounterRecord(
+        visitId as string,
+        resource as string,
+        id as string,
+        validatedData.data,
+      );
+      if (!record) {
+        throw new AppError(
+          `${resource} record not found`,
+          HTTP_STATUS.NOT_FOUND,
+        );
+      }
+      return this.ok(res, record, "Record updated successfully");
+    },
+  );
 
   public addTreatment = catchAsync(async (req: AuthRequest, res: Response) => {
     const context = requireFacilityContext(req);

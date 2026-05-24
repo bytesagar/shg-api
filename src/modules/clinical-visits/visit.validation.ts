@@ -97,6 +97,15 @@ export const testCreateSchema = z.object({
 
 export type TestCreateInput = z.infer<typeof testCreateSchema>;
 
+export const testUpdateSchema = z.object({
+  testName: z.string().min(1).max(255).optional(),
+  testResult: z.string().optional().nullable(),
+  testCategory: z.enum(["lab", "imaging", "other"]).optional(),
+  attachmentId: z.uuid().optional().nullable(),
+});
+
+export type TestUpdateInput = z.infer<typeof testUpdateSchema>;
+
 export const treatmentCreateSchema = z.object({
   medicalAdvise: z.string().optional().nullable(),
   followUpText: z.string().optional().nullable(),
@@ -122,3 +131,69 @@ export const medicationCreateSchema = z.object({
 });
 
 export type MedicationCreateInput = z.infer<typeof medicationCreateSchema>;
+
+/* -------------------------------------------------------------------------- */
+/* Encounter record UPDATE schemas                                            */
+/*                                                                            */
+/* Drive the generic `PATCH /visits/:visitId/:resource/:id` endpoint. All     */
+/* fields are optional (PATCH semantics); free-text fields drop the create-   */
+/* time `.min(1)` so an edit can clear/keep them. `tests` keeps its own       */
+/* dedicated route (attachment handling), so it is intentionally absent here. */
+/* -------------------------------------------------------------------------- */
+
+export const complaintUpdateSchema = z.object({
+  title: z.string().min(1).max(500).optional(),
+  duration: z.number().int().optional().nullable(),
+  durationUnit: z.enum(["hours", "days", "weeks", "months", "years"]).optional(),
+  severity: z.enum(["low", "medium", "high", "critical"]).optional(),
+  description: z.string().optional().nullable(),
+});
+
+export const provisionalDiagnosisUpdateSchema = z.object({
+  description: z.string().optional().nullable(),
+});
+
+export const confirmDiagnosisUpdateSchema = z.object({
+  icdCode: z.string().max(50).optional().nullable(),
+  description: z.string().optional().nullable(),
+});
+
+export const physicalExaminationUpdateSchema = z.object({
+  generalCondition: z.string().optional(),
+  chest: z.string().optional(),
+  cvs: z.string().optional(),
+  cns: z.string().optional(),
+  perabdominal: z.string().optional(),
+  localExamination: z.string().optional(),
+});
+
+export const historyUpdateSchema = z.object({
+  medical: z.string().optional(),
+  surgical: z.string().optional(),
+  obGyn: z.string().optional(),
+  medication: z.string().optional(),
+  familyHistory: z.string().optional(),
+  social: z.string().optional(),
+  other: z.string().optional().nullable(),
+});
+
+export const treatmentUpdateSchema = treatmentCreateSchema.partial();
+
+export const medicationUpdateSchema = medicationCreateSchema.partial();
+
+/**
+ * URL resource slug → update schema, consumed by the generic encounter-update
+ * endpoint. Keep keys in sync with `ENCOUNTER_UPDATE_TABLES` in
+ * `visit-record.service.ts`.
+ */
+export const ENCOUNTER_UPDATE_SCHEMAS = {
+  complaints: complaintUpdateSchema,
+  "provisional-diagnoses": provisionalDiagnosisUpdateSchema,
+  "confirm-diagnoses": confirmDiagnosisUpdateSchema,
+  "physical-examinations": physicalExaminationUpdateSchema,
+  histories: historyUpdateSchema,
+  treatments: treatmentUpdateSchema,
+  medications: medicationUpdateSchema,
+} as const;
+
+export type EncounterResource = keyof typeof ENCOUNTER_UPDATE_SCHEMAS;

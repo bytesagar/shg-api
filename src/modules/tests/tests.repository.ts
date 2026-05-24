@@ -2,7 +2,8 @@ import { db } from "../../db";
 import { attachments, encounters, tests, visits } from "../../db/schema";
 import { FacilityContext } from "../../context/facility-context";
 import { FacilityRepository } from "../../core/facility-repository";
-import { SQL, and, desc, eq, gte, lte, sql } from "drizzle-orm";
+import type { TestUpdateInput } from "../clinical-visits/visit.validation";
+import { SQL, and, desc, eq, gte, inArray, lte, sql } from "drizzle-orm";
 
 export type TestCategoryFilter = "lab" | "imaging" | "other";
 
@@ -57,5 +58,20 @@ export class TestsRepository extends FacilityRepository {
       .offset(offset);
 
     return items;
+  }
+
+  /** Update a test row. Scoped to the facility via a visit subquery. */
+  public async update(testId: string, data: TestUpdateInput) {
+    const ownedVisitIds = db
+      .select({ id: visits.id })
+      .from(visits)
+      .where(eq(visits.facilityId, this.context.facilityId));
+
+    const updated = await db
+      .update(tests)
+      .set({ ...data, updatedAt: new Date() })
+      .where(and(eq(tests.id, testId), inArray(tests.visitId, ownedVisitIds)))
+      .returning();
+    return updated[0] ?? null;
   }
 }
