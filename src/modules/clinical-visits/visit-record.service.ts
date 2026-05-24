@@ -21,9 +21,27 @@ import {
   PhysicalExaminationCreateInput,
   ProvisionalDiagnosisCreateInput,
   TestCreateInput,
+  TestUpdateInput,
   TreatmentCreateInput,
   VitalsCreateInput,
 } from "./visit.validation";
+import { TestsRepository } from "../tests/tests.repository";
+import { and, eq } from "drizzle-orm";
+
+/**
+ * URL resource slug → Drizzle table for the generic encounter-update endpoint.
+ * Keep keys in sync with `ENCOUNTER_UPDATE_SCHEMAS` in `visit.validation.ts`.
+ * `tests` keeps its dedicated route, so it is intentionally omitted here.
+ */
+const ENCOUNTER_UPDATE_TABLES = {
+  complaints,
+  "provisional-diagnoses": provisional_diagnoses,
+  "confirm-diagnoses": confirm_diagnoses,
+  "physical-examinations": physical_examinations,
+  histories,
+  treatments,
+  medications,
+} as const;
 
 export class VisitRecordService {
   private visitRepository: VisitRepository;
@@ -221,6 +239,43 @@ export class VisitRecordService {
         .returning();
       return { encounter, record: inserted[0] };
     });
+  }
+
+  public async updateTest(visitId: string, testId: string, input: TestUpdateInput) {
+    // Verify the visit belongs to this facility first.
+    const visit = await this.getOwnedVisit(visitId);
+    if (!visit) return null;
+
+    const repo = new TestsRepository(this.context);
+    return repo.update(testId, input);
+  }
+
+  /**
+   * Generic update for a visit-scoped encounter detail record. `resource` is the
+   * URL slug (e.g. "complaints"); the body has already been validated against
+   * the matching schema in the controller. Scoped to the visit (and the visit's
+   * facility via `getOwnedVisit`) so records can't be cross-updated.
+   */
+  public async updateEncounterRecord(
+    visitId: string,
+    resource: string,
+    recordId: string,
+    input: Record<string, unknown>,
+  ) {
+    const visit = await this.getOwnedVisit(visitId);
+    if (!visit) return null;
+
+    const table = ENCOUNTER_UPDATE_TABLES[
+      resource as keyof typeof ENCOUNTER_UPDATE_TABLES
+    ] as any;
+    if (!table) return null;
+
+    const updated = await db
+      .update(table)
+      .set({ ...input, updatedBy: this.context.userId, updatedAt: new Date() })
+      .where(and(eq(table.id, recordId), eq(table.visitId, visitId)))
+      .returning();
+    return updated[0] ?? null;
   }
 
   public async addTreatment(visitId: string, input: TreatmentCreateInput) {
