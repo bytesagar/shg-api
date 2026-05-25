@@ -1,6 +1,6 @@
 import { db } from "../db";
 import { patients, districts } from "../db/schema";
-import { desc, like, eq } from "drizzle-orm";
+import { desc, like, eq, sql } from "drizzle-orm";
 
 /**
  * Generates a unique patient ID based on district code.
@@ -36,4 +36,23 @@ export async function generatePatientId(districtId?: string): Promise<string> {
   } else {
     return `${districtPrefix}000001`;
   }
+}
+
+/**
+ * Generates a unique registration number for a facility. Returns one past the
+ * highest numeric registration number already on the facility's patients
+ * (ignoring non-numeric values), so a generated number never collides with the
+ * facility's existing/imported register numbers. Starts at 1 for a facility
+ * with no numeric registration numbers yet.
+ */
+export async function generateRegistrationNo(facilityId: string): Promise<string> {
+  const [row] = await db
+    .select({
+      max: sql<number>`COALESCE(MAX(CASE WHEN ${patients.registrationNo} ~ '^[0-9]+$' THEN ${patients.registrationNo}::int ELSE 0 END), 0)`,
+    })
+    .from(patients)
+    .where(eq(patients.facilityId, facilityId));
+
+  const next = Number(row?.max ?? 0) + 1;
+  return next.toString();
 }

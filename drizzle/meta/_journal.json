@@ -113,6 +113,20 @@
       "when": 1779426966623,
       "tag": "0015_windy_power_pack",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1779681268907,
+      "tag": "0016_patient_registration_no_date",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1779684677596,
+      "tag": "0017_health_facility_address_optional",
+      "breakpoints": true
     }
   ]
 }

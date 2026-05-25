@@ -215,6 +215,10 @@ export interface PatientDetail {
   spouseName: string | null;
   childrenMale: number | null;
   childrenFemale: number | null;
+  /** Facility's existing register number (kept or generated). */
+  registrationNo: string | null;
+  /** Registration date, `YYYY-MM-DD` (kept or defaulted to today). */
+  registrationDate: string | null;
   status: (typeof patients.$inferSelect)["status"];
   facilityId: string | null;
   assignedUserId: string | null;

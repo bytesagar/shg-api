@@ -67,6 +67,12 @@ export const patientCreateSchema = z.object({
   childrenMale: z.number().int().min(0).max(10).optional().nullable(),
   childrenFemale: z.number().int().min(0).max(10).optional().nullable(),
 
+  // Facility's existing register number + date (legacy paper book-keeping).
+  // Kept if provided; otherwise the service generates a unique registrationNo
+  // and defaults registrationDate to today (YYYY-MM-DD).
+  registrationNo: z.string().max(100).optional().nullable(),
+  registrationDate: z.string().max(20).optional().nullable(),
+
   // Maternal health service-specific fields → create a `pregnancies` row.
   firstVisit: z.string().max(20).optional().nullable(),
   gravida: z.union([z.string(), z.number()]).optional().nullable(),

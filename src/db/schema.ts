@@ -435,7 +435,7 @@ export const health_facilities = pgTable(
       .notNull()
       .default(sql`gen_random_uuid()`),
     name: varchar("name", { length: 255 }).notNull(),
-    address: text("address").notNull(),
+    address: text("address"),
     phone: varchar("phone", { length: 50 }).notNull(),
     email: varchar("email", { length: 255 }).notNull(),
     ward: varchar("ward", { length: 100 }).notNull(),
@@ -806,6 +806,11 @@ export const patients = pgTable(
     spouseName: varchar("spouse_name", { length: 255 }),
     childrenMale: integer("children_male"),
     childrenFemale: integer("children_female"),
+    // Facility's existing register number + date (legacy paper book-keeping).
+    // registrationNo is kept if provided, otherwise generated; registrationDate
+    // defaults to today (YYYY-MM-DD) when absent.
+    registrationNo: varchar("registration_no", { length: 100 }),
+    registrationDate: date("registration_date", { mode: "string" }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at"),
     createdBy: uuid("created_by"),
