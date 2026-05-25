@@ -1,4 +1,9 @@
-import { generatePatientId } from "../../utils/id-generator";
+import { format } from "date-fns";
+
+import {
+  generatePatientId,
+  generateRegistrationNo,
+} from "../../utils/id-generator";
 import {
   PatientCreateInput,
   PatientFamilyPlanningProfileInput,
@@ -47,9 +52,22 @@ export class PatientService {
     }
 
     const patientId = await generatePatientId(data.address?.districtId ?? undefined);
+
+    // Keep a provided registration number, else generate a unique one for the
+    // facility. Keep a provided registration date, else default to today.
+    const registrationNo =
+      data.registrationNo?.trim() ||
+      (await generateRegistrationNo(this.context.facilityId));
+    const registrationDate =
+      data.registrationDate?.trim() || format(new Date(), "yyyy-MM-dd");
+
     let newPatient;
     try {
-      newPatient = await this.patientRepository.createWithInitialVisit(data, patientId);
+      newPatient = await this.patientRepository.createWithInitialVisit(
+        data,
+        patientId,
+        { registrationNo, registrationDate },
+      );
     } catch (err: any) {
       if (err?.code === "23505") {
         throw new AppError(

@@ -14,7 +14,7 @@ import { signJwt } from "../../utils/jwt";
 import { randomBytes, createHash } from "crypto";
 import { AppError } from "../../utils/app-error";
 import { HTTP_STATUS } from "../../config/constants";
-import { getPermissionsForRole, normalizeRole } from "../../constants/rbac";
+import { effectivePermissions, normalizeRole } from "../../constants/rbac";
 import { logger } from "../../utils/logger";
 
 type AuthUserPayload = Omit<typeof users.$inferSelect, "passwordHash">;
@@ -27,10 +27,14 @@ export class AuthService {
     return createHash("sha256").update(token).digest("hex");
   }
 
-  private async resolveRole(userId: string, fallbackRole: string) {
+  private async resolveRole(
+    userId: string,
+    fallbackRole: string,
+  ): Promise<{ name: string; permissions: string[] }> {
     const roleAssignment = await db
       .select({
         roleName: user_roles.name,
+        permissions: user_roles.permissions,
       })
       .from(user_role_assignments)
       .innerJoin(user_roles, eq(user_role_assignments.roleId, user_roles.id))
@@ -42,7 +46,11 @@ export class AuthService {
       )
       .orderBy(desc(user_role_assignments.createdAt))
       .limit(1);
-    return roleAssignment[0]?.roleName ?? fallbackRole;
+    const found = roleAssignment[0];
+    return {
+      name: found?.roleName ?? fallbackRole,
+      permissions: found?.permissions ?? [],
+    };
   }
 
   private sanitizeUser(user: typeof users.$inferSelect): AuthUserPayload {
@@ -78,7 +86,8 @@ export class AuthService {
       throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
     }
 
-    const role = normalizeRole(await this.resolveRole(user.id, user.userType));
+    const resolved = await this.resolveRole(user.id, user.userType);
+    const role = normalizeRole(resolved.name);
 
     return {
       user: {
@@ -86,7 +95,7 @@ export class AuthService {
         facility,
       },
       role,
-      permissions: getPermissionsForRole(role),
+      permissions: effectivePermissions(role, resolved.permissions),
     };
   }
 
@@ -232,7 +241,10 @@ export class AuthService {
       );
     }
 
-    const resolvedRole = await this.resolveRole(foundUser.id, foundUser.userType);
+    const resolved = await this.resolveRole(foundUser.id, foundUser.userType);
+    const resolvedRole = resolved.name;
+    const normalizedRole = normalizeRole(resolvedRole);
+    const permissions = effectivePermissions(normalizedRole, resolved.permissions);
 
     const refreshToken = randomBytes(48).toString("hex");
     const refreshTokenHash = this.hashToken(refreshToken);
@@ -257,6 +269,7 @@ export class AuthService {
         userType: foundUser.userType,
         facilityId: foundUser.facilityId,
         sessionId,
+        permissions,
       },
       { expiresIn: `${Math.floor(this.accessTokenTtlMs / 1000)}s` },
     );
@@ -289,12 +302,11 @@ export class AuthService {
       sessionId,
     });
 
-    const normalizedRole = normalizeRole(resolvedRole);
     return {
       user: this.sanitizeUser(foundUser),
       facility,
       role: normalizedRole,
-      permissions: getPermissionsForRole(normalizedRole),
+      permissions,
       accessToken: token,
       expiresInSec: Math.floor(this.accessTokenTtlMs / 1000),
       refreshToken,
@@ -346,7 +358,10 @@ export class AuthService {
       throw new AppError("Invalid session user", HTTP_STATUS.UNAUTHORIZED);
     }
 
-    const resolvedRole = await this.resolveRole(user.id, user.userType);
+    const resolved = await this.resolveRole(user.id, user.userType);
+    const resolvedRole = resolved.name;
+    const normalizedRole = normalizeRole(resolvedRole);
+    const permissions = effectivePermissions(normalizedRole, resolved.permissions);
 
     const newRefreshToken = randomBytes(48).toString("hex");
     const newRefreshTokenHash = this.hashToken(newRefreshToken);
@@ -368,6 +383,7 @@ export class AuthService {
         userType: user.userType,
         facilityId: user.facilityId,
         sessionId: session.id,
+        permissions,
       },
       { expiresIn: `${Math.floor(this.accessTokenTtlMs / 1000)}s` },
     );
@@ -387,12 +403,11 @@ export class AuthService {
       facilityId: user.facilityId,
     });
 
-    const normalizedRole = normalizeRole(resolvedRole);
     return {
       user: this.sanitizeUser(user),
       facility,
       role: normalizedRole,
-      permissions: getPermissionsForRole(normalizedRole),
+      permissions,
       accessToken,
       expiresInSec: Math.floor(this.accessTokenTtlMs / 1000),
       refreshToken: newRefreshToken,

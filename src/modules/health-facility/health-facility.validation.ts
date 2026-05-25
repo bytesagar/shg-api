@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const healthFacilityCreateSchema = z.object({
   name: z.string().min(1, "Name is required").max(255),
-  address: z.string().min(1, "Address is required"),
+  address: z.string().max(1000).optional().nullable(),
   phone: z.string().min(7, "Phone is required").max(50),
   email: z.string().email("Invalid email").max(255),
   ward: z.string().min(1, "Ward is required").max(100),

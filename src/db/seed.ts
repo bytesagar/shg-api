@@ -46,6 +46,7 @@ import * as bcrypt from "bcryptjs";
 import { and, eq, sql } from "drizzle-orm";
 import { distance } from "fastest-levenshtein";
 import { seedImnciBookletStub } from "./seeds/imnci/seed-imnci";
+import { getPermissionsForRole } from "../constants/rbac";
 
 const DEFAULT_USER_ROLES: { name: string; description: string }[] = [
   { name: "admin", description: "Administrator" },
@@ -167,6 +168,9 @@ async function seedUserRoles() {
   console.log("🌱 Seeding user roles...");
   const now = new Date();
   for (const role of DEFAULT_USER_ROLES) {
+    // Backfill the explicit permissions column from the hardcoded fallback map
+    // so seeded roles enforce identically once permissions live on the record.
+    const permissions = getPermissionsForRole(role.name);
     const existing = await db
       .select({ id: user_roles.id })
       .from(user_roles)
@@ -176,13 +180,14 @@ async function seedUserRoles() {
     if (existing[0]) {
       await db
         .update(user_roles)
-        .set({ description: role.description, updatedAt: now })
+        .set({ description: role.description, permissions, updatedAt: now })
         .where(eq(user_roles.id, existing[0].id));
       console.log(`  ↳ User role '${role.name}' updated`);
     } else {
       await db.insert(user_roles).values({
         name: role.name,
         description: role.description,
+        permissions,
         updatedAt: now,
       });
       console.log(`  ↳ User role '${role.name}' created`);
@@ -1214,6 +1219,17 @@ async function seed() {
       facilityId,
       roleName: "municipalityuser",
     },
+    {
+      email: "palika@shg.com",
+      username: "palika",
+      firstName: "Sita",
+      lastName: "Gurung",
+      passwordHash: hashedPassword,
+      userType: "user" as const,
+      phoneNumber: "9800000005",
+      facilityId,
+      roleName: "palika",
+    },
   ];
 
   try {
@@ -1271,6 +1287,8 @@ async function seed() {
         });
       }
 
+      const roleId = roleMap.get(u.roleName);
+
       const [upsertedUser] = await db
         .insert(users)
         .values({
@@ -1284,6 +1302,9 @@ async function seed() {
           designation: (u as any).designation,
           specialization: (u as any).specialization,
           facilityId: u.facilityId,
+          // Set the direct FK too — the Users API/UI reads `users.userRoleId`,
+          // not just the `user_role_assignments` join row.
+          userRoleId: roleId ?? null,
           personId,
         })
         .onConflictDoUpdate({
@@ -1293,6 +1314,7 @@ async function seed() {
             personId,
             passwordHash: u.passwordHash,
             userType: u.userType,
+            userRoleId: roleId ?? null,
             updatedAt: new Date(),
           },
         })
@@ -1301,7 +1323,6 @@ async function seed() {
       userIdByEmail.set(u.email, upsertedUser.id);
       userPersonIdByEmail.set(u.email, personId);
 
-      const roleId = roleMap.get(u.roleName);
       if (roleId) {
         await db
           .insert(user_role_assignments)

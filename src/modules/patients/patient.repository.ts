@@ -100,6 +100,8 @@ export class PatientRepository extends FacilityRepository {
         spouseName: patients.spouseName,
         childrenMale: patients.childrenMale,
         childrenFemale: patients.childrenFemale,
+        registrationNo: patients.registrationNo,
+        registrationDate: patients.registrationDate,
         status: patients.status,
         facilityId: patients.facilityId,
         assignedUserId: patients.assignedUserId,
@@ -136,6 +138,8 @@ export class PatientRepository extends FacilityRepository {
       spouseName: parent.spouseName,
       childrenMale: parent.childrenMale,
       childrenFemale: parent.childrenFemale,
+      registrationNo: parent.registrationNo,
+      registrationDate: parent.registrationDate,
       status: parent.status,
       facilityId: parent.facilityId,
       assignedUserId: parent.assignedUserId,
@@ -552,6 +556,7 @@ export class PatientRepository extends FacilityRepository {
   public async createWithInitialVisit(
     data: PatientCreateInput,
     patientId: string,
+    registration: { registrationNo: string; registrationDate: string },
   ) {
     return db.transaction(async (tx) => {
       const insertedPerson = await tx
@@ -625,6 +630,8 @@ export class PatientRepository extends FacilityRepository {
           spouseName: data.spouseName ?? null,
           childrenMale: data.childrenMale ?? null,
           childrenFemale: data.childrenFemale ?? null,
+          registrationNo: registration.registrationNo,
+          registrationDate: registration.registrationDate,
           facilityId: this.context.facilityId,
           assignedUserId: data.assignedUserId ?? null,
           status: data.status,
