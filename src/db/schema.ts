@@ -488,6 +488,10 @@ export const user_roles = pgTable("user_roles", {
     .default(sql`gen_random_uuid()`),
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description").notNull(),
+  permissions: text("permissions")
+    .array()
+    .notNull()
+    .default(sql`'{}'::text[]`),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").notNull(),
   deletedBy: uuid("deleted_by"),

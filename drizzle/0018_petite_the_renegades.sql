@@ -1,0 +1,1 @@
+ALTER TABLE "user_roles" ADD COLUMN "permissions" text[] DEFAULT '{}'::text[] NOT NULL;
