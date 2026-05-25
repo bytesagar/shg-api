@@ -622,11 +622,10 @@ router.post(
  *         description: Record updated
  *       404:
  *         description: Record not found
- *
- * Generic encounter-record updater. Registered last so the dedicated
- * `/:visitId/tests/:testId` PATCH above keeps handling tests; every other
- * resource slug is dispatched here by `:resource`.
  */
+// Generic encounter-record updater. Registered last so the dedicated
+// `/:visitId/tests/:testId` PATCH above keeps handling tests; every other
+// resource slug is dispatched here by `:resource`.
 router.patch(
   "/:visitId/:resource/:id",
   authMiddleware,

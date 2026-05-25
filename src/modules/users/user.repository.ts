@@ -59,6 +59,11 @@ export class UserRepository extends FacilityRepository {
       province: health_facilities.province,
       ward: health_facilities.ward,
     },
+    role: {
+      id: user_roles.id,
+      name: user_roles.name,
+      permissions: user_roles.permissions,
+    },
   };
 
   public async countAll(where?: SQL) {
@@ -129,6 +134,7 @@ export class UserRepository extends FacilityRepository {
       .select(this.userSelectWithFacility)
       .from(users)
       .leftJoin(health_facilities, eq(health_facilities.id, users.facilityId))
+      .leftJoin(user_roles, eq(user_roles.id, users.userRoleId))
       .where(this.withFacilityScope(where));
     if (opts) {
       return base
@@ -199,6 +205,7 @@ export class UserRepository extends FacilityRepository {
       .select(this.userSelectWithFacility)
       .from(users)
       .leftJoin(health_facilities, eq(health_facilities.id, users.facilityId))
+      .leftJoin(user_roles, eq(user_roles.id, users.userRoleId))
       .where(where)
       .orderBy(desc(users.createdAt))
       .limit(params.limit)
@@ -274,8 +281,10 @@ export class UserRepository extends FacilityRepository {
 
   public async findById(id: string) {
     const result = await db
-      .select(this.userSelectBase)
+      .select(this.userSelectWithFacility)
       .from(users)
+      .leftJoin(health_facilities, eq(health_facilities.id, users.facilityId))
+      .leftJoin(user_roles, eq(user_roles.id, users.userRoleId))
       .where(this.withFacilityScope(eq(users.id, id)))
       .limit(1);
     return result[0];

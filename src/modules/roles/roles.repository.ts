@@ -7,6 +7,7 @@ export class RoleRepository {
     id: user_roles.id,
     name: user_roles.name,
     description: user_roles.description,
+    permissions: user_roles.permissions,
     createdAt: user_roles.createdAt,
     updatedAt: user_roles.updatedAt,
   };
@@ -29,13 +30,18 @@ export class RoleRepository {
     return rows[0] ?? null;
   }
 
-  public async create(data: { name: string; description: string }) {
+  public async create(data: {
+    name: string;
+    description: string;
+    permissions?: string[];
+  }) {
     const now = new Date();
     const inserted = await db
       .insert(user_roles)
       .values({
         name: data.name,
         description: data.description,
+        permissions: data.permissions ?? [],
         updatedAt: now,
       })
       .returning(this.selectShape);
@@ -44,7 +50,7 @@ export class RoleRepository {
 
   public async updateById(
     id: string,
-    data: { name?: string; description?: string },
+    data: { name?: string; description?: string; permissions?: string[] },
   ) {
     const now = new Date();
     const updated = await db
