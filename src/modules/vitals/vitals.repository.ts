@@ -11,10 +11,19 @@ export class VitalsRepository extends FacilityRepository {
 
   public async findByPatientId(params: {
     patientId: string;
+    visitId?: string;
     page: number;
     pageSize: number;
   }) {
     const offset = (params.page - 1) * params.pageSize;
+
+    // Optional visit scoping — the visit drill-down passes visitId so vitals
+    // are limited to that single encounter; callers without it get the
+    // patient's full history (vitals history tab, recent-vitals strip, etc).
+    const wherePredicate = and(
+      eq(visits.patientId, params.patientId),
+      params.visitId ? eq(vitals.visitId, params.visitId) : undefined,
+    );
 
     const items = await db
       .select({
@@ -39,9 +48,7 @@ export class VitalsRepository extends FacilityRepository {
       .from(vitals)
       .innerJoin(visits, eq(vitals.visitId, visits.id))
       .leftJoin(encounters, eq(vitals.encounterId, encounters.id))
-      .where(
-        this.withFacilityScope(and(eq(visits.patientId, params.patientId))),
-      )
+      .where(this.withFacilityScope(wherePredicate))
       .orderBy(desc(sql`coalesce(${encounters.encounterAt}, ${visits.date})`))
       .limit(params.pageSize)
       .offset(offset);

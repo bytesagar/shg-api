@@ -270,6 +270,9 @@ export const PERMISSION_CATALOG = {
   immunization: ["read", "create", "update", "delete"],
   medication: ["read", "create", "update", "delete"],
   growth: ["read", "create", "update", "delete"],
+  // Global medicine registry (Settings). Read open to clinical roles; write
+  // effectively admin-only (no non-admin role lists medicine:*).
+  medicine: ["read", "create", "update", "delete"],
   "family-planning": ["read", "create", "update", "delete"],
   consent: ["read", "create", "update", "delete"],
   audit: ["read"],

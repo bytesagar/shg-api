@@ -133,3 +133,35 @@ export const icd11CodesListQuerySchema = createListQuerySchema({
   q: icd11CodesSearchQ,
   category: optionalQueryString,
 });
+
+/** Optional tri-state boolean from query: "true"/"false" -> bool, else undefined. */
+const optionalQueryBoolean = z.preprocess((v) => {
+  if (typeof v !== "string") return undefined;
+  const t = v.trim().toLowerCase();
+  if (t === "true") return true;
+  if (t === "false") return false;
+  return undefined;
+}, z.boolean().optional());
+
+/**
+ * Medicines list cap is higher than the default 100 because the picker on the
+ * medication form fetches the whole registry up front (small dataset, client-
+ * side filtering — way better UX than debounced server search for ~hundreds of
+ * curated rows).
+ */
+const MEDICINES_MAX_PAGE_SIZE = 2000;
+
+export const medicinesListQuerySchema = z
+  .object({
+    page: z.coerce.number().int().min(1).default(1),
+    pageSize: z.coerce
+      .number()
+      .int()
+      .min(1)
+      .max(MEDICINES_MAX_PAGE_SIZE)
+      .default(30),
+    q: optionalQueryString,
+    form: optionalQueryString,
+    isDefault: optionalQueryBoolean,
+  })
+  .strict();
