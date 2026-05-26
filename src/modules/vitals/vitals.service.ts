@@ -10,6 +10,7 @@ export class VitalsService {
 
   public async listVitalsByPatientId(params: {
     patientId: string;
+    visitId?: string;
     page: number;
     pageSize: number;
   }) {

@@ -1244,6 +1244,49 @@ export const icd11_codes = pgTable(
   ],
 );
 
+/**
+ * Global medicine registry (reference catalog); not facility-scoped.
+ * Curated by admins under Settings. `isDefault` marks system/seeded entries
+ * shipped pre-loaded, distinct from admin-added custom ones.
+ *
+ * Natural identity is the composite (medicineName, medicineForm, strength) —
+ * the same name can legitimately appear with different forms/strengths
+ * ("Acyclovir TABLET 200mg" vs "Acyclovir SYRUP 200mg/5ml"). Form and strength
+ * are NOT NULL with default '' so Postgres treats blanks consistently in the
+ * unique check (NULLs would be treated as distinct, breaking dedup).
+ */
+export const medicines = pgTable(
+  "medicines",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    medicineName: varchar("medicine_name", { length: 500 }).notNull(),
+    medicineForm: varchar("medicine_form", { length: 100 }).notNull().default(""), // TABLET, CAPSULE, SYRUP...
+    strength: varchar("strength", { length: 255 }).notNull().default(""),
+    unit: varchar("unit", { length: 100 }),
+    dose: varchar("dose", { length: 255 }),
+    frequency: varchar("frequency", { length: 100 }), // OD, BD, TDS...
+    route: varchar("route", { length: 100 }), // PO, IV...
+    medicineTime: varchar("medicine_time", { length: 100 }), // BEFORE_FOOD, AFTER_FOOD
+    isDefault: boolean("is_default").default(false).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    deletedAt: timestamp("deleted_at"),
+    deletedBy: uuid("deleted_by").references(() => users.id),
+  },
+  (t) => [
+    uniqueIndex("medicines_name_form_strength_uidx").on(
+      t.medicineName,
+      t.medicineForm,
+      t.strength,
+    ),
+  ],
+);
+
 export const tests = pgTable(
   "tests",
   {

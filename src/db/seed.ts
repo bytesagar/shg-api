@@ -20,6 +20,7 @@ import {
   vaccines,
   vaccine_doses,
   medications,
+  medicines,
   municipalities,
   patient_identifiers,
   patients,
@@ -234,6 +235,82 @@ async function seedIcd11Codes() {
   }
 
   console.log(`✅ ICD-11 codes seeded (${rows.length} rows)`);
+}
+
+/**
+ * Source shape of a row in data/medicines.json. Drizzle/the DB own `id`,
+ * `createdAt`/`updatedAt`, `createdBy`/`updatedBy` — those are not in the
+ * seed file. Legacy noise (`palikaId`, `medicineId`, `deletedInfo`, etc.) is
+ * stripped from the file too. `default` (per row) maps to `isDefault`.
+ */
+type MedicineSeedRow = {
+  medicineName?: string | null;
+  medicineForm?: string | null;
+  strength?: string | null;
+  unit?: string | null;
+  dose?: string | null;
+  frequency?: string | null;
+  route?: string | null;
+  medicineTime?: string | null;
+  default?: boolean | null;
+};
+
+async function seedMedicines() {
+  console.log("🌱 Seeding medicines registry...");
+
+  let parsed: MedicineSeedRow[] | { medicines: MedicineSeedRow[] } | null = null;
+  try {
+    parsed = readDataJson("medicines.json");
+  } catch {
+    console.log("  ↳ data/medicines.json not found — skipping medicines seed");
+    return;
+  }
+
+  const source = Array.isArray(parsed) ? parsed : (parsed?.medicines ?? []);
+  const trim = (v?: string | null) =>
+    typeof v === "string" ? v.trim() : "";
+  const optional = (v?: string | null) => {
+    const t = trim(v);
+    return t.length === 0 ? null : t;
+  };
+
+  const rows = source
+    .filter((m) => trim(m.medicineName).length > 0)
+    .map((m) => ({
+      medicineName: trim(m.medicineName),
+      // form/strength participate in the composite unique key — store ""
+      // (not null) so Postgres dedup treats blanks consistently.
+      medicineForm: trim(m.medicineForm),
+      strength: trim(m.strength),
+      unit: optional(m.unit),
+      dose: optional(m.dose),
+      frequency: optional(m.frequency),
+      route: optional(m.route),
+      medicineTime: optional(m.medicineTime),
+      isDefault: m.default !== false, // treat missing/true as default; only explicit false demotes
+    }));
+
+  if (rows.length === 0) {
+    console.log("  ↳ No medicines to seed");
+    return;
+  }
+
+  // Composite (medicineName, medicineForm, strength) is the natural identity.
+  // DO NOTHING so admin edits to seeded entries survive re-seeds.
+  const batchSize = 200;
+  let attempted = 0;
+  for (let i = 0; i < rows.length; i += batchSize) {
+    const chunk = rows.slice(i, i + batchSize);
+    attempted += chunk.length;
+    await db
+      .insert(medicines)
+      .values(chunk)
+      .onConflictDoNothing({
+        target: [medicines.medicineName, medicines.medicineForm, medicines.strength],
+      });
+  }
+
+  console.log(`✅ Medicines seed processed (${attempted} rows from file)`);
 }
 
 async function seedGeography() {
@@ -1122,6 +1199,7 @@ async function seedVaccineCatalog() {
 async function seed() {
   await seedUserRoles();
   await seedIcd11Codes();
+  await seedMedicines();
   await seedGeography();
   await seedHealthFacilitiesFromJson();
   await seedImnciBookletStub();

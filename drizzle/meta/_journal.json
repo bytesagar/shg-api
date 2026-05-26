@@ -134,6 +134,20 @@
       "when": 1779687806009,
       "tag": "0018_petite_the_renegades",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1779759982546,
+      "tag": "0019_add_medicines_registry",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1779761444915,
+      "tag": "0020_medicines_composite_unique",
+      "breakpoints": true
     }
   ]
 }

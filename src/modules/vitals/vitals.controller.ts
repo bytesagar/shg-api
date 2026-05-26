@@ -15,6 +15,7 @@ export class VitalsController extends BaseController {
     const service = new VitalsService(context);
     const result = await service.listVitalsByPatientId({
       patientId: query.patientId,
+      visitId: query.visitId,
       page: query.page,
       pageSize: query.pageSize,
     });
