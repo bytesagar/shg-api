@@ -2,8 +2,14 @@ import { z } from "zod";
 import { AppError } from "./app-error";
 import { HTTP_STATUS } from "../config/constants";
 
-/** Maximum allowed page size for list endpoints. */
-export const MAX_LIST_PAGE_SIZE = 100;
+/**
+ * Maximum allowed page size for list endpoints. Sized so reference
+ * catalogs (lab tests, medicines, ICD codes, etc.) fit in a single
+ * round-trip — paginated views on real growing data still send
+ * sensible pageSize values; this is just the upper bound the
+ * validator accepts.
+ */
+export const MAX_LIST_PAGE_SIZE = 1000;
 
 const paginationShape = {
   page: z.coerce.number().int().min(1).default(1),

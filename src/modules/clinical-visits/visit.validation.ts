@@ -36,13 +36,18 @@ export const vitalsCreateSchema = z.object({
 
 export type VitalsCreateInput = z.infer<typeof vitalsCreateSchema>;
 
+/**
+ * Client history — every category is optional. The service layer
+ * defaults missing fields to `""` before inserting so the histories
+ * table's NOT NULL columns stay satisfied without a DB migration.
+ */
 export const historyCreateSchema = z.object({
-  medical: z.string().min(1),
-  surgical: z.string().min(1),
-  obGyn: z.string().min(1),
-  medication: z.string().min(1),
-  familyHistory: z.string().min(1),
-  social: z.string().min(1),
+  medical: z.string().optional(),
+  surgical: z.string().optional(),
+  obGyn: z.string().optional(),
+  medication: z.string().optional(),
+  familyHistory: z.string().optional(),
+  social: z.string().optional(),
   other: z.string().optional().nullable(),
 });
 

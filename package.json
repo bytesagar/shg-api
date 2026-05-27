@@ -14,6 +14,7 @@
     "db:drop": "drizzle-kit drop",
     "db:seed": "ts-node -r tsconfig-paths/register src/db/seed.ts",
     "db:seed:prod": "node dist/db/seed.js",
+    "db:seed:lab-tests": "ts-node -r tsconfig-paths/register src/db/seeds/lab-tests/index.ts",
     "db:up": "docker compose -f docker-compose.local.yml up  -d postgres",
     "db:down": "docker compose -f docker-compose.local.yml down",
     "db:logs": "docker compose -f docker-compose.local.yml logs -f postgres",
