@@ -1255,6 +1255,40 @@ export const icd11_codes = pgTable(
  * are NOT NULL with default '' so Postgres treats blanks consistently in the
  * unique check (NULLs would be treated as distinct, breaking dedup).
  */
+/**
+ * Reference catalog of lab tests offered by the system. Seeded from
+ * data/lab-tests.json (HMIS-aligned PATHOLOGY / RADIOLOGY list). The
+ * frontend settings page reads from here; future per-visit `tests`
+ * rows can FK into this catalog by id once an FK is needed.
+ */
+export const lab_tests = pgTable(
+  "lab_tests",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    name: varchar("name", { length: 255 }).notNull(),
+    /** PATHOLOGY | RADIOLOGY (HMIS service categorisation). */
+    category: varchar("category", { length: 64 }).notNull(),
+    /**
+     * Optional canonical report-template key (e.g. HEMATOLOGICAL_TEST).
+     * Nullable because some catalog entries — many radiology ones —
+     * don't have a per-template form yet.
+     */
+    reportTemplate: varchar("report_template", { length: 64 }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [
+    // Same test name can legitimately appear under both PATHOLOGY and
+    // RADIOLOGY (e.g. some imaging vs blood tests share names).
+    uniqueIndex("lab_tests_name_category_uidx").on(t.name, t.category),
+    index("lab_tests_category_idx").on(t.category),
+  ],
+);
+
 export const medicines = pgTable(
   "medicines",
   {
