@@ -254,6 +254,15 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
     run: (_scope, { fromDate, toDate }, repo) =>
       repo.systemTotals({ from: fromDate, toExclusive: toDate }),
   },
+  DOCTORS_APPOINTMENT_SUMMARY: {
+    inputSchema: dateRangeSchema,
+    run: (scope, { fromDate, toDate }, repo) =>
+      repo.doctorsAppointmentSummary({
+        from: fromDate,
+        toExclusive: toDate,
+        facilityId: facilityFilter(scope),
+      }),
+  },
 };
 
 export class AnalyticsService {

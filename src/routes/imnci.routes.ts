@@ -10,12 +10,14 @@ import { ImnciVisitController } from "../modules/imnci/imnci-visit.controller";
 import { ImnciFollowUpController } from "../modules/imnci/imnci-followup.controller";
 import { ImnciReferenceController } from "../modules/imnci/imnci-reference.controller";
 import { ImnciReportsController } from "../modules/imnci/imnci-reports.controller";
+import { ImnciRecordController } from "../modules/imnci-records/imnci-record.controller";
 
 const router = Router();
 const visit = new ImnciVisitController();
 const followUp = new ImnciFollowUpController();
 const reference = new ImnciReferenceController();
 const reports = new ImnciReportsController();
+const record = new ImnciRecordController();
 
 router.use(authMiddleware);
 
@@ -93,6 +95,17 @@ router.post(
   "/visits/:id/refer",
   authorize([...CLINICAL_WRITE_ROLES]),
   visit.refer,
+);
+
+// Records (offline-first IMNCI register archive). The frontend's Dexie
+// outbox upserts here by its client-generated id — POST is idempotent.
+router.get("/records", authorize([...CLINICAL_READ_ROLES]), record.list);
+router.post("/records", authorize([...CLINICAL_WRITE_ROLES]), record.upsert);
+router.get("/records/:id", authorize([...CLINICAL_READ_ROLES]), record.getById);
+router.delete(
+  "/records/:id",
+  authorize([...CLINICAL_WRITE_ROLES]),
+  record.remove,
 );
 
 export default router;

@@ -4078,6 +4078,62 @@ export const imnci_fchv_commodities_dispensed = pgTable(
   ],
 );
 
+// ----- IMNCI offline-first record archive -----
+//
+// Stores the JSON blob the frontend's Dexie outbox submits per IMNCI
+// register entry. Coexists with the visit-centric tables above — those
+// remain the source of truth for the structured rule-engine flow; this
+// table is the per-submission archive for the form the field worker
+// fills offline.
+//
+// Idempotency: the `id` is the client-generated UUID from the outbox.
+// Re-syncing the same record (e.g. after an edit) upserts on `id` so
+// retries don't duplicate rows.
+export const imnci_records = pgTable(
+  "imnci_records",
+  {
+    id: uuid("id").primaryKey().notNull(),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
+    patientId: uuid("patient_id")
+      .notNull()
+      .references(() => patients.id),
+    visitId: uuid("visit_id").references(() => visits.id),
+    encounterId: uuid("encounter_id").references(() => encounters.id),
+    // "under-2-months" | "2-months-to-5-years" — kept as varchar instead
+    // of an enum so the frontend's union can evolve without a backend
+    // migration.
+    ageBand: varchar("age_band", { length: 32 }).notNull(),
+    // The full per-band form payload (registration, vitals, signs,
+    // classification, treatment, counselling, outcome, …). Shape varies
+    // by ageBand; jsonb lets us index later if needed.
+    values: jsonb("values").notNull(),
+    // Client-side timestamps preserved verbatim so reports can show the
+    // moment the clinician submitted, even if sync was delayed by hours.
+    clientCreatedAt: timestamp("client_created_at", {
+      withTimezone: true,
+    }).notNull(),
+    clientUpdatedAt: timestamp("client_updated_at", {
+      withTimezone: true,
+    }).notNull(),
+    createdByUserId: uuid("created_by_user_id").references(() => users.id),
+    // Server timestamps.
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [
+    index("imnci_records_facility_patient_idx").on(t.facilityId, t.patientId),
+    index("imnci_records_facility_patient_band_idx").on(
+      t.facilityId,
+      t.patientId,
+      t.ageBand,
+    ),
+    index("imnci_records_facility_updated_idx").on(t.facilityId, t.updatedAt),
+  ],
+);
+
 // ----- IMNCI Relations -----
 
 export const imnciChartBookletsRelations = relations(
@@ -4142,6 +4198,29 @@ export const imnciCounsellingMessagesRelations = relations(
     }),
   }),
 );
+
+export const imnciRecordsRelations = relations(imnci_records, ({ one }) => ({
+  facility: one(health_facilities, {
+    fields: [imnci_records.facilityId],
+    references: [health_facilities.id],
+  }),
+  patient: one(patients, {
+    fields: [imnci_records.patientId],
+    references: [patients.id],
+  }),
+  visit: one(visits, {
+    fields: [imnci_records.visitId],
+    references: [visits.id],
+  }),
+  encounter: one(encounters, {
+    fields: [imnci_records.encounterId],
+    references: [encounters.id],
+  }),
+  createdBy: one(users, {
+    fields: [imnci_records.createdByUserId],
+    references: [users.id],
+  }),
+}));
 
 export const imnciVisitsRelations = relations(
   imnci_visits,

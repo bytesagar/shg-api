@@ -22,6 +22,7 @@ import {
   persons,
   telehealth_sessions,
   treatments,
+  users,
   visits,
 } from "@/db/schema";
 import {
@@ -30,6 +31,7 @@ import {
   CasteBucket,
   DailyPoint,
   DiseaseBucket,
+  DoctorAppointmentSummaryRow,
   FacilityBucket,
   FacilityLeaderboardRow,
   GenderTotals,
@@ -837,6 +839,73 @@ export class AnalyticsRepository {
       totalImmunization: immunizationRow.total,
       totalMaternal: maternal.total,
     };
+  }
+
+  // ---------------------------------------------------------------------------
+  // Doctors appointment summary
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Per-doctor appointment summary for the chosen date range.
+   *
+   *   - `totalAssigned`               COUNT(appointments) grouped by doctor.
+   *   - `totalConsultation`           COUNT where the appointment was
+   *                                   actually delivered — status='completed'
+   *                                   OR a non-null `visit_id`.
+   *   - `consultationDurationSeconds` SUM(telehealth_sessions.duration_seconds)
+   *                                   on the linked sessions. In-person
+   *                                   visits contribute 0 — duration tracking
+   *                                   for those would need visit started/ended
+   *                                   columns, which the schema doesn't yet
+   *                                   carry. Add it here when those land.
+   *
+   * Rows are ordered by `totalAssigned DESC` so the busiest doctor surfaces
+   * first. Doctors with zero appointments in the window are omitted (the
+   * report is a leaderboard, not a roster).
+   */
+  public async doctorsAppointmentSummary(
+    f: BaseAnalyticsFilter,
+  ): Promise<Array<DoctorAppointmentSummaryRow>> {
+    const rows = await db
+      .select({
+        doctorId: appointments.doctorId,
+        doctorFirstName: users.firstName,
+        doctorLastName: users.lastName,
+        totalAssigned: sql<number>`count(${appointments.id})::int`,
+        totalConsultation: sql<number>`count(*) FILTER (
+          WHERE ${appointments.status} = 'completed'
+             OR ${appointments.visitId} IS NOT NULL
+        )::int`,
+        consultationDurationSeconds: sql<number>`coalesce(
+          sum(${telehealth_sessions.durationSeconds})::int,
+          0
+        )`,
+      })
+      .from(appointments)
+      .innerJoin(users, eq(users.id, appointments.doctorId))
+      .leftJoin(
+        telehealth_sessions,
+        eq(telehealth_sessions.appointmentId, appointments.id),
+      )
+      .where(
+        andFilters(
+          gte(appointments.date, toDateStr(f.from)),
+          lt(appointments.date, toDateStr(f.toExclusive)),
+          isNull(appointments.deletedAt),
+          withFacility(appointments.facilityId, f.facilityId),
+        ),
+      )
+      .groupBy(appointments.doctorId, users.firstName, users.lastName)
+      .orderBy(desc(sql`count(${appointments.id})`));
+
+    return rows.map((r) => ({
+      doctorId: r.doctorId,
+      doctorFirstName: r.doctorFirstName,
+      doctorLastName: r.doctorLastName,
+      totalAssigned: Number(r.totalAssigned),
+      totalConsultation: Number(r.totalConsultation),
+      consultationDurationSeconds: Number(r.consultationDurationSeconds),
+    }));
   }
 }
 

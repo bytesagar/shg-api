@@ -102,10 +102,19 @@ export class VisitRecordService {
 
     return db.transaction(async (tx) => {
       const encounter = await this.createEncounter(tx, visit, "HISTORY");
+      // Default every category to "" so the `histories` table's NOT
+      // NULL columns stay satisfied when the clinician submits a
+      // partial history.
       const inserted = await tx
         .insert(histories)
         .values({
-          ...input,
+          medical: input.medical ?? "",
+          surgical: input.surgical ?? "",
+          obGyn: input.obGyn ?? "",
+          medication: input.medication ?? "",
+          familyHistory: input.familyHistory ?? "",
+          social: input.social ?? "",
+          other: input.other ?? null,
           visitId: visit.id,
           encounterId: encounter.id,
           createdBy: this.context.userId,

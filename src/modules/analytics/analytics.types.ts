@@ -94,3 +94,24 @@ export interface SystemTotals {
   totalImmunization: number;
   totalMaternal: number;
 }
+
+/**
+ * Row in the doctors-appointment-summary report. One row per doctor
+ * who has at least one appointment in the date range.
+ *   - `totalAssigned`         appointments assigned to the doctor
+ *                             (regardless of status) in the range.
+ *   - `totalConsultation`     subset of those that were actually
+ *                             delivered — appointment status
+ *                             `completed` OR a linked visit.
+ *   - `consultationDurationSeconds`  cumulative duration across the
+ *                             linked telehealth_sessions; 0 when no
+ *                             session was recorded (in-person visits).
+ */
+export interface DoctorAppointmentSummaryRow {
+  doctorId: string;
+  doctorFirstName: string | null;
+  doctorLastName: string | null;
+  totalAssigned: number;
+  totalConsultation: number;
+  consultationDurationSeconds: number;
+}

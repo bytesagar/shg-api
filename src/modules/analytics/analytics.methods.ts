@@ -21,6 +21,7 @@ export const ANALYTICS_METHODS = [
   "VISITS_DAILY_TREND",
   "FACILITY_LEADERBOARD",
   "SYSTEM_TOTALS",
+  "DOCTORS_APPOINTMENT_SUMMARY",
 ] as const;
 
 export type AnalyticsMethod = (typeof ANALYTICS_METHODS)[number];
