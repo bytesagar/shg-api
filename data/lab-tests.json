@@ -1,0 +1,1326 @@
+[
+  {
+    "name": "HB",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "RBC Count",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "TLC",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "Platelets Count",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "DLC",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "ESR",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "MCV",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "MCH",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "MCHC",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "RDW",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "Blood Group and RH Type",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "Direct Coombs Test",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "Retics",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "PBS / PBF",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "HBA1c",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "Sickling Test",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "Urine for Hemosidering",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "BT",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "CT",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "PT-INR",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "APTT",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "Bone Marrow Analysis",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "Aldehyde Test",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "MP Total",
+    "category": null,
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "LD Bodies",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "HB Electrophoresis",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "LE Cell",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "ALC",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "AEF",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "FDP",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "D-Dimer",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "Fac VIII",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "Fac IX",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "Cross Matching",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "Others",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "Blood Sugar Random",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Blood Urea",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Creatinine",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Sodium (Na)-Blood",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Potassium (K) - Blood",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Calcium",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Phosphorous",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Magnesium",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Uric Acid",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Total Cholesterol",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Triglycerides",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "HDL",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "LDL",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Amylase",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Micro albumin",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Billrubin",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "SGPT",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Alk Phos",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "SGOT",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Total Protein",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Gamma GT",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "24hr Urine Protein",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "24hr urine U/A",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Creatinine Clearance",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Iron",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "TIBC",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "CPK-MB",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "CPK-NAC",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "LDH",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Iso-Trop-I",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Others",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Stool R/E",
+    "category": "PATHOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "Occult blood",
+    "category": "PATHOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "Reducing sugar",
+    "category": "PATHOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "Urine R/E",
+    "category": "PATHOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "Bile Salts",
+    "category": "PATHOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "Bile Pigments",
+    "category": "PATHOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "Urobilinogen",
+    "category": "PATHOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "Porphobilinogen",
+    "category": "PATHOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "Acetone",
+    "category": "PATHOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "Chyle",
+    "category": "PATHOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "Specific Gravity",
+    "category": "PATHOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "Bence Jones Protein",
+    "category": "PATHOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "Semen Analysis",
+    "category": "PATHOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "Others",
+    "category": "PATHOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "T3",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HORMONE_ENDOCRINE_TEST"
+  },
+  {
+    "name": "T4",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HORMONE_ENDOCRINE_TEST"
+  },
+  {
+    "name": "TSH",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HORMONE_ENDOCRINE_TEST"
+  },
+  {
+    "name": "Cortisol",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HORMONE_ENDOCRINE_TEST"
+  },
+  {
+    "name": "AFP",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HORMONE_ENDOCRINE_TEST"
+  },
+  {
+    "name": "LH",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HORMONE_ENDOCRINE_TEST"
+  },
+  {
+    "name": "FSH",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HORMONE_ENDOCRINE_TEST"
+  },
+  {
+    "name": "Prolactin",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HORMONE_ENDOCRINE_TEST"
+  },
+  {
+    "name": "Oestrogen",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HORMONE_ENDOCRINE_TEST"
+  },
+  {
+    "name": "Progesterone",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HORMONE_ENDOCRINE_TEST"
+  },
+  {
+    "name": "Testosterone",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HORMONE_ENDOCRINE_TEST"
+  },
+  {
+    "name": "Vit. D",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HORMONE_ENDOCRINE_TEST"
+  },
+  {
+    "name": "Vit. B12",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HORMONE_ENDOCRINE_TEST"
+  },
+  {
+    "name": "Others",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HORMONE_ENDOCRINE_TEST"
+  },
+  {
+    "name": "Covid-19 PCR",
+    "category": "PATHOLOGY",
+    "reportTemplate": "MOLECULAR_LAB_AND_FLOWCYTOMETRY_TEST"
+  },
+  {
+    "name": "Influenzia",
+    "category": "PATHOLOGY",
+    "reportTemplate": "MOLECULAR_LAB_AND_FLOWCYTOMETRY_TEST"
+  },
+  {
+    "name": "Leukemia Panel",
+    "category": "PATHOLOGY",
+    "reportTemplate": "MOLECULAR_LAB_AND_FLOWCYTOMETRY_TEST"
+  },
+  {
+    "name": "Carbamazepine",
+    "category": "PATHOLOGY",
+    "reportTemplate": "TEST_DURING_ANALYSIS"
+  },
+  {
+    "name": "Cyclosporine",
+    "category": "PATHOLOGY",
+    "reportTemplate": "TEST_DURING_ANALYSIS"
+  },
+  {
+    "name": "Valporic Acid",
+    "category": "PATHOLOGY",
+    "reportTemplate": "TEST_DURING_ANALYSIS"
+  },
+  {
+    "name": "Phenytoin",
+    "category": "PATHOLOGY",
+    "reportTemplate": "TEST_DURING_ANALYSIS"
+  },
+  {
+    "name": "Digoxine",
+    "category": "PATHOLOGY",
+    "reportTemplate": "TEST_DURING_ANALYSIS"
+  },
+  {
+    "name": "Tacrolimus",
+    "category": "PATHOLOGY",
+    "reportTemplate": "TEST_DURING_ANALYSIS"
+  },
+  {
+    "name": "Others",
+    "category": "PATHOLOGY",
+    "reportTemplate": "TEST_DURING_ANALYSIS"
+  },
+  {
+    "name": "Pregnancy Test (UPT)",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "ASO",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "CRP",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "RA Factor",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "ANA",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Anti-dsDNA",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "CEA",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "CA-125",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "CA-199",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "CA-153",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Toxo",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Rubella",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "CMV (Cytomegalovirus-Blood Test)",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "HSV (Herpes Simplex Virus-Blood Test)",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Measles",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Echinococcus",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Amoebiasis",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "PSA (Prostate Specific Antigen-Blood Test)",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Ferritin",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Cysticercosis",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Brucella",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Thyroglobulin",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Anti TPO",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Protein Electrophoresis",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Anti - CCP",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "TPHA",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "PRPR / VDRL",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "RK-39",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "JE",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Dengue",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "RDT MP",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Mantoux Test",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Chikugunya",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Scrub Typhus",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "H. Pylori",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Leptospira",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Widal Test",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Others",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "Gram Stain",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "Culture",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "Sputum AFB",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "Other AFB",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "Leprosy Smear/AFB for Leprosy",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "India Ink Test",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "Anaerobic Culture",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "Fungus",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "Others",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "ER",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNO_HISTO_CHEMISTRY_TEST"
+  },
+  {
+    "name": "PR",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNO_HISTO_CHEMISTRY_TEST"
+  },
+  {
+    "name": "G - FAP",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNO_HISTO_CHEMISTRY_TEST"
+  },
+  {
+    "name": "S - 100",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNO_HISTO_CHEMISTRY_TEST"
+  },
+  {
+    "name": "Vimentin",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNO_HISTO_CHEMISTRY_TEST"
+  },
+  {
+    "name": "Cytokeratin",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNO_HISTO_CHEMISTRY_TEST"
+  },
+  {
+    "name": "Others",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNO_HISTO_CHEMISTRY_TEST"
+  },
+  {
+    "name": "HIV RDT",
+    "category": "PATHOLOGY",
+    "reportTemplate": "VIROLOGY_TEST"
+  },
+  {
+    "name": "HBSAg RDT",
+    "category": "PATHOLOGY",
+    "reportTemplate": "VIROLOGY_TEST"
+  },
+  {
+    "name": "HCV RDT",
+    "category": "PATHOLOGY",
+    "reportTemplate": "VIROLOGY_TEST"
+  },
+  {
+    "name": "HIV ELISA / CLIA",
+    "category": "PATHOLOGY",
+    "reportTemplate": "VIROLOGY_TEST"
+  },
+  {
+    "name": "HAV ELISA / CLIA",
+    "category": "PATHOLOGY",
+    "reportTemplate": "VIROLOGY_TEST"
+  },
+  {
+    "name": "HBsAg ELISA / CLIA",
+    "category": "PATHOLOGY",
+    "reportTemplate": "VIROLOGY_TEST"
+  },
+  {
+    "name": "HCV ELISA / CLIA",
+    "category": "PATHOLOGY",
+    "reportTemplate": "VIROLOGY_TEST"
+  },
+  {
+    "name": "HEV ELISA / CLIA",
+    "category": "PATHOLOGY",
+    "reportTemplate": "VIROLOGY_TEST"
+  },
+  {
+    "name": "Anti - HBS",
+    "category": "PATHOLOGY",
+    "reportTemplate": "VIROLOGY_TEST"
+  },
+  {
+    "name": "HBeAg",
+    "category": "PATHOLOGY",
+    "reportTemplate": "VIROLOGY_TEST"
+  },
+  {
+    "name": "Anti - HBe",
+    "category": "PATHOLOGY",
+    "reportTemplate": "VIROLOGY_TEST"
+  },
+  {
+    "name": "HBcAg",
+    "category": "PATHOLOGY",
+    "reportTemplate": "VIROLOGY_TEST"
+  },
+  {
+    "name": "Anti HBcAg",
+    "category": "PATHOLOGY",
+    "reportTemplate": "VIROLOGY_TEST"
+  },
+  {
+    "name": "Western blot",
+    "category": "PATHOLOGY",
+    "reportTemplate": "VIROLOGY_TEST"
+  },
+  {
+    "name": "CD4 Count",
+    "category": "PATHOLOGY",
+    "reportTemplate": "VIROLOGY_TEST"
+  },
+  {
+    "name": "Viral Load",
+    "category": "PATHOLOGY",
+    "reportTemplate": "VIROLOGY_TEST"
+  },
+  {
+    "name": "Others",
+    "category": null,
+    "reportTemplate": "VIROLOGY_TEST"
+  },
+  {
+    "name": "Biopsy",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HISTOPATHOLOGY_CYTOLOGY_TEST"
+  },
+  {
+    "name": "Cytology",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HISTOPATHOLOGY_CYTOLOGY_TEST"
+  },
+  {
+    "name": "Special stan",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "MP Smear Test",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "MF",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "Blood RME",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "CBC",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "Indirect Coombs Test",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "Blood Sugar Fasting",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Urine Culture",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "Body Fluid Culture",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "Swab Culture",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "Stool Culture",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "Water Culture",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "Pus Culture",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "Sputum Culture",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "CSF Culture",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "Blood Culture",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "AFB Test",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BACTERIOLOGY_TEST"
+  },
+  {
+    "name": "Blood Sugar PP",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Albumin",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Typhoid Antibody",
+    "category": "PATHOLOGY",
+    "reportTemplate": "IMMUNOLOGY_TEST"
+  },
+  {
+    "name": "General USG",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Urine ketone Bodies",
+    "category": "PATHOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "Urine Albumin",
+    "category": "PATHOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "LFT",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Lipid Profile",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "RFT",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "CXR  P/A view",
+    "category": "RADIOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "CXR  A/ P view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Right Shoulder A/P view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Left Shoulder A/P view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Lateral shoulder view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "A/P clavicle view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Right A/P humerus view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Left A/P humerus View",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Lateral humerus view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Right A/P elbow view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Left A/P elbow view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Lateral elbow view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Right lateral forearm view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Left lateral forearm view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Right  wrist P/A view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Left wrist P/A view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Right Lateral wrist",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Left lateral wrist",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Right P/A hand",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Left P/A hand",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Right P/A fingers view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Left P/A fingers view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Right lateral fingers view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Left lateral fingers view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "CXR Oblique",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "C-spine A/P view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "C-spine lateral view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "L-spine A/P view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "L-spine P/A view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "L-spine lateral view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "T-spine A/P view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "T-spine  Lateral view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Hip A/P view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Hip lateral view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "pelvic A/P view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Pelvic-lateral view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Pelvic A/P view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Pelvic Oblique view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Right femur A/P view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Left femur A/P view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Right femur lateral view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Left femur lateral view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Right knee A/P view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Left knee A/P view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Right knee lateral view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "left knee lateral view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Rt. horizontal beam lateral knee view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Lt. horizontal beam lateral knee view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Rt.Tibia/ Fibula A/P view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Lf.Tibia/Fibula A/P view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Rt. tibia, Fibula lateral view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Lt. tibia/ fibula lateral view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Rt. ankle A/P view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Lt. ankle A/P view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Rt. ankle lateral view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Lt. ankle lateral view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Rt. medial oblique foot view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Lt. medial oblique foot  view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Rt .lateral foot view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Lt. lateral foot view",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "X-ray KUB",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Obstetric Ultrasound",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Ultrasound-Abdomen",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "USG- breast",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "USG- carotid",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "USG- Musculoskeletal",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "USG-Pelvis",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Ultrasound - Prostate",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Ultrasound -scrotum",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "Ultrasound- Thyroid",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "ECG",
+    "category": "RADIOLOGY"
+  },
+  {
+    "name": "S.Electrolyte",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Lipid Profile",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  },
+  {
+    "name": "Hematocrit Level",
+    "category": "PATHOLOGY",
+    "reportTemplate": "HEMATOLOGICAL_TEST"
+  },
+  {
+    "name": "Urine dipstick",
+    "category": "PATHOLOGY",
+    "reportTemplate": "PARASITOLOGY_TEST"
+  },
+  {
+    "name": "GTT",
+    "category": "PATHOLOGY",
+    "reportTemplate": "BIOCHEMICAL_TEST"
+  }
+]

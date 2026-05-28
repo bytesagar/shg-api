@@ -37,6 +37,7 @@ import teleAuscultationRoutes from "./tele-auscultation.routes";
 import analyticsRoutes from "./analytics.routes";
 import hmisAnalyticsRoutes from "./hmis-analytics.routes";
 import immunizationRoutes from "./immunization.routes";
+import labTestRoutes from "./lab-test.routes";
 
 const router = Router();
 const authController = new AuthController();
@@ -96,5 +97,6 @@ router.use("/tele-auscultation", teleAuscultationRoutes);
 router.use("/analytics", analyticsRoutes);
 router.use("/hmis-analytics", hmisAnalyticsRoutes);
 router.use("/immunizations", immunizationRoutes);
+router.use("/lab-tests", labTestRoutes);
 
 export default router;
