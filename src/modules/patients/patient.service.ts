@@ -21,6 +21,7 @@ import {
 import { AppError } from "../../utils/app-error";
 import { HTTP_STATUS } from "../../config/constants";
 import { NotificationService } from "../notifications/notification.service";
+import { SmsService } from "../sms/sms.service";
 import { db } from "../../db";
 import { eq } from "drizzle-orm";
 import { logger } from "../../utils/logger";
@@ -28,10 +29,12 @@ import { logger } from "../../utils/logger";
 export class PatientService {
   private patientRepository: PatientRepository;
   private notifications: NotificationService;
+  private sms: SmsService;
 
   constructor(private readonly context: FacilityContext) {
     this.patientRepository = new PatientRepository(context);
     this.notifications = new NotificationService(context.userId);
+    this.sms = new SmsService(context);
   }
 
   public async createPatient(data: PatientCreateInput) {
@@ -79,6 +82,21 @@ export class PatientService {
     }
 
     await this.publishPatientRegistered(newPatient, data);
+
+    // Patient-facing welcome SMS (best-effort; never blocks registration).
+    // This is the single registration entry point for all services (OPD,
+    // pregnancy, IMNCI all create a patient here first), so the welcome text
+    // is sent once here rather than at each downstream record-create hook.
+    const patientName = [data.firstName, data.middleName, data.lastName]
+      .filter(Boolean)
+      .join(" ");
+    await this.sms.sendTemplate(
+      "patientRegistration",
+      data.phoneNumber,
+      { name: patientName, patientId: newPatient.patientId },
+      { patientId: newPatient.id },
+    );
+
     return newPatient;
   }
 

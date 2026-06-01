@@ -16,8 +16,14 @@ export class VisitService {
     this.patientRepository = new PatientRepository(context);
   }
 
-  public async listVisits(patientId: string) {
-    return { items: await this.visitRepository.findAllByPatientId(patientId) };
+  public async listVisits(params: {
+    patientId?: string;
+    page?: number;
+    pageSize?: number;
+  }) {
+    return {
+      items: await this.visitRepository.findManyWithPatient(params),
+    };
   }
 
   public async createVisit(input: VisitCreateInput) {
