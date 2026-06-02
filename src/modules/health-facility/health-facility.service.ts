@@ -1,6 +1,9 @@
 import { db } from "../../db";
 import { health_facilities, user_facility_affiliations, users } from "../../db/schema";
-import { HealthFacilityCreateInput } from "./health-facility.validation";
+import {
+  HealthFacilityCreateInput,
+  HealthFacilityUpdateInput,
+} from "./health-facility.validation";
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { FacilityContext } from "../../context/facility-context";
 import { AppError } from "../../utils/app-error";
@@ -12,6 +15,39 @@ export class HealthFacilityService {
   public async createHealthFacility(data: HealthFacilityCreateInput) {
     const result = await db.insert(health_facilities).values(data).returning();
     return result[0];
+  }
+
+  /**
+   * Update a facility. Admins may edit any facility; every other role is
+   * restricted to their own (the one in their active context). 404 if the row
+   * doesn't exist, 403 on a cross-facility attempt by a non-admin.
+   */
+  public async updateHealthFacility(
+    id: string,
+    data: HealthFacilityUpdateInput,
+  ) {
+    if (this.context.role !== "admin" && id !== this.context.facilityId) {
+      throw new AppError(
+        "Forbidden: cannot edit another facility",
+        HTTP_STATUS.FORBIDDEN,
+      );
+    }
+
+    const [existing] = await db
+      .select({ id: health_facilities.id })
+      .from(health_facilities)
+      .where(eq(health_facilities.id, id))
+      .limit(1);
+    if (!existing) {
+      throw new AppError("Health facility not found", HTTP_STATUS.NOT_FOUND);
+    }
+
+    const [updated] = await db
+      .update(health_facilities)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(health_facilities.id, id))
+      .returning();
+    return updated;
   }
 
   public async getHealthFacilities(params: {

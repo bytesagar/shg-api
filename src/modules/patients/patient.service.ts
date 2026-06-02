@@ -11,7 +11,12 @@ import {
 } from "../../validations/patient.validation";
 import { FacilityContext } from "../../context/facility-context";
 import { PatientRepository } from "./patient.repository";
-import { health_facilities, patients } from "../../db/schema";
+import {
+  health_facilities,
+  patients,
+  person_contacts,
+  person_names,
+} from "../../db/schema";
 import {
   andFilter,
   orFilter,
@@ -23,7 +28,7 @@ import { HTTP_STATUS } from "../../config/constants";
 import { NotificationService } from "../notifications/notification.service";
 import { SmsService } from "../sms/sms.service";
 import { db } from "../../db";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { logger } from "../../utils/logger";
 
 export class PatientService {
@@ -168,8 +173,21 @@ export class PatientService {
 
     const searchString = params.searchString?.trim();
     if (searchString) {
+      // Match the human MRN (patientId) as well as the patient's name and
+      // primary phone. Name/phone live on the normalized `person_*` tables, so
+      // they're matched with correlated EXISTS subqueries keyed on the (already
+      // facility-scoped) patient's `person_id`.
+      const term = `%${searchString}%`;
       clauses.push(
-        orFilter({ ilike: { column: patients.patientId, value: searchString } }),
+        orFilter(
+          { ilike: { column: patients.patientId, value: searchString } },
+          {
+            raw: sql`EXISTS (SELECT 1 FROM ${person_names} WHERE ${person_names.personId} = ${patients.personId} AND (${person_names.given} ILIKE ${term} OR ${person_names.middle} ILIKE ${term} OR ${person_names.family} ILIKE ${term}))`,
+          },
+          {
+            raw: sql`EXISTS (SELECT 1 FROM ${person_contacts} WHERE ${person_contacts.personId} = ${patients.personId} AND ${person_contacts.value} ILIKE ${term})`,
+          },
+        ),
       );
     }
 

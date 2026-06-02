@@ -58,6 +58,53 @@ export class AuthService {
     return userWithoutPassword;
   }
 
+  private readonly facilitySelect = {
+    id: health_facilities.id,
+    name: health_facilities.name,
+    address: health_facilities.address,
+    phone: health_facilities.phone,
+    email: health_facilities.email,
+    ward: health_facilities.ward,
+    palika: health_facilities.palika,
+    district: health_facilities.district,
+    province: health_facilities.province,
+  };
+
+  /**
+   * The facility a user lands in by default. Most users carry a `facilityId`
+   * pin, but doctors are cross-facility and have none — for them we fall back
+   * to their oldest active facility affiliation as the effective "home".
+   * Returns null only when the user has neither a pin nor any affiliation.
+   */
+  private async resolveEffectiveFacilityId(
+    userId: string,
+    ownFacilityId: string | null,
+  ): Promise<string | null> {
+    if (ownFacilityId) return ownFacilityId;
+    const [aff] = await db
+      .select({ facilityId: user_facility_affiliations.facilityId })
+      .from(user_facility_affiliations)
+      .where(
+        and(
+          eq(user_facility_affiliations.userId, userId),
+          eq(user_facility_affiliations.isActive, true),
+        ),
+      )
+      .orderBy(user_facility_affiliations.createdAt)
+      .limit(1);
+    return aff?.facilityId ?? null;
+  }
+
+  private async fetchFacility(facilityId: string | null) {
+    if (!facilityId) return null;
+    const [f] = await db
+      .select(this.facilitySelect)
+      .from(health_facilities)
+      .where(eq(health_facilities.id, facilityId))
+      .limit(1);
+    return f ?? null;
+  }
+
   public async getCurrentUser(userId: string) {
     const userResult = await db
       .select({
@@ -80,10 +127,20 @@ export class AuthService {
       .limit(1);
 
     const user = userResult[0]?.user;
-    const facility = userResult[0]?.facility?.id ? userResult[0].facility : null;
+    let facility = userResult[0]?.facility?.id ? userResult[0].facility : null;
 
     if (!user) {
       throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
+    }
+
+    // Doctors carry no facility pin; surface their effective (affiliation)
+    // facility so the client still has a facility to render/select.
+    if (!facility) {
+      const effectiveFacilityId = await this.resolveEffectiveFacilityId(
+        user.id,
+        user.facilityId,
+      );
+      facility = await this.fetchFacility(effectiveFacilityId);
     }
 
     const resolved = await this.resolveRole(user.id, user.userType);
@@ -135,7 +192,13 @@ export class AuthService {
       throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
     }
 
-    const primaryFacilityId = rows[0]?.primaryFacilityId ?? null;
+    // Most users have a `facilityId` pin that marks their primary facility.
+    // Doctors don't, so fall back to their first affiliated facility as the
+    // primary one (the list still contains every facility they can access).
+    const primaryFacilityId =
+      rows[0]?.primaryFacilityId ??
+      rows.find((r) => r.facilityId)?.facilityId ??
+      null;
     if (!primaryFacilityId) {
       throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
     }
@@ -181,7 +244,7 @@ export class AuthService {
       .limit(1);
 
     const foundUser = userResult[0]?.user;
-    const facility = userResult[0]?.facility?.id ? userResult[0].facility : null;
+    let facility = userResult[0]?.facility?.id ? userResult[0].facility : null;
 
     if (!foundUser) {
       logger.audit("auth.login.failed", { email, reason: "unknown_email" });
@@ -234,11 +297,20 @@ export class AuthService {
       throw new AppError("Invalid credentials", HTTP_STATUS.UNAUTHORIZED);
     }
 
-    if (!foundUser.facilityId) {
+    const effectiveFacilityId = await this.resolveEffectiveFacilityId(
+      foundUser.id,
+      foundUser.facilityId,
+    );
+    if (!effectiveFacilityId) {
       throw new AppError(
         "User is not associated with a facility",
         HTTP_STATUS.UNAUTHORIZED,
       );
+    }
+    // Doctors carry no facility pin, so the join above yielded no facility —
+    // hydrate it from the effective (affiliation) facility for the response.
+    if (!facility) {
+      facility = await this.fetchFacility(effectiveFacilityId);
     }
 
     const resolved = await this.resolveRole(foundUser.id, foundUser.userType);
@@ -267,7 +339,7 @@ export class AuthService {
         email: foundUser.email,
         role: resolvedRole,
         userType: foundUser.userType,
-        facilityId: foundUser.facilityId,
+        facilityId: effectiveFacilityId,
         sessionId,
         permissions,
       },
@@ -292,13 +364,13 @@ export class AuthService {
       resourceType: "User",
       resourceId: foundUser.id,
       outcome: "success",
-      facilityId: foundUser.facilityId,
+      facilityId: effectiveFacilityId,
     });
 
     logger.audit("auth.login.success", {
       userId: foundUser.id,
       email: foundUser.email,
-      facilityId: foundUser.facilityId,
+      facilityId: effectiveFacilityId,
       sessionId,
     });
 
@@ -352,10 +424,21 @@ export class AuthService {
       .limit(1);
 
     const user = userRows[0]?.user;
-    const facility = userRows[0]?.facility?.id ? userRows[0].facility : null;
+    let facility = userRows[0]?.facility?.id ? userRows[0].facility : null;
 
-    if (!user || !user.facilityId) {
+    if (!user) {
       throw new AppError("Invalid session user", HTTP_STATUS.UNAUTHORIZED);
+    }
+
+    const effectiveFacilityId = await this.resolveEffectiveFacilityId(
+      user.id,
+      user.facilityId,
+    );
+    if (!effectiveFacilityId) {
+      throw new AppError("Invalid session user", HTTP_STATUS.UNAUTHORIZED);
+    }
+    if (!facility) {
+      facility = await this.fetchFacility(effectiveFacilityId);
     }
 
     const resolved = await this.resolveRole(user.id, user.userType);
@@ -381,7 +464,7 @@ export class AuthService {
         email: user.email,
         role: resolvedRole,
         userType: user.userType,
-        facilityId: user.facilityId,
+        facilityId: effectiveFacilityId,
         sessionId: session.id,
         permissions,
       },
@@ -400,7 +483,7 @@ export class AuthService {
       resourceType: "AuthSession",
       resourceId: session.id,
       outcome: "success",
-      facilityId: user.facilityId,
+      facilityId: effectiveFacilityId,
     });
 
     return {

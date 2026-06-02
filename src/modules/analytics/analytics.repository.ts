@@ -871,6 +871,15 @@ export class AnalyticsRepository {
         doctorId: appointments.doctorId,
         doctorFirstName: users.firstName,
         doctorLastName: users.lastName,
+        // Doctors are cross-facility (no `users.facility_id`), so the facility
+        // shown is where the appointments were booked. When scoped to one
+        // facility every row shares it; in the all-facilities view a doctor may
+        // span facilities, so we surface one (the alphabetically first) rather
+        // than splitting the doctor across rows.
+        facilityId: sql<
+          string | null
+        >`min(${appointments.facilityId}::text)`,
+        facilityName: sql<string | null>`min(${health_facilities.name})`,
         totalAssigned: sql<number>`count(${appointments.id})::int`,
         totalConsultation: sql<number>`count(*) FILTER (
           WHERE ${appointments.status} = 'completed'
@@ -883,6 +892,10 @@ export class AnalyticsRepository {
       })
       .from(appointments)
       .innerJoin(users, eq(users.id, appointments.doctorId))
+      .leftJoin(
+        health_facilities,
+        eq(health_facilities.id, appointments.facilityId),
+      )
       .leftJoin(
         telehealth_sessions,
         eq(telehealth_sessions.appointmentId, appointments.id),
@@ -902,6 +915,8 @@ export class AnalyticsRepository {
       doctorId: r.doctorId,
       doctorFirstName: r.doctorFirstName,
       doctorLastName: r.doctorLastName,
+      facilityId: r.facilityId,
+      facilityName: r.facilityName,
       totalAssigned: Number(r.totalAssigned),
       totalConsultation: Number(r.totalConsultation),
       consultationDurationSeconds: Number(r.consultationDurationSeconds),

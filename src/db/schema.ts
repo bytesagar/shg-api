@@ -13,6 +13,8 @@ import {
   index,
   jsonb,
   uuid,
+  bigint,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 
@@ -4425,4 +4427,24 @@ export const imnciFchvCommoditiesDispensedRelations = relations(
       references: [imnci_fchv_screenings.id],
     }),
   }),
+);
+
+// ============================================================
+// MIGRATION BOOKKEEPING (v1 -> v2 ETL)
+// ============================================================
+
+// Bidirectional registry mapping every v1 integer primary key to the v2 uuid
+// it became. Persisted (not in-memory) so the migration is idempotent and
+// resumable: each step checks the map and skips already-migrated rows, and a
+// crashed run can be re-started. Also doubles as the audit/debug trail of
+// "which v2 row came from which v1 row". Keyed by (entity, v1_id).
+export const migration_id_map = pgTable(
+  "migration_id_map",
+  {
+    entity: varchar("entity", { length: 64 }).notNull(),
+    v1Id: bigint("v1_id", { mode: "number" }).notNull(),
+    v2Id: uuid("v2_id").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.entity, t.v1Id] })],
 );

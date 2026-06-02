@@ -139,6 +139,48 @@ router.post(
   healthFacilityController.createHealthFacility,
 );
 
+/**
+ * @openapi
+ * /health-facilities/{id}:
+ *   patch:
+ *     tags:
+ *       - Health Facilities
+ *     summary: Update a health facility
+ *     operationId: updateHealthFacility
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Health facility updated
+ *       400:
+ *         description: Validation failed
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Not found
+ */
+router.patch(
+  "/:id",
+  authMiddleware,
+  authorize([...FACILITY_MANAGEMENT_ROLES]),
+  healthFacilityController.updateHealthFacility,
+);
+
 router.post(
   "/:facilityId/doctors/affiliations",
   authMiddleware,

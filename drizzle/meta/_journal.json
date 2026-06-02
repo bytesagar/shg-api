@@ -169,6 +169,13 @@
       "when": 1780135595313,
       "tag": "0023_sms_logs_outbound",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1780308360337,
+      "tag": "0024_migration_id_map",
+      "breakpoints": true
     }
   ]
 }
