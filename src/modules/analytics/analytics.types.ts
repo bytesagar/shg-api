@@ -111,6 +111,8 @@ export interface DoctorAppointmentSummaryRow {
   doctorId: string;
   doctorFirstName: string | null;
   doctorLastName: string | null;
+  facilityId: string | null;
+  facilityName: string | null;
   totalAssigned: number;
   totalConsultation: number;
   consultationDurationSeconds: number;

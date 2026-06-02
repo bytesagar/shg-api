@@ -120,4 +120,98 @@ router.post(
   userController.createUser,
 );
 
+/**
+ * @openapi
+ * /users/{id}:
+ *   patch:
+ *     tags:
+ *       - Users
+ *     summary: Update a user
+ *     operationId: updateUser
+ *     description: Partially update a user within the authenticated facility.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: User updated
+ *       400:
+ *         description: Validation failed
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Not found
+ */
+router.patch(
+  "/:id",
+  authMiddleware,
+  authorize([...ADMIN_ONLY_ROLES]),
+  userController.updateUser,
+);
+
+/**
+ * @openapi
+ * /users/{id}/reset-password:
+ *   post:
+ *     tags:
+ *       - Users
+ *     summary: Admin reset a user's password
+ *     operationId: resetUserPassword
+ *     description: >
+ *       Sets a new password for the target user and revokes their active
+ *       sessions. Admin-only privileged override (no current password needed).
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - password
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 minLength: 8
+ *     responses:
+ *       200:
+ *         description: Password reset
+ *       400:
+ *         description: Validation failed
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Not found
+ */
+router.post(
+  "/:id/reset-password",
+  authMiddleware,
+  authorize([...ADMIN_ONLY_ROLES]),
+  userController.resetPassword,
+);
+
 export default router;

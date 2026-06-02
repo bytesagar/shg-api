@@ -16,6 +16,8 @@
     "db:seed:reference": "ts-node -r tsconfig-paths/register src/db/seed.ts reference",
     "db:seed:demo": "ts-node -r tsconfig-paths/register src/db/seed.ts demo",
     "db:seed:prod": "node dist/src/db/seed.js reference",
+    "migrate:v1": "ts-node -r tsconfig-paths/register src/migrate-v1/index.ts",
+    "set-password": "ts-node -r tsconfig-paths/register src/db/set-user-password.ts",
     "db:seed:lab-tests": "ts-node -r tsconfig-paths/register src/db/seeds/lab-tests/index.ts",
     "db:up": "docker compose -f docker-compose.local.yml up  -d postgres",
     "db:down": "docker compose -f docker-compose.local.yml down",

@@ -1,8 +1,8 @@
 import { db } from "../../db";
-import { encounters } from "../../db/schema";
+import { encounters, patients, person_names } from "../../db/schema";
 import { FacilityContext } from "../../context/facility-context";
 import { FacilityRepository } from "../../core/facility-repository";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, getTableColumns } from "drizzle-orm";
 
 export class EncounterRepository extends FacilityRepository {
   constructor(context: FacilityContext) {
@@ -38,13 +38,51 @@ export class EncounterRepository extends FacilityRepository {
         ? this.withFacilityScope(and(...filters))
         : this.withFacilityScope();
 
-    const items = await db
-      .select()
+    // Join the patient's primary name so list consumers (dashboards, feeds)
+    // can render a person instead of a bare UUID without a second round-trip.
+    const rows = await db
+      .select({
+        ...getTableColumns(encounters),
+        patientCode: patients.patientId,
+        patientGiven: person_names.given,
+        patientMiddle: person_names.middle,
+        patientFamily: person_names.family,
+      })
       .from(encounters)
+      .leftJoin(patients, eq(patients.id, encounters.patientId))
+      .leftJoin(
+        person_names,
+        and(
+          eq(person_names.personId, patients.personId),
+          eq(person_names.isPrimary, true),
+        ),
+      )
       .where(where)
       .orderBy(desc(encounters.encounterAt))
       .limit(pageSize)
       .offset(offset);
+
+    const items = rows.map(
+      ({
+        patientCode,
+        patientGiven,
+        patientMiddle,
+        patientFamily,
+        ...encounter
+      }) => ({
+        ...encounter,
+        patient: {
+          id: encounter.patientId,
+          code: patientCode ?? null,
+          firstName: patientGiven ?? null,
+          middleName: patientMiddle ?? null,
+          lastName: patientFamily ?? null,
+          name: [patientGiven, patientMiddle, patientFamily]
+            .filter(Boolean)
+            .join(" "),
+        },
+      }),
+    );
 
     return { items };
   }

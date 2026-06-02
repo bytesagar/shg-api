@@ -26,10 +26,14 @@ import { requireFacilityContext } from "../../utils/request-context";
 export class VisitController extends BaseController {
   public listVisits = catchAsync(async (req: AuthRequest, res: Response) => {
     const context = requireFacilityContext(req);
-    const { patientId } = req.query;
+    const { patientId, page, pageSize } = req.query;
 
     const visitService = new VisitService(context);
-    const visits = await visitService.listVisits(patientId as string);
+    const visits = await visitService.listVisits({
+      patientId: typeof patientId === "string" ? patientId : undefined,
+      page: page ? Number(page) : undefined,
+      pageSize: pageSize ? Number(pageSize) : undefined,
+    });
     return this.ok(res, visits, "Visits retrieved successfully");
   });
 

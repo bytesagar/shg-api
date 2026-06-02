@@ -1203,7 +1203,17 @@ async function seedReferenceData() {
   await seedIcd11Codes();
   await seedMedicines();
   await seedGeography();
-  await seedHealthFacilitiesFromJson();
+  // The full official Nepal facility registry (~8.6k rows) is only needed when
+  // facilities come from the registry rather than the v1 migration. When
+  // importing v1 data we want ONLY the migrated facilities to exist, so this is
+  // opt-in via SEED_FACILITY_REGISTRY=true (default: skip).
+  if (/^(1|true|yes)$/i.test(process.env.SEED_FACILITY_REGISTRY ?? "")) {
+    await seedHealthFacilitiesFromJson();
+  } else {
+    console.log(
+      "⏭️  Skipping health-facility registry seed (set SEED_FACILITY_REGISTRY=true to enable)",
+    );
+  }
   await seedImnciBookletStub();
   await seedVaccineCatalog();
   console.log("✅ Reference data seeded");

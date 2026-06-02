@@ -162,6 +162,20 @@
       "when": 1779923284333,
       "tag": "0022_lab_tests",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1780135595313,
+      "tag": "0023_sms_logs_outbound",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1780308360337,
+      "tag": "0024_migration_id_map",
+      "breakpoints": true
     }
   ]
 }
