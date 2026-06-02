@@ -1,8 +1,17 @@
 import { db } from "../../db";
-import { visits } from "../../db/schema";
+import { patients, person_names, visits } from "../../db/schema";
 import { FacilityContext } from "../../context/facility-context";
 import { FacilityRepository } from "../../core/facility-repository";
-import { SQL, and, desc, eq, inArray, isNull, or } from "drizzle-orm";
+import {
+  SQL,
+  and,
+  desc,
+  eq,
+  getTableColumns,
+  inArray,
+  isNull,
+  or,
+} from "drizzle-orm";
 
 export class VisitRepository extends FacilityRepository {
   constructor(context: FacilityContext) {
@@ -70,13 +79,68 @@ export class VisitRepository extends FacilityRepository {
       .where(this.withFacilityScope(where));
     return result;
   }
-  public async findAllByPatientId(patientId: string) {
-    const result = await db
-      .select()
+  /**
+   * List visits with the patient's primary name joined in, so feeds/dashboards
+   * render a person instead of a bare UUID. Optionally filtered by `patientId`
+   * (patient-detail view) and optionally paginated (dashboard recent activity).
+   * When `page`/`pageSize` are omitted, every matching visit is returned.
+   */
+  public async findManyWithPatient(params: {
+    patientId?: string;
+    page?: number;
+    pageSize?: number;
+  }) {
+    const { patientId, page, pageSize } = params;
+
+    const filters: SQL[] = [isNull(visits.deletedAt)];
+    if (patientId) filters.push(eq(visits.patientId, patientId));
+
+    const base = db
+      .select({
+        ...getTableColumns(visits),
+        patientCode: patients.patientId,
+        patientGiven: person_names.given,
+        patientMiddle: person_names.middle,
+        patientFamily: person_names.family,
+      })
       .from(visits)
-      .where(this.withFacilityScope(eq(visits.patientId, patientId)))
+      .leftJoin(patients, eq(patients.id, visits.patientId))
+      .leftJoin(
+        person_names,
+        and(
+          eq(person_names.personId, patients.personId),
+          eq(person_names.isPrimary, true),
+        ),
+      )
+      .where(this.withFacilityScope(and(...filters)))
       .orderBy(desc(visits.createdAt));
-    return result;
+
+    const rows =
+      page && pageSize
+        ? await base.limit(pageSize).offset((page - 1) * pageSize)
+        : await base;
+
+    return rows.map(
+      ({
+        patientCode,
+        patientGiven,
+        patientMiddle,
+        patientFamily,
+        ...visit
+      }) => ({
+        ...visit,
+        patient: {
+          id: visit.patientId,
+          code: patientCode ?? null,
+          firstName: patientGiven ?? null,
+          middleName: patientMiddle ?? null,
+          lastName: patientFamily ?? null,
+          name: [patientGiven, patientMiddle, patientFamily]
+            .filter(Boolean)
+            .join(" "),
+        },
+      }),
+    );
   }
 
   public async updateStatus(params: {

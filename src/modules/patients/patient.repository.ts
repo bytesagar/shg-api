@@ -706,6 +706,48 @@ export class PatientRepository extends FacilityRepository {
     });
   }
 
+  /**
+   * Resolve a patient's display name + primary phone for outbound SMS.
+   * Facility-scoped; joins the primary `person_names` and the primary phone
+   * `person_contacts`. Returns `null` when the patient isn't in this facility.
+   */
+  public async getNameAndPhone(
+    patientId: string,
+  ): Promise<{ name: string; phone: string | null } | null> {
+    const rows = await db
+      .select({
+        given: person_names.given,
+        middle: person_names.middle,
+        family: person_names.family,
+        phone: person_contacts.value,
+      })
+      .from(patients)
+      .where(this.withFacilityScope(eq(patients.id, patientId)))
+      .leftJoin(
+        person_names,
+        and(
+          eq(person_names.personId, patients.personId),
+          eq(person_names.isPrimary, true),
+        ),
+      )
+      .leftJoin(
+        person_contacts,
+        and(
+          eq(person_contacts.personId, patients.personId),
+          eq(person_contacts.isPrimary, true),
+          eq(person_contacts.system, "phone"),
+        ),
+      )
+      .limit(1);
+
+    const row = rows[0];
+    if (!row) return null;
+    return {
+      name: [row.given, row.middle, row.family].filter(Boolean).join(" "),
+      phone: row.phone ?? null,
+    };
+  }
+
   private async hydratePatients(
     records: Array<typeof patients.$inferSelect>,
   ): Promise<HydratedPatient[]> {

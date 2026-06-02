@@ -2,6 +2,9 @@ import { db } from "../../db";
 import { FacilityContext } from "../../context/facility-context";
 import { VisitRepository } from "../clinical-visits/visit.repository";
 import { MaternalHealthRepository } from "./maternal-health.repository";
+import { PatientRepository } from "../patients/patient.repository";
+import { SmsService } from "../sms/sms.service";
+import { logger } from "../../utils/logger";
 import {
   AamaIncentivePatchInput,
   AntenatalCareCreateInput,
@@ -79,10 +82,14 @@ function todayIso(): string {
 export class MaternalHealthService {
   private readonly visitRepository: VisitRepository;
   private readonly maternalHealthRepository: MaternalHealthRepository;
+  private readonly patientRepository: PatientRepository;
+  private readonly sms: SmsService;
 
   constructor(private readonly context: FacilityContext) {
     this.visitRepository = new VisitRepository(context);
     this.maternalHealthRepository = new MaternalHealthRepository(context);
+    this.patientRepository = new PatientRepository(context);
+    this.sms = new SmsService(context);
   }
 
   private async requireActiveVisit(visitId: string) {
@@ -107,7 +114,7 @@ export class MaternalHealthService {
     const edd =
       input.expectedDeliveryDate ?? (lmp ? computeEddFromLmp(lmp) : null);
 
-    return db.transaction(async (tx) => {
+    const result = await db.transaction(async (tx) => {
       const existingActive =
         await this.maternalHealthRepository.findActivePregnancyByPatientId(
           tx,
@@ -150,6 +157,26 @@ export class MaternalHealthService {
 
       return { encounter, record };
     });
+
+    // Pregnancy-registration SMS (best-effort; never blocks the create). Only
+    // on a successful new pregnancy — not when an active one already existed.
+    if (!("error" in result)) {
+      try {
+        const contact = await this.patientRepository.getNameAndPhone(
+          visit.patientId,
+        );
+        await this.sms.sendTemplate(
+          "pregnancyRegistration",
+          contact?.phone,
+          { name: contact?.name ?? "" },
+          { patientId: visit.patientId },
+        );
+      } catch (err) {
+        logger.error("maternal_health.pregnancy_sms_failed", { err });
+      }
+    }
+
+    return result;
   }
 
   public async getPregnancyById(id: string) {

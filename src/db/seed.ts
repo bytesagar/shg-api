@@ -1196,15 +1196,32 @@ async function seedVaccineCatalog() {
   console.log(`✅ Vaccine catalog seeded (${catalog.length} vaccines).`);
 }
 
-async function seed() {
+// Idempotent reference data. Safe to run against any environment, including
+// production — every function upserts by stable code/name.
+async function seedReferenceData() {
   await seedUserRoles();
   await seedIcd11Codes();
   await seedMedicines();
   await seedGeography();
-  await seedHealthFacilitiesFromJson();
+  // The full official Nepal facility registry (~8.6k rows) is only needed when
+  // facilities come from the registry rather than the v1 migration. When
+  // importing v1 data we want ONLY the migrated facilities to exist, so this is
+  // opt-in via SEED_FACILITY_REGISTRY=true (default: skip).
+  if (/^(1|true|yes)$/i.test(process.env.SEED_FACILITY_REGISTRY ?? "")) {
+    await seedHealthFacilitiesFromJson();
+  } else {
+    console.log(
+      "⏭️  Skipping health-facility registry seed (set SEED_FACILITY_REGISTRY=true to enable)",
+    );
+  }
   await seedImnciBookletStub();
   await seedVaccineCatalog();
+  console.log("✅ Reference data seeded");
+}
 
+// Demo/fixture data: a sample facility, users with a shared known password, and
+// example patients/visits. Never run this in production.
+async function seedDemoData() {
   console.log("🌱 Seeding health facilities...");
 
   const facilityData = {
@@ -2150,12 +2167,37 @@ async function seed() {
     }
 
     console.log("✅ Frontend integration demo dataset seeded");
-    console.log("✨ Seeding completed!");
   } catch (error) {
-    console.error("❌ Seeding failed:", error);
-  } finally {
-    process.exit(0);
+    console.error("❌ Demo seeding failed:", error);
+    throw error;
   }
 }
 
-seed();
+// Mode selection: first CLI arg or SEED_MODE env. "reference" | "demo" | "all".
+// Demo data is hard-refused when NODE_ENV=production.
+async function main() {
+  const mode = (process.argv[2] ?? process.env.SEED_MODE ?? "all").toLowerCase();
+
+  try {
+    if (mode === "reference" || mode === "all") {
+      await seedReferenceData();
+    }
+
+    if (mode === "demo" || mode === "all") {
+      if (process.env.NODE_ENV === "production") {
+        throw new Error(
+          "Refusing to seed demo data with NODE_ENV=production. Use the 'reference' mode (db:seed:prod) instead.",
+        );
+      }
+      await seedDemoData();
+    }
+
+    console.log("✨ Seeding completed!");
+    process.exit(0);
+  } catch (error) {
+    console.error("❌ Seeding failed:", error);
+    process.exit(1);
+  }
+}
+
+main();

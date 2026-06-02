@@ -10,6 +10,8 @@ import {
   facilityDoctorAffiliationDeactivateParamsSchema,
   facilityDoctorAffiliationUpsertBodySchema,
   healthFacilityCreateSchema,
+  healthFacilityIdParamsSchema,
+  healthFacilityUpdateSchema,
 } from "./health-facility.validation";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { requireFacilityContext } from "../../utils/request-context";
@@ -48,6 +50,34 @@ export class HealthFacilityController extends BaseController {
         facility,
         "Health facility created successfully",
       );
+    },
+  );
+
+  public updateHealthFacility = catchAsync(
+    async (req: AuthRequest, res: Response) => {
+      const paramsParsed = healthFacilityIdParamsSchema.safeParse(req.params);
+      if (!paramsParsed.success) {
+        throw new AppError("Invalid facility id", HTTP_STATUS.BAD_REQUEST);
+      }
+
+      const validatedData = healthFacilityUpdateSchema.safeParse(req.body);
+      if (!validatedData.success) {
+        const errorMessages = validatedData.error.issues
+          .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+          .join(", ");
+        throw new AppError(
+          `Validation failed: ${errorMessages}`,
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+
+      const context = requireFacilityContext(req);
+      const healthFacilityService = new HealthFacilityService(context);
+      const facility = await healthFacilityService.updateHealthFacility(
+        paramsParsed.data.id,
+        validatedData.data,
+      );
+      return this.ok(res, facility, "Health facility updated successfully");
     },
   );
 

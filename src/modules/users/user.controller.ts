@@ -5,7 +5,12 @@ import { catchAsync } from "../../utils/catch-async";
 import { AuthRequest } from "../../middlewares/auth.middleware";
 import { AppError } from "../../utils/app-error";
 import { HTTP_STATUS } from "../../config/constants";
-import { userCreateSchema } from "./user.validation";
+import {
+  userCreateSchema,
+  userIdParamsSchema,
+  userResetPasswordSchema,
+  userUpdateSchema,
+} from "./user.validation";
 import { requireFacilityContext } from "../../utils/request-context";
 import { parseListQuery, usersListQuerySchema } from "../../utils/query-parser";
 
@@ -47,5 +52,66 @@ export class UserController extends BaseController {
       }
       throw err;
     }
+  });
+
+  public updateUser = catchAsync(async (req: AuthRequest, res: Response) => {
+    const context = requireFacilityContext(req);
+
+    const paramsParsed = userIdParamsSchema.safeParse(req.params);
+    if (!paramsParsed.success) {
+      throw new AppError("Invalid user id", HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const validatedData = userUpdateSchema.safeParse(req.body);
+    if (!validatedData.success) {
+      const errorMessages = validatedData.error.issues
+        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+        .join(", ");
+      throw new AppError(
+        `Validation failed: ${errorMessages}`,
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    const userService = new UserService(context);
+    try {
+      const user = await userService.updateUser(
+        paramsParsed.data.id,
+        validatedData.data,
+      );
+      return this.ok(res, user, "User updated successfully");
+    } catch (err: any) {
+      if (err?.code === "EMAIL_EXISTS") {
+        throw new AppError("Email already exists", HTTP_STATUS.BAD_REQUEST);
+      }
+      throw err;
+    }
+  });
+
+  public resetPassword = catchAsync(async (req: AuthRequest, res: Response) => {
+    const context = requireFacilityContext(req);
+
+    const paramsParsed = userIdParamsSchema.safeParse(req.params);
+    if (!paramsParsed.success) {
+      throw new AppError("Invalid user id", HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const validatedData = userResetPasswordSchema.safeParse(req.body);
+    if (!validatedData.success) {
+      const errorMessages = validatedData.error.issues
+        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+        .join(", ");
+      throw new AppError(
+        `Validation failed: ${errorMessages}`,
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    const userService = new UserService(context);
+    const result = await userService.resetPassword(
+      paramsParsed.data.id,
+      validatedData.data.password,
+    );
+    return this.ok(res, result, "Password reset successfully");
   });
 }
