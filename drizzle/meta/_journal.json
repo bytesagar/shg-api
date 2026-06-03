@@ -176,6 +176,13 @@
       "when": 1780308360337,
       "tag": "0024_migration_id_map",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1780493994924,
+      "tag": "0025_patient_photo_attachment",
+      "breakpoints": true
     }
   ]
 }

@@ -150,6 +150,9 @@ export const patientUpdateSchema = z.object({
   spouseName: z.string().max(255).optional().nullable(),
   childrenMale: z.number().int().min(0).max(10).optional().nullable(),
   childrenFemale: z.number().int().min(0).max(10).optional().nullable(),
+  // Links a previously-uploaded `profile_photo` attachment (sourceType
+  // "Patient", same facility) as this patient's profile picture. `null` clears.
+  photoAttachmentId: z.uuid().optional().nullable(),
 });
 
 export type PatientUpdateInput = z.infer<typeof patientUpdateSchema>;

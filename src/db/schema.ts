@@ -825,6 +825,10 @@ export const patients = pgTable(
     deletedAt: timestamp("deleted_at"),
     facilityId: uuid("facility_id").references(() => health_facilities.id),
     assignedUserId: uuid("assigned_user_id").references(() => users.id),
+    photoAttachmentId: uuid("photo_attachment_id").references(
+      () => attachments.id,
+      { onDelete: "set null" },
+    ),
     status: patientStatusEnum("status").default("active").notNull(),
   },
   (t) => [
