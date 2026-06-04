@@ -56,20 +56,24 @@ export async function v1Count(tableIdent: string): Promise<number> {
 
 /**
  * Stream a v1 table in id-ordered batches so we never hold a 30k-row table in
- * memory at once. `tableIdent` and `idCol` must be trusted constants supplied
- * by the migration steps (never user input).
+ * memory at once. `tableIdent`, `idCol` and the optional `extraWhere` must be
+ * trusted constants supplied by the migration steps (never user input) — they
+ * are interpolated, not parameterised. `extraWhere` is ANDed onto the keyset
+ * predicate to pre-filter rows at the source (e.g. `"callDuration" > 0`).
  */
 export async function* v1Batches<T = Record<string, unknown>>(
   tableIdent: string,
   idCol: string,
   batchSize = 500,
   selectCols = "*",
+  extraWhere?: string,
 ): AsyncGenerator<T[]> {
+  const extra = extraWhere ? ` AND (${extraWhere})` : "";
   let lastId = -1;
   for (;;) {
     const rows = await v1Query<T>(
       `SELECT ${selectCols} FROM ${tableIdent}
-       WHERE ${idCol} > $1
+       WHERE ${idCol} > $1${extra}
        ORDER BY ${idCol} ASC
        LIMIT ${batchSize}`,
       [lastId],

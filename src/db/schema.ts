@@ -533,6 +533,7 @@ export const users = pgTable(
       length: 100,
     }),
     signatureUrl: varchar("signature_url", { length: 500 }),
+    avatarUrl: varchar("avatar_url", { length: 500 }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at"),
     deletedBy: uuid("deleted_by"),
@@ -825,6 +826,10 @@ export const patients = pgTable(
     deletedAt: timestamp("deleted_at"),
     facilityId: uuid("facility_id").references(() => health_facilities.id),
     assignedUserId: uuid("assigned_user_id").references(() => users.id),
+    photoAttachmentId: uuid("photo_attachment_id").references(
+      () => attachments.id,
+      { onDelete: "set null" },
+    ),
     status: patientStatusEnum("status").default("active").notNull(),
   },
   (t) => [
@@ -2661,12 +2666,11 @@ export const appointments = pgTable(
       .notNull()
       .references(() => patients.id),
     facilityId: uuid("facility_id").references(() => health_facilities.id),
-    // Optional link to the clinical visit this appointment was delivered
-    // through. Nullable: an appointment may be scheduled before (or without) a
-    // visit being created. Set once the consultation is tied to a visit so
-    // analytics can correlate telehealth appointments with their encounter.
+
     visitId: uuid("visit_id").references(() => visits.id),
     date: date("date").notNull(),
+
+    scheduledAt: timestamp("scheduled_at", { withTimezone: true }),
     status: appointmentStatusEnum("status").default("scheduled").notNull(),
     service: varchar("service", { length: 255 }),
     consent: integer("consent").default(1),

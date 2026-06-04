@@ -105,6 +105,7 @@ export class PatientRepository extends FacilityRepository {
         status: patients.status,
         facilityId: patients.facilityId,
         assignedUserId: patients.assignedUserId,
+        photoAttachmentId: patients.photoAttachmentId,
         createdAt: patients.createdAt,
         updatedAt: patients.updatedAt,
         // persons
@@ -143,6 +144,7 @@ export class PatientRepository extends FacilityRepository {
       status: parent.status,
       facilityId: parent.facilityId,
       assignedUserId: parent.assignedUserId,
+      photoAttachmentId: parent.photoAttachmentId,
       createdAt: parent.createdAt.toISOString(),
       updatedAt: parent.updatedAt ? parent.updatedAt.toISOString() : null,
       person: {
@@ -461,6 +463,8 @@ export class PatientRepository extends FacilityRepository {
         patientSet.childrenMale = data.childrenMale ?? null;
       if (data.childrenFemale !== undefined)
         patientSet.childrenFemale = data.childrenFemale ?? null;
+      if (data.photoAttachmentId !== undefined)
+        patientSet.photoAttachmentId = data.photoAttachmentId ?? null;
 
       patientSet.updatedAt = new Date();
       patientSet.updatedBy = this.context.userId;

@@ -40,5 +40,11 @@ router.post("/login", authController.login);
 router.post("/refresh", authController.refresh);
 router.post("/logout", authController.logout);
 router.get("/me", authMiddleware, authController.me);
+router.post(
+  "/me/avatar/upload-url",
+  authMiddleware,
+  authController.avatarUploadUrl,
+);
+router.patch("/me/avatar", authMiddleware, authController.setAvatar);
 
 export default router;

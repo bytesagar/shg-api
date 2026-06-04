@@ -7,12 +7,20 @@ import { HTTP_STATUS } from "../../config/constants";
 import { requireFacilityContext } from "../../utils/request-context";
 import { AnalyticsService } from "./analytics.service";
 import { isAnalyticsMethod } from "./analytics.methods";
+import { geographyScopeParamsSchema } from "../../validations/analytics.validation";
 
 export class AnalyticsController extends BaseController {
   public handle = catchAsync(async (req: AuthRequest, res: Response) => {
     const context = requireFacilityContext(req);
 
-    const { method, facilityId, ...rest } = req.query as Record<string, unknown>;
+    const {
+      method,
+      facilityId,
+      provinceId,
+      districtId,
+      municipalityId,
+      ...rest
+    } = req.query as Record<string, unknown>;
 
     if (!method || typeof method !== "string") {
       throw new AppError(
@@ -32,8 +40,26 @@ export class AnalyticsController extends BaseController {
         ? facilityId.trim()
         : undefined;
 
+    const geoParsed = geographyScopeParamsSchema.safeParse({
+      provinceId,
+      districtId,
+      municipalityId,
+    });
+    if (!geoParsed.success) {
+      const message = geoParsed.error.issues
+        .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+        .join(", ");
+      throw new AppError(
+        `Validation failed: ${message}`,
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
     const service = new AnalyticsService(context);
-    const scope = service.resolveScope(facilityIdParam);
+    const scope = await service.resolveScope({
+      facilityId: facilityIdParam,
+      ...geoParsed.data,
+    });
     const { result, range } = await service.run(method, scope, rest);
 
     return this.ok(

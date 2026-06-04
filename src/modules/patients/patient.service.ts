@@ -11,6 +11,7 @@ import {
 } from "../../validations/patient.validation";
 import { FacilityContext } from "../../context/facility-context";
 import { PatientRepository } from "./patient.repository";
+import { AttachmentRepository } from "../attachments/attachment.repository";
 import {
   health_facilities,
   patients,
@@ -33,11 +34,13 @@ import { logger } from "../../utils/logger";
 
 export class PatientService {
   private patientRepository: PatientRepository;
+  private attachmentRepository: AttachmentRepository;
   private notifications: NotificationService;
   private sms: SmsService;
 
   constructor(private readonly context: FacilityContext) {
     this.patientRepository = new PatientRepository(context);
+    this.attachmentRepository = new AttachmentRepository(context);
     this.notifications = new NotificationService(context.userId);
     this.sms = new SmsService(context);
   }
@@ -143,6 +146,26 @@ export class PatientService {
   }
 
   public async updatePatient(id: string, data: PatientUpdateInput) {
+    // When linking a profile photo, the attachment must be a non-deleted
+    // `profile_photo` belonging to THIS patient in the caller's facility.
+    // The repository read is already facility-scoped; we additionally pin the
+    // source so a photo can't be borrowed from another patient or record type.
+    if (data.photoAttachmentId) {
+      const attachment = await this.attachmentRepository.findById(
+        data.photoAttachmentId,
+      );
+      if (
+        !attachment ||
+        attachment.sourceType !== "Patient" ||
+        attachment.sourceId !== id
+      ) {
+        throw new AppError(
+          "Photo attachment not found for this patient",
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+    }
+
     try {
       return await this.patientRepository.updatePatient(id, data);
     } catch (err: any) {

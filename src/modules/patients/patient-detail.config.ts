@@ -222,6 +222,9 @@ export interface PatientDetail {
   status: (typeof patients.$inferSelect)["status"];
   facilityId: string | null;
   assignedUserId: string | null;
+  /** Attachment id of the patient's `profile_photo`, or null. Resolve the URL
+   * via `GET /attachments/:id/download-url`. */
+  photoAttachmentId: string | null;
   /** ISO 8601 string. */
   createdAt: string;
   /** ISO 8601 string. */

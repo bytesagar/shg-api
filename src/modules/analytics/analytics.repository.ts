@@ -7,7 +7,7 @@
  * deletes via `deleted_at IS NULL` on the tables involved.
  */
 
-import { SQL, and, desc, eq, gte, isNotNull, isNull, lt, sql } from "drizzle-orm";
+import { SQL, and, desc, eq, gte, inArray, isNotNull, isNull, lt, sql } from "drizzle-orm";
 import { db } from "@/db";
 import {
   appointments,
@@ -60,8 +60,35 @@ function toDateStr(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-function withFacility(col: any, facilityId?: string): SQL | undefined {
-  return facilityId ? eq(col, facilityId) : undefined;
+/**
+ * Facility-scope predicate for the typed query builder.
+ *   - `undefined` → no predicate (all facilities, system-wide)
+ *   - `[]`        → `false` (geography matched nothing → zero rows)
+ *   - `[id]`      → equality
+ *   - `[a, b, …]` → `IN (…)`
+ */
+function withFacilities(col: any, ids?: string[]): SQL | undefined {
+  if (ids === undefined) return undefined;
+  if (ids.length === 0) return sql`false`;
+  if (ids.length === 1) return eq(col, ids[0]);
+  return inArray(col, ids);
+}
+
+/**
+ * Same facility scoping for the raw-SQL methods. `colExpr` is the qualified
+ * column (e.g. `sql\`p.facility_id\``); returns a fragment ready to splice
+ * after a WHERE/AND, or empty SQL when unscoped.
+ */
+function facilityScopeClause(colExpr: SQL, ids?: string[]): SQL {
+  if (ids === undefined) return sql``;
+  if (ids.length === 0) return sql`AND false`;
+  if (ids.length === 1) return sql`AND ${colExpr} = ${ids[0]}::uuid`;
+  // Bind the ids as a single Postgres array literal. Splicing the JS array
+  // directly (`ANY(${ids}::uuid[])`) makes Drizzle expand it into a
+  // parenthesised placeholder list `($1,$2,...)` — a record, not an array —
+  // which Postgres then refuses to cast to `uuid[]`.
+  const arrayLiteral = `{${ids.join(",")}}`;
+  return sql`AND ${colExpr} = ANY(${arrayLiteral}::uuid[])`;
 }
 
 function andFilters(...parts: Array<SQL | undefined>): SQL | undefined {
@@ -70,6 +97,41 @@ function andFilters(...parts: Array<SQL | undefined>): SQL | undefined {
 }
 
 export class AnalyticsRepository {
+  // ---------------------------------------------------------------------------
+  // Geography → facility resolution
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Resolve a geography filter to the set of (non-deleted) facility IDs that
+   * sit within it. All provided levels are AND-ed, so a municipality that
+   * doesn't belong to the given province yields an empty set. An empty result
+   * is meaningful: callers must scope to zero rows, never widen to all.
+   */
+  public async facilityIdsByGeography(geo: {
+    provinceId?: string;
+    districtId?: string;
+    municipalityId?: string;
+  }): Promise<string[]> {
+    const rows = await db
+      .select({ id: health_facilities.id })
+      .from(health_facilities)
+      .where(
+        andFilters(
+          isNull(health_facilities.deletedAt),
+          geo.provinceId
+            ? eq(health_facilities.provinceId, geo.provinceId)
+            : undefined,
+          geo.districtId
+            ? eq(health_facilities.districtId, geo.districtId)
+            : undefined,
+          geo.municipalityId
+            ? eq(health_facilities.municipalityId, geo.municipalityId)
+            : undefined,
+        ),
+      );
+    return rows.map((r) => r.id);
+  }
+
   // ---------------------------------------------------------------------------
   // KPI cards
   // ---------------------------------------------------------------------------
@@ -83,7 +145,7 @@ export class AnalyticsRepository {
           gte(patients.createdAt, toDate(f.from)),
           lt(patients.createdAt, toDate(f.toExclusive)),
           isNull(patients.deletedAt),
-          withFacility(patients.facilityId, f.facilityId),
+          withFacilities(patients.facilityId, f.facilityIds),
         ),
       );
     return { total: rows[0]?.total ?? 0 };
@@ -99,7 +161,7 @@ export class AnalyticsRepository {
           lt(visits.date, toDateStr(f.toExclusive)),
           sql`lower(${visits.service}) = 'opd'`,
           isNull(visits.deletedAt),
-          withFacility(visits.facilityId, f.facilityId),
+          withFacilities(visits.facilityId, f.facilityIds),
         ),
       );
     return { total: rows[0]?.total ?? 0 };
@@ -119,7 +181,7 @@ export class AnalyticsRepository {
           lt(immunization_histories.date, toDate(f.toExclusive)),
           isNull(immunization_histories.deletedAt),
           isNull(child_immunizations.deletedAt),
-          withFacility(child_immunizations.facilityId, f.facilityId),
+          withFacilities(child_immunizations.facilityId, f.facilityIds),
         ),
       );
     return { total: rows[0]?.total ?? 0 };
@@ -128,9 +190,7 @@ export class AnalyticsRepository {
   public async totalMaternal(f: BaseAnalyticsFilter): Promise<TotalCount> {
     const fromStr = toDateStr(f.from);
     const toStr = toDateStr(f.toExclusive);
-    const facilityClause = f.facilityId
-      ? sql`AND p.facility_id = ${f.facilityId}::uuid`
-      : sql``;
+    const facilityClause = facilityScopeClause(sql`p.facility_id`, f.facilityIds);
 
     const result = await db.execute<{ total: number }>(sql`
       SELECT COALESCE(SUM(c), 0)::int AS total FROM (
@@ -185,7 +245,7 @@ export class AnalyticsRepository {
           sql`length(trim(${treatments.refer})) > 0`,
           isNull(treatments.deletedAt),
           isNull(visits.deletedAt),
-          withFacility(visits.facilityId, f.facilityId),
+          withFacilities(visits.facilityId, f.facilityIds),
         ),
       )
       .groupBy(visits.service);
@@ -197,7 +257,7 @@ export class AnalyticsRepository {
         andFilters(
           gte(imnci_referrals.referredAt, toDate(f.from)),
           lt(imnci_referrals.referredAt, toDate(f.toExclusive)),
-          withFacility(imnci_referrals.facilityId, f.facilityId),
+          withFacilities(imnci_referrals.facilityId, f.facilityIds),
         ),
       );
 
@@ -230,12 +290,14 @@ export class AnalyticsRepository {
     // Treatments: free-text `refer`. Best-effort: case-insensitive trimmed
     // name match against `health_facilities` to resolve a destination type.
     // Unmatched / external destinations bucket as "unknown".
-    const treatmentsFacilityClause = f.facilityId
-      ? sql`AND v.facility_id = ${f.facilityId}::uuid`
-      : sql``;
-    const imnciFacilityClause = f.facilityId
-      ? sql`AND ir.facility_id = ${f.facilityId}::uuid`
-      : sql``;
+    const treatmentsFacilityClause = facilityScopeClause(
+      sql`v.facility_id`,
+      f.facilityIds,
+    );
+    const imnciFacilityClause = facilityScopeClause(
+      sql`ir.facility_id`,
+      f.facilityIds,
+    );
 
     const result = await db.execute<{ sector: string; count: number }>(sql`
       WITH refs AS (
@@ -300,7 +362,7 @@ export class AnalyticsRepository {
             gte(appointments.date, toDateStr(f.from)),
             lt(appointments.date, toDateStr(f.toExclusive)),
             isNull(appointments.deletedAt),
-            withFacility(appointments.facilityId, f.facilityId),
+            withFacilities(appointments.facilityId, f.facilityIds),
             serviceClause,
           ),
         ),
@@ -317,7 +379,7 @@ export class AnalyticsRepository {
             gte(telehealth_sessions.endedAt, toDate(f.from)),
             lt(telehealth_sessions.endedAt, toDate(f.toExclusive)),
             isNull(appointments.deletedAt),
-            withFacility(appointments.facilityId, f.facilityId),
+            withFacilities(appointments.facilityId, f.facilityIds),
             serviceClause,
           ),
         ),
@@ -339,7 +401,7 @@ export class AnalyticsRepository {
       lt(visits.date, toDateStr(f.toExclusive)),
       isNotNull(visits.followUpId),
       isNull(visits.deletedAt),
-      withFacility(visits.facilityId, f.facilityId),
+      withFacilities(visits.facilityId, f.facilityIds),
     );
 
     const [requestedRows, performedRows] = await Promise.all([
@@ -364,9 +426,7 @@ export class AnalyticsRepository {
     f: BaseAnalyticsFilter,
     limit: number,
   ): Promise<MorbiditySeries> {
-    const facilityClause = f.facilityId
-      ? sql`AND v.facility_id = ${f.facilityId}::uuid`
-      : sql``;
+    const facilityClause = facilityScopeClause(sql`v.facility_id`, f.facilityIds);
     const fromStr = toDateStr(f.from);
     const toStr = toDateStr(f.toExclusive);
 
@@ -400,13 +460,16 @@ export class AnalyticsRepository {
       sql`, `,
     );
 
-    const daily = await db.execute<{
+    // Bucket the trend by calendar MONTH (`YYYY-MM`) rather than day, so the
+    // stacked-bar card reads as "which disease was seen in which month". Lexical
+    // ordering of `YYYY-MM` is chronological.
+    const monthly = await db.execute<{
       icd_code: string | null;
-      day: string;
+      month: string;
       count: number;
     }>(sql`
       SELECT cd.icd_code,
-             to_char(v.date::date, 'YYYY-MM-DD') AS day,
+             to_char(v.date::date, 'YYYY-MM') AS month,
              count(DISTINCT cd.patient_id)::int AS count
       FROM confirm_diagnoses cd
       JOIN visits v ON v.id = cd.visit_id
@@ -416,14 +479,14 @@ export class AnalyticsRepository {
         AND v.deleted_at IS NULL
         AND cd.icd_code IN (${codePlaceholders})
         ${facilityClause}
-      GROUP BY cd.icd_code, day
-      ORDER BY day ASC
+      GROUP BY cd.icd_code, month
+      ORDER BY month ASC
     `);
 
     const byCode = new Map<string | null, DailyPoint[]>();
-    for (const row of daily.rows) {
+    for (const row of monthly.rows) {
       const arr = byCode.get(row.icd_code) ?? [];
-      arr.push({ date: row.day, count: Number(row.count) });
+      arr.push({ date: row.month, count: Number(row.count) });
       byCode.set(row.icd_code, arr);
     }
 
@@ -455,7 +518,7 @@ export class AnalyticsRepository {
           gte(patients.createdAt, toDate(f.from)),
           lt(patients.createdAt, toDate(f.toExclusive)),
           isNull(patients.deletedAt),
-          withFacility(patients.facilityId, f.facilityId),
+          withFacilities(patients.facilityId, f.facilityIds),
         ),
       )
       .groupBy(persons.gender);
@@ -484,7 +547,7 @@ export class AnalyticsRepository {
           gte(patients.createdAt, toDate(f.from)),
           lt(patients.createdAt, toDate(f.toExclusive)),
           isNull(patients.deletedAt),
-          withFacility(patients.facilityId, f.facilityId),
+          withFacilities(patients.facilityId, f.facilityIds),
         ),
       )
       .groupBy(persons.caste)
@@ -520,7 +583,7 @@ export class AnalyticsRepository {
           gte(patients.createdAt, toDate(f.from)),
           lt(patients.createdAt, toDate(f.toExclusive)),
           isNull(patients.deletedAt),
-          withFacility(patients.facilityId, f.facilityId),
+          withFacilities(patients.facilityId, f.facilityIds),
         ),
       )
       .groupBy(person_addresses.municipalityId, municipalities.name)
@@ -553,7 +616,7 @@ export class AnalyticsRepository {
           lt(patients.createdAt, toDate(f.toExclusive)),
           isNull(patients.deletedAt),
           isNotNull(patients.facilityId),
-          withFacility(patients.facilityId, f.facilityId),
+          withFacilities(patients.facilityId, f.facilityIds),
         ),
       )
       .groupBy(patients.facilityId, health_facilities.name)
@@ -588,7 +651,7 @@ export class AnalyticsRepository {
           lt(visits.date, toDateStr(f.toExclusive)),
           isNull(confirm_diagnoses.deletedAt),
           isNull(visits.deletedAt),
-          withFacility(visits.facilityId, f.facilityId),
+          withFacilities(visits.facilityId, f.facilityIds),
         ),
       )
       .groupBy(confirm_diagnoses.icdCode)
@@ -609,9 +672,7 @@ export class AnalyticsRepository {
   public async ageGenderDistribution(
     f: BaseAnalyticsFilter,
   ): Promise<AgeGenderBucket[]> {
-    const facilityClause = f.facilityId
-      ? sql`AND p.facility_id = ${f.facilityId}::uuid`
-      : sql``;
+    const facilityClause = facilityScopeClause(sql`p.facility_id`, f.facilityIds);
 
     const result = await db.execute<{
       age_range: string;
@@ -700,7 +761,7 @@ export class AnalyticsRepository {
           gte(visits.date, toDateStr(f.from)),
           lt(visits.date, toDateStr(f.toExclusive)),
           isNull(visits.deletedAt),
-          withFacility(visits.facilityId, f.facilityId),
+          withFacilities(visits.facilityId, f.facilityIds),
         ),
       )
       .groupBy(sql`${visits.date}::date`)
@@ -905,7 +966,7 @@ export class AnalyticsRepository {
           gte(appointments.date, toDateStr(f.from)),
           lt(appointments.date, toDateStr(f.toExclusive)),
           isNull(appointments.deletedAt),
-          withFacility(appointments.facilityId, f.facilityId),
+          withFacilities(appointments.facilityId, f.facilityIds),
         ),
       )
       .groupBy(appointments.doctorId, users.firstName, users.lastName)

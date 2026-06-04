@@ -9,7 +9,10 @@ const isoDateTimeString = z
 export const telehealthAppointmentCreateSchema = z.object({
   patientId: z.uuid(),
   doctorId: z.uuid(),
-  scheduledAt: isoDateString,
+  // Accepts a full ISO date-time (preferred, carries time-of-day) or a bare
+  // `YYYY-MM-DD` for backward compatibility. The service derives the calendar
+  // day (for conflict detection) and stores the full instant separately.
+  scheduledAt: isoDateTimeString,
   reason: z.string().max(1000).optional().nullable(),
 });
 

@@ -58,9 +58,19 @@ export class TelehealthService {
       toDate = next.toISOString().slice(0, 10);
     }
 
+    // A doctor must only ever see appointments assigned to them — they cannot
+    // browse other doctors' telehealth schedules. For non-doctor roles (admin,
+    // nurse/hfuser, municipality, palika) the optional client-supplied doctor
+    // filter is honoured as before.
+    const isDoctor =
+      this.context.userType === "doctor" || this.context.role === "doctor";
+    const doctorId = isDoctor
+      ? this.context.userId
+      : (query.assignedDoctorId ?? query.doctorId);
+
     return this.appointmentRepository.findMany({
       patientId: query.patientId,
-      doctorId: query.assignedDoctorId ?? query.doctorId,
+      doctorId,
       status: query.status,
       fromDate,
       toDate,
@@ -80,11 +90,17 @@ export class TelehealthService {
     if (doctor.userType !== "doctor")
       return { error: "DOCTOR_NOT_FOUND" as const };
 
+    // `scheduledAt` may now carry a time-of-day. Split it into the full instant
+    // (stored on `scheduled_at`) and the UTC calendar day (stored on `date`,
+    // and used for per-day conflict detection).
+    const scheduledInstant = new Date(input.scheduledAt);
+    const scheduledDay = scheduledInstant.toISOString().slice(0, 10);
+
     const dayConflict =
       await this.appointmentRepository.findTelehealthDayConflict({
         doctorId: doctor.id,
         patientId: patient.id,
-        scheduledAt: input.scheduledAt,
+        scheduledAt: scheduledDay,
       });
     if (dayConflict === "DOCTOR_DAY_TAKEN") {
       logger.warn("telehealth.booking.conflict", {
@@ -126,7 +142,8 @@ export class TelehealthService {
       id: appointmentId,
       doctorId: doctor.id,
       patientId: patient.id,
-      date: input.scheduledAt,
+      date: scheduledDay,
+      scheduledAt: scheduledInstant,
       facilityId: this.context.facilityId,
       status: "scheduled",
       service: "telehealth",
@@ -227,7 +244,11 @@ export class TelehealthService {
 
     let token: string | null = null;
     if (params.as === "doctor") {
-      const doctor = await this.userRepository.findById(appt.doctorId);
+      // Identify the meeting participant by the *logged-in* user, not the
+      // appointment's assigned doctor. Otherwise every doctor who joins via
+      // this appointment is labelled with the assigned doctor's name in the
+      // call. (A second/consulting doctor must appear as themselves.)
+      const doctor = await this.userRepository.findById(this.context.userId);
       if (!doctor) return { error: "DOCTOR_NOT_FOUND" as const };
       const doctorName =
         `${doctor.firstName} ${doctor.lastName}`.trim() || "Doctor";
@@ -324,6 +345,19 @@ export class TelehealthService {
     });
 
     if ("session" in result && params.endedAt) {
+      // Make `appointments.status` authoritative: once the call has ended the
+      // appointment is completed. Without this the telehealth list keeps
+      // showing the raw "scheduled" status ("Waiting") while other surfaces
+      // (e.g. analytics, which derives completion from session.endedAt) report
+      // it as completed — the source of the cross-dashboard inconsistency.
+      if (appt.status !== "completed" && appt.status !== "cancelled") {
+        await this.appointmentRepository.updateById(appt.id, {
+          status: "completed",
+          updatedBy: this.context.userId,
+          updatedAt: new Date(),
+        });
+      }
+
       logger.info("telehealth.session.ended", {
         appointmentId: appt.id,
         durationSeconds: params.durationSeconds,

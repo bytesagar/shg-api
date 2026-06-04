@@ -34,3 +34,26 @@ export function isAttachmentKeyForFacility(key: string, facilityId: string): boo
   );
   return pattern.test(key) && !key.includes("..");
 }
+
+/**
+ * Server-owned object key for a user's own avatar: users/{userId}/avatar/{uuid}{ext}.
+ * Kept under a per-user prefix (not the facility attachments tree) so avatars are
+ * self-service for any authenticated user, regardless of facility/clinical role.
+ */
+export function buildUserAvatarObjectKey(
+  userId: string,
+  extWithDot: string,
+): string {
+  const id = randomUUID();
+  const suffix = extWithDot || "";
+  return `users/${userId}/avatar/${id}${suffix}`;
+}
+
+/** Validates that `key` is one of this user's own avatar keys. */
+export function isAvatarKeyForUser(key: string, userId: string): boolean {
+  const pattern = new RegExp(
+    `^users/${userId}/avatar/${UUID_RE}(\\.[a-z0-9]{1,10})?$`,
+    "i",
+  );
+  return pattern.test(key) && !key.includes("..");
+}
