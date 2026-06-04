@@ -25,14 +25,34 @@ type EventConfig = {
   channels: (data: any, recipientUserIds: string[]) => string[];
 };
 
+/**
+ * Render an ISO instant as a human-readable local date-time for notification
+ * copy. The deployment serves Nepal, so we format in Asia/Kathmandu (UTC+5:45)
+ * rather than leaking a raw UTC `...Z` string into the inbox. Falls back to the
+ * raw value if it isn't a parseable date.
+ */
+function formatScheduledAt(iso: unknown): string {
+  if (typeof iso !== "string" || Number.isNaN(Date.parse(iso))) {
+    return typeof iso === "string" ? iso : "the scheduled time";
+  }
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Kathmandu",
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(iso));
+}
+
 export const NOTIFICATION_EVENTS = {
   "telehealth.appointment.booked": {
     persist: true,
     email: true,
     module: "telehealth",
-    title: () => "Telehealth appointment booked",
+    title: (d) =>
+      d.patientName
+        ? `Telehealth with ${d.patientName}`
+        : "Telehealth appointment booked",
     description: (d) =>
-      `Telehealth consult with ${d.patientName ?? "patient"} scheduled at ${d.scheduledAt}`,
+      `Telehealth consult with ${d.patientName ?? "patient"} on ${formatScheduledAt(d.scheduledAt)}.`,
     channels: (_d, recipients) =>
       recipients.map((id) => `private-user-${id}`),
   },
@@ -40,9 +60,12 @@ export const NOTIFICATION_EVENTS = {
     persist: true,
     email: false,
     module: "telehealth",
-    title: () => "Telehealth appointment cancelled",
+    title: (d) =>
+      d.patientName
+        ? `Cancelled: telehealth with ${d.patientName}`
+        : "Telehealth appointment cancelled",
     description: (d) =>
-      `Telehealth appointment on ${d.scheduledAt} was cancelled`,
+      `Telehealth appointment on ${formatScheduledAt(d.scheduledAt)} was cancelled.`,
     channels: (_d, recipients) =>
       recipients.map((id) => `private-user-${id}`),
   },

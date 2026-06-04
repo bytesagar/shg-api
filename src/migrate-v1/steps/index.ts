@@ -10,13 +10,16 @@ import { immunizationStep } from "./08-immunization";
 import { familyPlanningStep } from "./09-family-planning";
 import { commsStep } from "./10-comms";
 import { backfillRegistrationVisitsStep } from "./11-backfill-registration-visits";
+import { backfillTelehealthSessionsStep } from "./12-backfill-telehealth-sessions";
 
 /**
  * Steps run strictly in this order so every FK target exists before it is
  * referenced: geography -> facilities -> users -> patients -> encounters ->
  * clinical/maternal/immunization/family-planning -> comms. The final
  * backfill step runs last because it depends on every visit-producing step
- * (05 encounters, 09 family-planning) having already populated `visits`.
+ * (05 encounters, 09 family-planning) having already populated `visits`. The
+ * telehealth-session backfill follows comms (10) because it reads the
+ * "appointment" id-map that step populates.
  */
 export const STEPS: MigrationStep[] = [
   geographyStep,
@@ -30,4 +33,5 @@ export const STEPS: MigrationStep[] = [
   familyPlanningStep,
   commsStep,
   backfillRegistrationVisitsStep,
+  backfillTelehealthSessionsStep,
 ];

@@ -16,8 +16,24 @@ import { AppError } from "../../utils/app-error";
 import { HTTP_STATUS } from "../../config/constants";
 import { effectivePermissions, normalizeRole } from "../../constants/rbac";
 import { logger } from "../../utils/logger";
+import {
+  S3StorageService,
+  isS3StorageConfigured,
+} from "../attachments/s3-storage.service";
+import {
+  buildUserAvatarObjectKey,
+  isAvatarKeyForUser,
+  safeFileExtension,
+} from "../../utils/attachment-keys";
 
 type AuthUserPayload = Omit<typeof users.$inferSelect, "passwordHash">;
+
+const AVATAR_ALLOWED_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]);
+const AVATAR_MAX_BYTES = 5 * 1024 * 1024;
 
 export class AuthService {
   private readonly accessTokenTtlMs = 24 * 60 * 60 * 1000;
@@ -150,10 +166,98 @@ export class AuthService {
       user: {
         ...this.sanitizeUser(user),
         facility,
+        avatarDownloadUrl: await this.presignAvatarDownload(user.avatarUrl),
       },
       role,
       permissions: effectivePermissions(role, resolved.permissions),
     };
+  }
+
+  /**
+   * Resolve a short-lived GET URL for a stored avatar key. Best-effort: a
+   * missing/unconfigured bucket or signing failure returns `null` so `/auth/me`
+   * never breaks just because the avatar can't be served.
+   */
+  private async presignAvatarDownload(
+    key: string | null,
+  ): Promise<string | null> {
+    if (!key || !isS3StorageConfigured()) return null;
+    try {
+      const { downloadUrl } = await new S3StorageService().presignGetObject({
+        key,
+      });
+      return downloadUrl;
+    } catch (err) {
+      logger.warn("auth.avatar.presign_get_failed", { err });
+      return null;
+    }
+  }
+
+  /**
+   * Issue a presigned PUT URL for the caller's own avatar. The object key is
+   * server-owned (`users/{userId}/avatar/{uuid}`) so the client can never pick
+   * an arbitrary path. Validates content type + size before signing.
+   */
+  public async presignAvatarUpload(
+    userId: string,
+    input: { fileName: string; fileType: string; fileSize: number },
+  ): Promise<{ uploadUrl: string; key: string; expiresIn: number }> {
+    if (!isS3StorageConfigured()) {
+      throw new AppError(
+        "File storage is not configured",
+        HTTP_STATUS.SERVICE_UNAVAILABLE,
+      );
+    }
+    const fileType = input.fileType.trim().toLowerCase();
+    if (!AVATAR_ALLOWED_TYPES.has(fileType)) {
+      throw new AppError(
+        "Avatar must be a JPEG, PNG, or WebP image",
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+    if (
+      !Number.isFinite(input.fileSize) ||
+      input.fileSize <= 0 ||
+      input.fileSize > AVATAR_MAX_BYTES
+    ) {
+      throw new AppError(
+        "Avatar exceeds the maximum allowed size (5 MB)",
+        HTTP_STATUS.BAD_REQUEST,
+      );
+    }
+
+    const key = buildUserAvatarObjectKey(
+      userId,
+      safeFileExtension(input.fileName),
+    );
+    const { uploadUrl, expiresIn } = await new S3StorageService().presignPutObject(
+      {
+        key,
+        contentType: fileType,
+        contentLength: input.fileSize,
+      },
+    );
+    return { uploadUrl, key, expiresIn };
+  }
+
+  /**
+   * Persist the avatar object key onto the user after the client has uploaded
+   * to the presigned URL. Rejects keys that aren't this user's own avatar path.
+   * Returns the refreshed `/auth/me` payload (with a presigned display URL).
+   */
+  public async setAvatar(userId: string, key: string) {
+    if (!isAvatarKeyForUser(key, userId)) {
+      throw new AppError("Invalid avatar reference", HTTP_STATUS.BAD_REQUEST);
+    }
+    const updated = await db
+      .update(users)
+      .set({ avatarUrl: key, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning({ id: users.id });
+    if (updated.length === 0) {
+      throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
+    }
+    return this.getCurrentUser(userId);
   }
 
   public async listMyFacilities(userId: string) {

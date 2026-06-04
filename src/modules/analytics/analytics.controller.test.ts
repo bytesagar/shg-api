@@ -16,14 +16,19 @@ function makeRes() {
   return res;
 }
 
-function makeReq(query: Record<string, unknown>): AuthRequest {
+const PROVINCE_ID = "33333333-3333-4333-8333-333333333333";
+
+function makeReq(
+  query: Record<string, unknown>,
+  role: "doctor" | "admin" = "doctor",
+): AuthRequest {
   return {
     query,
     context: {
       facilityId: FACILITY_ID,
-      userId: "u-doc",
-      role: "doctor",
-      userType: "doctor",
+      userId: role === "admin" ? "u-admin" : "u-doc",
+      role,
+      userType: role,
     },
   } as unknown as AuthRequest;
 }
@@ -37,6 +42,9 @@ beforeEach(() => {
   jest.clearAllMocks();
   (AnalyticsRepository as unknown as jest.Mock).mockImplementation(() => ({
     totalPatients: jest.fn().mockResolvedValue({ total: 42 }),
+    facilityIdsByGeography: jest
+      .fn()
+      .mockResolvedValue(["aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"]),
   }));
 });
 
@@ -111,6 +119,55 @@ describe("AnalyticsController", () => {
 
     const payload = (res as any).json.mock.calls[0][0];
     expect(payload.data.facilityId).toBe(FACILITY_ID);
+  });
+
+  it("returns a 400 when a geography param is not a UUID", async () => {
+    const req = makeReq(
+      { method: "TOTAL_PATIENTS", provinceId: "not-a-uuid", ...RANGE },
+      "admin",
+    );
+    const res = makeRes();
+    const next = jest.fn();
+
+    await controller.handle(req, res, next);
+    await flush();
+
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next.mock.calls[0][0].statusCode).toBe(400);
+    expect(next.mock.calls[0][0].message).toMatch(/Validation failed/i);
+  });
+
+  it("resolves an admin geography filter to the facilities scope", async () => {
+    const req = makeReq(
+      { method: "TOTAL_PATIENTS", provinceId: PROVINCE_ID, ...RANGE },
+      "admin",
+    );
+    const res = makeRes();
+    const next = jest.fn();
+
+    await controller.handle(req, res, next);
+    await flush();
+
+    expect(next).not.toHaveBeenCalled();
+    const payload = (res as any).json.mock.calls[0][0];
+    expect(payload.data.scope).toBe("facilities");
+    expect(payload.data.facilityId).toBeNull();
+  });
+
+  it("forwards a 403 when a non-admin uses a geography filter", async () => {
+    const req = makeReq({
+      method: "TOTAL_PATIENTS",
+      provinceId: PROVINCE_ID,
+      ...RANGE,
+    });
+    const res = makeRes();
+    const next = jest.fn();
+
+    await controller.handle(req, res, next);
+    await flush();
+
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next.mock.calls[0][0].statusCode).toBe(403);
   });
 
   it("forwards a 403 from the service when a non-admin requests scope=all", async () => {

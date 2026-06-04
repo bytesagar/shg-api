@@ -86,6 +86,45 @@ export class AuthController extends BaseController {
     return res.status(HTTP_STATUS.OK).json(result);
   });
 
+  public avatarUploadUrl = catchAsync(
+    async (req: AuthRequest, res: Response) => {
+      const userId = req.user?.id;
+      if (!userId) {
+        throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
+      }
+      const { fileName, fileType, fileSize } = req.body ?? {};
+      if (
+        typeof fileName !== "string" ||
+        typeof fileType !== "string" ||
+        typeof fileSize !== "number"
+      ) {
+        throw new AppError(
+          "fileName, fileType and fileSize are required",
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+      const result = await this.authService.presignAvatarUpload(userId, {
+        fileName,
+        fileType,
+        fileSize,
+      });
+      return this.ok(res, result, "Upload URL generated");
+    },
+  );
+
+  public setAvatar = catchAsync(async (req: AuthRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new AppError("Unauthorized", HTTP_STATUS.UNAUTHORIZED);
+    }
+    const { key } = req.body ?? {};
+    if (typeof key !== "string" || !key.trim()) {
+      throw new AppError("key is required", HTTP_STATUS.BAD_REQUEST);
+    }
+    const result = await this.authService.setAvatar(userId, key.trim());
+    return res.status(HTTP_STATUS.OK).json(result);
+  });
+
   public myFacilities = catchAsync(async (req: AuthRequest, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {

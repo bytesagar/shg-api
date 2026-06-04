@@ -4,7 +4,7 @@ import { HTTP_STATUS } from "../../config/constants";
 import { FacilityContext } from "../../context/facility-context";
 import { ANALYTICS_METHODS, AnalyticsMethod } from "./analytics.methods";
 import { AnalyticsRepository } from "./analytics.repository";
-import { Scope } from "./analytics.types";
+import { GeographyScopeInput, Scope } from "./analytics.types";
 import {
   dateRangeSchema,
   morbidityTrendSchema,
@@ -22,8 +22,14 @@ interface MethodConfig<I, O> {
   ) => Promise<O>;
 }
 
-function facilityFilter(scope: Scope) {
-  return scope.kind === "facility" ? scope.facilityId : undefined;
+/**
+ * The set of facility IDs a scope restricts to, in the shape the repository
+ * expects (`undefined` = all facilities; `[]` = geography matched nothing).
+ */
+function facilityFilter(scope: Scope): string[] | undefined {
+  if (scope.kind === "facility") return [scope.facilityId];
+  if (scope.kind === "facilities") return scope.facilityIds;
+  return undefined;
 }
 
 /**
@@ -48,7 +54,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
       repo.totalPatients({
         from: fromDate,
         toExclusive: toDate,
-        facilityId: facilityFilter(scope),
+        facilityIds: facilityFilter(scope),
       }),
   },
   TOTAL_OPD: {
@@ -57,7 +63,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
       repo.totalOpd({
         from: fromDate,
         toExclusive: toDate,
-        facilityId: facilityFilter(scope),
+        facilityIds: facilityFilter(scope),
       }),
   },
   TOTAL_IMMUNIZATION: {
@@ -66,7 +72,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
       repo.totalImmunization({
         from: fromDate,
         toExclusive: toDate,
-        facilityId: facilityFilter(scope),
+        facilityIds: facilityFilter(scope),
       }),
   },
   TOTAL_MATERNAL: {
@@ -75,7 +81,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
       repo.totalMaternal({
         from: fromDate,
         toExclusive: toDate,
-        facilityId: facilityFilter(scope),
+        facilityIds: facilityFilter(scope),
       }),
   },
   SERVICE_WISE_REFERRALS: {
@@ -84,7 +90,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
       repo.serviceWiseReferrals({
         from: fromDate,
         toExclusive: toDate,
-        facilityId: facilityFilter(scope),
+        facilityIds: facilityFilter(scope),
       }),
   },
   SECTOR_WISE_REFERRALS: {
@@ -93,7 +99,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
       repo.sectorWiseReferrals({
         from: fromDate,
         toExclusive: toDate,
-        facilityId: facilityFilter(scope),
+        facilityIds: facilityFilter(scope),
       }),
   },
   TELEHEALTH_REQUESTS_TOTAL: {
@@ -103,7 +109,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
         {
           from: fromDate,
           toExclusive: toDate,
-          facilityId: facilityFilter(scope),
+          facilityIds: facilityFilter(scope),
         },
         null,
       ),
@@ -115,7 +121,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
         {
           from: fromDate,
           toExclusive: toDate,
-          facilityId: facilityFilter(scope),
+          facilityIds: facilityFilter(scope),
         },
         "opd",
       ),
@@ -127,7 +133,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
         {
           from: fromDate,
           toExclusive: toDate,
-          facilityId: facilityFilter(scope),
+          facilityIds: facilityFilter(scope),
         },
         "maternal",
       ),
@@ -139,7 +145,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
         {
           from: fromDate,
           toExclusive: toDate,
-          facilityId: facilityFilter(scope),
+          facilityIds: facilityFilter(scope),
         },
         "child",
       ),
@@ -150,7 +156,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
       repo.opdFollowUp({
         from: fromDate,
         toExclusive: toDate,
-        facilityId: facilityFilter(scope),
+        facilityIds: facilityFilter(scope),
       }),
   },
   MORBIDITY_TREND: {
@@ -160,7 +166,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
         {
           from: fromDate,
           toExclusive: toDate,
-          facilityId: facilityFilter(scope),
+          facilityIds: facilityFilter(scope),
         },
         limit ?? 3,
       ),
@@ -171,7 +177,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
       repo.demographicsByGender({
         from: fromDate,
         toExclusive: toDate,
-        facilityId: facilityFilter(scope),
+        facilityIds: facilityFilter(scope),
       }),
   },
   PATIENTS_BY_ETHNICITY: {
@@ -180,7 +186,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
       repo.patientsByEthnicity({
         from: fromDate,
         toExclusive: toDate,
-        facilityId: facilityFilter(scope),
+        facilityIds: facilityFilter(scope),
       }),
   },
   PATIENTS_BY_MUNICIPALITY: {
@@ -189,7 +195,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
       repo.patientsByMunicipality({
         from: fromDate,
         toExclusive: toDate,
-        facilityId: facilityFilter(scope),
+        facilityIds: facilityFilter(scope),
       }),
   },
   PATIENTS_BY_FACILITY: {
@@ -198,7 +204,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
       repo.patientsByFacility({
         from: fromDate,
         toExclusive: toDate,
-        facilityId: facilityFilter(scope),
+        facilityIds: facilityFilter(scope),
       }),
   },
   TOP_DISEASES: {
@@ -208,7 +214,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
         {
           from: fromDate,
           toExclusive: toDate,
-          facilityId: facilityFilter(scope),
+          facilityIds: facilityFilter(scope),
         },
         limit ?? 10,
       ),
@@ -219,7 +225,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
       repo.ageGenderDistribution({
         from: fromDate,
         toExclusive: toDate,
-        facilityId: facilityFilter(scope),
+        facilityIds: facilityFilter(scope),
       }),
   },
   CHART_DATA_FOR_MALE_AND_FEMALE_BY_AGE_RANGE: {
@@ -228,7 +234,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
       repo.ageGenderDistribution({
         from: fromDate,
         toExclusive: toDate,
-        facilityId: facilityFilter(scope),
+        facilityIds: facilityFilter(scope),
       }),
   },
   VISITS_DAILY_TREND: {
@@ -237,7 +243,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
       repo.visitsDailyTrend({
         from: fromDate,
         toExclusive: toDate,
-        facilityId: facilityFilter(scope),
+        facilityIds: facilityFilter(scope),
       }),
   },
   FACILITY_LEADERBOARD: {
@@ -260,7 +266,7 @@ const METHODS: { [K in AnalyticsMethod]: MethodConfig<any, any> } = {
       repo.doctorsAppointmentSummary({
         from: fromDate,
         toExclusive: toDate,
-        facilityId: facilityFilter(scope),
+        facilityIds: facilityFilter(scope),
       }),
   },
 };
@@ -272,28 +278,46 @@ export class AnalyticsService {
     this.repo = new AnalyticsRepository();
   }
 
-  public resolveScope(facilityIdParam: string | undefined): Scope {
-    if (facilityIdParam === "all") {
-      if (this.context.role !== "admin") {
-        throw new AppError(
-          "Forbidden: facilityId=all is admin-only",
-          HTTP_STATUS.FORBIDDEN,
-        );
-      }
+  /**
+   * Resolve the requested scope from the query params. Precedence:
+   *   1. `facilityId=all`            → system-wide (admin only)
+   *   2. province/district/municipality → the facilities within that geography
+   *                                       (admin only), resolved to an ID set
+   *   3. a single `facilityId`       → that facility (admin only when it isn't
+   *                                       the caller's own)
+   *   4. nothing                     → the caller's own facility
+   */
+  public async resolveScope(input: GeographyScopeInput): Promise<Scope> {
+    const { facilityId, provinceId, districtId, municipalityId } = input;
+
+    if (facilityId === "all") {
+      this.requireAdmin("facilityId=all is admin-only");
       return { kind: "all" };
     }
 
-    if (facilityIdParam && facilityIdParam !== this.context.facilityId) {
-      if (this.context.role !== "admin") {
-        throw new AppError(
-          "Forbidden: cannot query another facility's analytics",
-          HTTP_STATUS.FORBIDDEN,
-        );
-      }
-      return { kind: "facility", facilityId: facilityIdParam };
+    if (provinceId || districtId || municipalityId) {
+      // Cross-facility geography scoping mirrors the `facilityId=all` gate.
+      this.requireAdmin("geography filters are admin-only");
+      const facilityIds = await this.repo.facilityIdsByGeography({
+        provinceId,
+        districtId,
+        municipalityId,
+      });
+      return { kind: "facilities", facilityIds };
+    }
+
+    if (facilityId && facilityId !== this.context.facilityId) {
+      this.requireAdmin("cannot query another facility's analytics");
+      return { kind: "facility", facilityId };
     }
 
     return { kind: "facility", facilityId: this.context.facilityId };
+  }
+
+  private requireAdmin(action: string): void {
+    if (this.context.role !== "admin") {
+      throw new AppError(`Forbidden: ${action}`, HTTP_STATUS.FORBIDDEN);
+    }
   }
 
   public async run(
