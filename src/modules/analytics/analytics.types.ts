@@ -1,11 +1,32 @@
 export type Scope =
   | { kind: "facility"; facilityId: string }
+  /**
+   * A geography-resolved set of facilities (province/district/municipality
+   * filter). An empty array means "the geography matched no facilities" and
+   * must yield zero rows — never silently widen to all.
+   */
+  | { kind: "facilities"; facilityIds: string[] }
   | { kind: "all" };
+
+/** Optional geography narrowing forwarded by the controller (admin-only). */
+export interface GeographyScopeInput {
+  facilityId?: string;
+  provinceId?: string;
+  districtId?: string;
+  municipalityId?: string;
+}
 
 export interface BaseAnalyticsFilter {
   from: Date;
   toExclusive: Date;
-  facilityId?: string;
+  /**
+   * Facility scope for the query:
+   *   - `undefined` → all facilities (system-wide)
+   *   - `[id]`      → a single facility
+   *   - `[a, b, …]` → a resolved set (geography filter)
+   *   - `[]`        → matched nothing; the query must return zero rows
+   */
+  facilityIds?: string[];
 }
 
 export interface TotalCount {

@@ -19,6 +19,26 @@ export const facilityIdParamSchema = z
   .union([z.literal("all"), z.string().uuid("Must be a UUID or 'all'")])
   .optional();
 
+/**
+ * Geography narrowing params (admin-only). Each is an optional facility-table
+ * UUID; the service resolves the narrowest provided level to a set of facility
+ * IDs. Empty strings are coerced to `undefined` so a blank query param is a
+ * no-op rather than a validation error.
+ */
+const optionalUuidParam = z
+  .string()
+  .trim()
+  .min(1)
+  .uuid("Must be a UUID")
+  .optional()
+  .or(z.literal("").transform(() => undefined));
+
+export const geographyScopeParamsSchema = z.object({
+  provinceId: optionalUuidParam,
+  districtId: optionalUuidParam,
+  municipalityId: optionalUuidParam,
+});
+
 export const dateRangeSchema = z
   .object({
     fromDate: isoDateInputSchema,
