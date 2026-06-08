@@ -29,7 +29,7 @@ export const vitalsCreateSchema = z.object({
   temperature: z.number(),
   pulse: z.number().int().optional().nullable(),
   respiratoryRate: z.number().int(),
-  spo2: z.number().int(),
+  spo2: z.number().int().optional().nullable(),
   weight: z.number().optional().nullable(),
   height: z.number().optional().nullable(),
 });
@@ -58,7 +58,7 @@ export const complaintCreateSchema = z.object({
   duration: z.number().int().optional().nullable(),
   durationUnit: z.enum(["hours", "days", "weeks", "months", "years"]),
   severity: z.enum(["low", "medium", "high", "critical"]),
-  description: z.string().min(1),
+  description: z.string().optional(),
 });
 
 export type ComplaintCreateInput = z.infer<typeof complaintCreateSchema>;
@@ -136,6 +136,27 @@ export const medicationCreateSchema = z.object({
 });
 
 export type MedicationCreateInput = z.infer<typeof medicationCreateSchema>;
+
+/**
+ * Aggregate OPD encounter body. Every section is optional; the service creates
+ * one `encounters` row + the matching detail row per present section — the same
+ * writes the per-kind endpoints do. Absent sections are no-ops.
+ */
+export const opdEncounterCreateSchema = z.object({
+  vitals: vitalsCreateSchema.optional(),
+  complaint: complaintCreateSchema.optional(),
+  history: historyCreateSchema.optional(),
+  physicalExamination: physicalExaminationCreateSchema.optional(),
+  provisionalDiagnosis: provisionalDiagnosisCreateSchema.optional(),
+  confirmDiagnosis: confirmDiagnosisCreateSchema.optional(),
+  treatment: treatmentCreateSchema.optional(),
+  // One OPD sitting can prescribe several medicines and order several tests, so
+  // these two sections arrive as arrays; each element becomes its own detail row.
+  medications: z.array(medicationCreateSchema).optional(),
+  tests: z.array(testCreateSchema).optional(),
+});
+
+export type OpdEncounterCreateInput = z.infer<typeof opdEncounterCreateSchema>;
 
 /* -------------------------------------------------------------------------- */
 /* Encounter record UPDATE schemas                                            */

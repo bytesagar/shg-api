@@ -122,7 +122,7 @@ export const vitals = pgTable(
     temperature: real("temperature").notNull(),
     pulse: integer("pulse"),
     respiratoryRate: integer("respiratory_rate").notNull(),
-    spo2: integer("spo2").notNull(),
+    spo2: integer("spo2"),
     weight: real("weight"),
     height: real("height"),
     visitId: uuid("visit_id")

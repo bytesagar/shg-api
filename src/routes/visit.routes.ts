@@ -613,6 +613,70 @@ router.post(
 
 /**
  * @openapi
+ * /visits/{visitId}/opd-encounter:
+ *   post:
+ *     tags:
+ *       - Visits
+ *     summary: Record a multi-section OPD encounter in one request
+ *     description: >
+ *       Accepts any subset of the clinical sections (vitals, complaint, history,
+ *       physicalExamination, provisionalDiagnosis, confirmDiagnosis, treatment,
+ *       medication, test). For each present section the server creates one
+ *       encounter plus the matching detail record, all in a single transaction.
+ *     operationId: addOpdEncounter
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: visitId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               vitals:
+ *                 type: object
+ *               complaint:
+ *                 type: object
+ *               history:
+ *                 type: object
+ *               physicalExamination:
+ *                 type: object
+ *               provisionalDiagnosis:
+ *                 type: object
+ *               confirmDiagnosis:
+ *                 type: object
+ *               treatment:
+ *                 type: object
+ *               medication:
+ *                 type: object
+ *               test:
+ *                 type: object
+ *     responses:
+ *       201:
+ *         description: OPD encounter recorded
+ *       400:
+ *         description: Validation failed
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Visit not found
+ */
+router.post(
+  "/:visitId/opd-encounter",
+  authMiddleware,
+  authorize([...CLINICAL_WRITE_ROLES]),
+  visitController.addOpdEncounter,
+);
+
+/**
+ * @openapi
  * /visits/{visitId}/{resource}/{id}:
  *   patch:
  *     tags: [Visits]
