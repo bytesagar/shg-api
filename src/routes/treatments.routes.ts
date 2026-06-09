@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorize } from "../middlewares/authorize.middleware";
+import { patientScopeFromQuery } from "../middlewares/patient-scope.middleware";
 import { CLINICAL_READ_ROLES } from "../constants/rbac";
 import { TreatmentsController } from "../modules/treatments/treatments.controller";
 
@@ -11,6 +12,7 @@ router.get(
   "/",
   authMiddleware,
   authorize([...CLINICAL_READ_ROLES]),
+  patientScopeFromQuery(),
   treatmentsController.getTreatments,
 );
 

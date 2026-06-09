@@ -1,11 +1,17 @@
 import { db } from "../../db";
-import { health_facilities, user_facility_affiliations, users } from "../../db/schema";
+import {
+  health_facilities,
+  user_facility_affiliations,
+  user_roles,
+  users,
+} from "../../db/schema";
 import {
   HealthFacilityCreateInput,
   HealthFacilityUpdateInput,
 } from "./health-facility.validation";
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { FacilityContext } from "../../context/facility-context";
+import { isDoctor } from "../../constants/rbac";
 import { AppError } from "../../utils/app-error";
 import { HTTP_STATUS } from "../../config/constants";
 
@@ -401,14 +407,15 @@ export class HealthFacilityService {
       }
 
       const doctors = await tx
-        .select({ id: users.id, userType: users.userType })
+        .select({ id: users.id, roleName: user_roles.name })
         .from(users)
+        .leftJoin(user_roles, eq(user_roles.id, users.userRoleId))
         .where(inArray(users.id, doctorIds));
 
       if (doctors.length !== doctorIds.length) {
         throw new AppError("User not found", HTTP_STATUS.NOT_FOUND);
       }
-      if (doctors.some((d) => d.userType !== "doctor")) {
+      if (doctors.some((d) => !isDoctor(d.roleName))) {
         throw new AppError("User is not a doctor", HTTP_STATUS.BAD_REQUEST);
       }
 

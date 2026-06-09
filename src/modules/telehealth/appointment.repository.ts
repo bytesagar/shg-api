@@ -1,6 +1,7 @@
 import { db } from "../../db";
 import {
   appointments,
+  health_facilities,
   patients,
   person_names,
   telehealth_sessions,
@@ -26,6 +27,14 @@ export class AppointmentRepository extends FacilityRepository {
     toDate?: string;
     limit: number;
     offset: number;
+    /**
+     * Bypass facility scoping. Doctors are cross-facility providers with no
+     * facility pin, so their telehealth schedule must surface every appointment
+     * assigned to them regardless of which facility the patient booked from.
+     * Safe only when `doctorId` is pinned to the caller's own id — that filter
+     * becomes the access boundary in place of the facility scope.
+     */
+    crossFacility?: boolean;
   }) {
     const clauses = [
       eq(appointments.service, "telehealth"),
@@ -47,7 +56,9 @@ export class AppointmentRepository extends FacilityRepository {
       clauses.push(lt(appointments.date, toUtc));
     }
 
-    const where = this.withFacilityScope(and(...clauses));
+    const where = params.crossFacility
+      ? and(...clauses)
+      : this.withFacilityScope(and(...clauses));
 
     const totalResult = await db
       .select({ count: count() })
@@ -61,6 +72,7 @@ export class AppointmentRepository extends FacilityRepository {
         patientId: appointments.patientId,
         doctorId: appointments.doctorId,
         facilityId: appointments.facilityId,
+        facilityName: health_facilities.name,
         date: appointments.date,
         scheduledAt: appointments.scheduledAt,
         status: appointments.status,
@@ -84,6 +96,10 @@ export class AppointmentRepository extends FacilityRepository {
         users,
         and(eq(users.id, appointments.doctorId), isNull(users.deletedAt)),
       )
+      .leftJoin(
+        health_facilities,
+        eq(health_facilities.id, appointments.facilityId),
+      )
       .leftJoin(patients, eq(patients.id, appointments.patientId))
       .leftJoin(
         person_names,
@@ -106,6 +122,9 @@ export class AppointmentRepository extends FacilityRepository {
         patientId: row.patientId,
         doctorId: row.doctorId,
         facilityId: row.facilityId,
+        facility: row.facilityId
+          ? { id: row.facilityId, name: row.facilityName ?? null }
+          : null,
         date: row.date,
         scheduledAt: row.scheduledAt,
         status: row.status,

@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import { eq } from "drizzle-orm";
 import { FacilityContext } from "../../context/facility-context";
+import { isDoctor } from "../../constants/rbac";
 import { AppError } from "../../utils/app-error";
 import { HTTP_STATUS } from "../../config/constants";
 import { db } from "../../db";
@@ -32,7 +33,7 @@ export class AuscultationService {
 
   public async startSession(input: AuscultationStartInput) {
     const doctor = await this.userRepo.findById(this.context.userId);
-    if (!doctor || doctor.userType !== "doctor") {
+    if (!doctor || !isDoctor(doctor.role?.name)) {
       throw new AppError(
         "Only doctors can start a tele-auscultation session",
         HTTP_STATUS.FORBIDDEN,

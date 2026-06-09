@@ -127,9 +127,9 @@ export class RosterController extends BaseController {
             HTTP_STATUS.BAD_REQUEST,
           );
         }
-        if (result.error === "FACILITY_MISMATCH") {
+        if (result.error === "FACILITY_NOT_ALLOWED") {
           throw new AppError(
-            "Each entry's facilityId must match the current facility",
+            "This user can only be rostered at their own facility",
             HTTP_STATUS.BAD_REQUEST,
           );
         }

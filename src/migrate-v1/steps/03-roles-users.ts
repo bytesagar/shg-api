@@ -19,8 +19,9 @@ import { v1Query } from "../v1-client";
  * User roles + users.
  *
  * Roles: v2 is already seeded with the same role NAMES v1 uses (admin, doctor,
- * hfuser, fchvuser, palika — plus municipalityuser), so roles are *matched* by
- * name into the id-map, not inserted.
+ * hfuser, fchvuser, municipalityuser), so roles are *matched* by name into the
+ * id-map, not inserted. The retired v1 `palika` role is remapped to
+ * `municipalityuser` (see `V1_ROLE_NAME_REMAP`).
  *
  * Users: each v1 `User` becomes a v2 `persons` + `users` pair. Because the
  * running app derives a user's effective role from their *primary*
@@ -54,6 +55,15 @@ interface V1User {
   deletedAt: Date | null;
   deletedBy: number | null;
 }
+
+/**
+ * Legacy v1 role names that no longer exist as v2 roles, mapped to their v2
+ * equivalent. `palika` was removed in v2 because it's identical in intent to
+ * `municipalityuser`, so v1 palika users migrate onto the municipality role.
+ */
+const V1_ROLE_NAME_REMAP: Record<string, string> = {
+  palika: "municipalityuser",
+};
 
 /** Map a role name to the closest `userRoleEnum` value for `users.userType`. */
 function roleToUserType(
@@ -122,7 +132,9 @@ export const usersStep: MigrationStep = {
         report.skipped("user_role");
         continue;
       }
-      const v2Id = v2RoleByName.get(r.name.toLowerCase());
+      const lookupName =
+        V1_ROLE_NAME_REMAP[r.name.toLowerCase()] ?? r.name.toLowerCase();
+      const v2Id = v2RoleByName.get(lookupName);
       if (!v2Id) {
         report.warn(`user_role "${r.name}" (v1 id ${r.id}) has no v2 match`);
         report.failed("user_role");

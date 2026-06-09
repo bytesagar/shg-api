@@ -55,7 +55,6 @@ const DEFAULT_USER_ROLES: { name: string; description: string }[] = [
   { name: "hfuser", description: "Health Facility User" },
   { name: "fchvuser", description: "FCHV User" },
   { name: "municipalityuser", description: "Municipality User" },
-  { name: "palika", description: "palika user" },
 ];
 
 const PROVINCE_ALIASES: Record<string, string> = {
@@ -1313,17 +1312,6 @@ async function seedDemoData() {
       phoneNumber: "9800000004",
       facilityId,
       roleName: "municipalityuser",
-    },
-    {
-      email: "palika@shg.com",
-      username: "palika",
-      firstName: "Sita",
-      lastName: "Gurung",
-      passwordHash: hashedPassword,
-      userType: "user" as const,
-      phoneNumber: "9800000005",
-      facilityId,
-      roleName: "palika",
     },
   ];
 

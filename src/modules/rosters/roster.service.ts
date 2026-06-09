@@ -1,4 +1,5 @@
 import { FacilityContext } from "../../context/facility-context";
+import { isDoctor } from "../../constants/rbac";
 import { RosterRepository } from "./roster.repository";
 import { UserRepository } from "../users/user.repository";
 import { NotificationService } from "../notifications/notification.service";
@@ -105,8 +106,13 @@ export class RosterService {
   }
 
   public async create(input: RosterCreateInput) {
+    // `findById` already enforces tenant isolation with the correct
+    // cross-facility carve-out: it returns the row for doctors (who are global
+    // and carry no home `facilityId` — NULL by design) and `undefined` for any
+    // other user type outside the active facility. Re-checking `user.facilityId`
+    // here would wrongly reject doctors, so trust `findById`.
     const user = await this.userRepository.findById(input.userId);
-    if (!user || user.facilityId !== this.context.facilityId) {
+    if (!user) {
       return { error: "USER_NOT_IN_FACILITY" as const };
     }
 
@@ -145,10 +151,26 @@ export class RosterService {
    * All rows share the same status; facility per row must match the JWT facility when provided.
    */
   public async createBatch(input: RosterBatchCreateInput) {
+    // `findById` already enforces tenant isolation with the correct
+    // cross-facility carve-out: it returns the row for doctors (who are global
+    // and carry no home `facilityId` — NULL by design) and `undefined` for any
+    // other user type outside the active facility. Re-checking `user.facilityId`
+    // here would wrongly reject doctors, so trust `findById`.
     const user = await this.userRepository.findById(input.userId);
-    if (!user || user.facilityId !== this.context.facilityId) {
+    if (!user) {
       return { error: "USER_NOT_IN_FACILITY" as const };
     }
+
+    // Facility rules differ by user type:
+    //  - Doctors are global and rosterable at ANY facility. There's nothing to
+    //    pre-validate (the NOT NULL FK on `rosters.facilityId` already
+    //    guarantees the facility exists), and requiring a prior affiliation
+    //    would defeat cross-facility rostering — a doctor is affiliated with
+    //    only their creation facility, if any. Instead we auto-affiliate them
+    //    to each rostered facility below, since a roster slot *is* an
+    //    assignment and the doctor needs facility access to work it.
+    //  - Facility-pinned staff may only be rostered at their own home facility.
+    const userIsDoctor = isDoctor(user.role?.name);
 
     const status = input.status ?? "active";
     const indicesByDate = new Map<string, number[]>();
@@ -182,8 +204,8 @@ export class RosterService {
     const rows = [];
     for (const entry of input.entries) {
       const facilityId = entry.facilityId ?? this.context.facilityId;
-      if (facilityId !== this.context.facilityId) {
-        return { error: "FACILITY_MISMATCH" as const };
+      if (!userIsDoctor && facilityId !== user.facilityId) {
+        return { error: "FACILITY_NOT_ALLOWED" as const, facilityId };
       }
       rows.push({
         userId: input.userId,
@@ -196,6 +218,18 @@ export class RosterService {
         createdBy: this.context.userId,
         updatedBy: this.context.userId,
       });
+    }
+
+    // Rostering a global doctor at a facility *is* assigning them there, so
+    // make sure they're affiliated with every facility in this batch (idempotent
+    // — existing affiliations are left untouched). Without this they couldn't
+    // switch their facility context to actually work the slot.
+    if (userIsDoctor) {
+      const facilityIds = [...new Set(rows.map((r) => r.facilityId))];
+      await this.userRepository.affiliateToFacilities(
+        input.userId,
+        facilityIds,
+      );
     }
 
     const items = await this.rosterRepository.createMany(rows);
