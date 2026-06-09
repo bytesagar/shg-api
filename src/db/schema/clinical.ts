@@ -7,6 +7,7 @@ import {
   text,
   boolean,
   real,
+  jsonb,
   uniqueIndex,
   index,
   uuid,
@@ -15,6 +16,9 @@ import {
 import { relations, sql } from "drizzle-orm";
 import {
   durationUnitEnum,
+  labOrderPriorityEnum,
+  labOrderStatusEnum,
+  labOrderTypeEnum,
   severityEnum,
   testCategoryEnum,
   visitStatusEnum,
@@ -362,6 +366,78 @@ export const lab_tests = pgTable(
     // RADIOLOGY (e.g. some imaging vs blood tests share names).
     uniqueIndex("lab_tests_name_category_uidx").on(t.name, t.category),
     index("lab_tests_category_idx").on(t.category),
+  ],
+);
+
+/**
+ * A single ordered lab/radiology investigation that flows through the
+ * Laboratory Console worklist: ordered -> (sample) collected -> completed.
+ *
+ * `labTestId` optionally links to the `lab_tests` catalog; `name` always
+ * carries the human label so an order survives catalog edits. `panel`
+ * (pathology, e.g. CBC/LIPID) and `modality` (radiology, e.g. X-Ray/USG)
+ * are mutually exclusive and depend on `type`. The recorded result lives in
+ * the `result` JSONB payload — pathology analyte rows or radiology
+ * findings/impression — with `resultMode` ("form" | "upload") describing how
+ * it was captured. Uploaded reports also point at an `attachments` row.
+ */
+export const lab_orders = pgTable(
+  "lab_orders",
+  {
+    id: uuid("id")
+      .primaryKey()
+      .notNull()
+      .default(sql`gen_random_uuid()`),
+    type: labOrderTypeEnum("type").notNull(),
+    labTestId: uuid("lab_test_id").references(() => lab_tests.id),
+    name: varchar("name", { length: 255 }).notNull(),
+    /** Pathology grouping (CBC, LIPID, RFT...); null for radiology. */
+    panel: varchar("panel", { length: 64 }),
+    /** Radiology modality (X-Ray, USG, CT...); null for pathology. */
+    modality: varchar("modality", { length: 64 }),
+    patientId: uuid("patient_id")
+      .notNull()
+      .references(() => patients.id),
+    visitId: uuid("visit_id").references(() => visits.id),
+    encounterId: uuid("encounter_id").references(() => encounters.id),
+    facilityId: uuid("facility_id")
+      .notNull()
+      .references(() => health_facilities.id),
+    orderedById: uuid("ordered_by_id").references(() => users.id),
+    orderedAt: timestamp("ordered_at").defaultNow().notNull(),
+    reason: text("reason"),
+    priority: labOrderPriorityEnum("priority").default("routine").notNull(),
+    status: labOrderStatusEnum("status").default("pending").notNull(),
+    // ---- specimen collection (pathology) ----
+    specimen: varchar("specimen", { length: 255 }),
+    collectedAt: timestamp("collected_at"),
+    collectedByName: varchar("collected_by_name", { length: 255 }),
+    // ---- result ----
+    resultMode: varchar("result_mode", { length: 16 }),
+    result: jsonb("result"),
+    attachmentId: uuid("attachment_id").references(() => attachments.id, {
+      onDelete: "set null",
+    }),
+    completedByName: varchar("completed_by_name", { length: 255 }),
+    completedAt: timestamp("completed_at"),
+    createdBy: uuid("created_by").references(() => users.id),
+    updatedBy: uuid("updated_by").references(() => users.id),
+    deletedBy: uuid("deleted_by").references(() => users.id),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at"),
+    deletedAt: timestamp("deleted_at"),
+  },
+  (t) => [
+    index("lab_order_facility_id_idx").on(t.facilityId),
+    index("lab_order_patient_id_idx").on(t.patientId),
+    index("lab_order_visit_id_idx").on(t.visitId),
+    index("lab_order_facility_status_idx").on(t.facilityId, t.status),
+    index("lab_order_facility_type_status_idx").on(
+      t.facilityId,
+      t.type,
+      t.status,
+    ),
+    index("lab_order_facility_ordered_idx").on(t.facilityId, t.orderedAt),
   ],
 );
 
@@ -788,6 +864,38 @@ export const complaintsRelations = relations(complaints, ({ one }) => ({
     fields: [complaints.createdBy],
     references: [users.id],
     relationName: "complaintCreator",
+  }),
+}));
+
+export const labOrdersRelations = relations(lab_orders, ({ one }) => ({
+  patient: one(patients, {
+    fields: [lab_orders.patientId],
+    references: [patients.id],
+  }),
+  visit: one(visits, {
+    fields: [lab_orders.visitId],
+    references: [visits.id],
+  }),
+  encounter: one(encounters, {
+    fields: [lab_orders.encounterId],
+    references: [encounters.id],
+  }),
+  facility: one(health_facilities, {
+    fields: [lab_orders.facilityId],
+    references: [health_facilities.id],
+  }),
+  orderedBy: one(users, {
+    fields: [lab_orders.orderedById],
+    references: [users.id],
+    relationName: "labOrderOrderedBy",
+  }),
+  labTest: one(lab_tests, {
+    fields: [lab_orders.labTestId],
+    references: [lab_tests.id],
+  }),
+  attachment: one(attachments, {
+    fields: [lab_orders.attachmentId],
+    references: [attachments.id],
   }),
 }));
 

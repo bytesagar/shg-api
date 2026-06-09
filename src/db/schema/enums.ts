@@ -61,6 +61,23 @@ export const testCategoryEnum = pgEnum("test_category_enum", [
   "other",
 ]);
 
+export const labOrderTypeEnum = pgEnum("lab_order_type_enum", [
+  "pathology",
+  "radiology",
+]);
+
+export const labOrderPriorityEnum = pgEnum("lab_order_priority_enum", [
+  "routine",
+  "urgent",
+]);
+
+export const labOrderStatusEnum = pgEnum("lab_order_status_enum", [
+  "pending",
+  "collected",
+  "completed",
+  "cancelled",
+]);
+
 export const familyPlanningServiceTypeEnum = pgEnum(
   "family_planning_service_type_enum",
   ["new", "follow_up", "removal"],

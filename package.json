@@ -19,6 +19,7 @@
     "migrate:v1": "ts-node -r tsconfig-paths/register src/migrate-v1/index.ts",
     "set-password": "ts-node -r tsconfig-paths/register src/db/set-user-password.ts",
     "db:seed:lab-tests": "ts-node -r tsconfig-paths/register src/db/seeds/lab-tests/index.ts",
+    "db:seed:lab-orders": "ts-node -r tsconfig-paths/register src/db/seeds/lab-orders/index.ts",
     "db:up": "docker compose -f docker-compose.local.yml up  -d postgres",
     "db:down": "docker compose -f docker-compose.local.yml down",
     "db:logs": "docker compose -f docker-compose.local.yml logs -f postgres",
