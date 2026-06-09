@@ -10,6 +10,7 @@ import {
   confirmDiagnosisCreateSchema,
   historyCreateSchema,
   medicationCreateSchema,
+  opdEncounterCreateSchema,
   physicalExaminationCreateSchema,
   provisionalDiagnosisCreateSchema,
   testCreateSchema,
@@ -433,4 +434,31 @@ export class VisitController extends BaseController {
       "Medication encounter recorded successfully",
     );
   });
+
+  public addOpdEncounter = catchAsync(
+    async (req: AuthRequest, res: Response) => {
+      const context = requireFacilityContext(req);
+      const validatedData = opdEncounterCreateSchema.safeParse(req.body);
+      if (!validatedData.success) {
+        const errorMessages = validatedData.error.issues
+          .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+          .join(", ");
+        throw new AppError(
+          `Validation failed: ${errorMessages}`,
+          HTTP_STATUS.BAD_REQUEST,
+        );
+      }
+
+      const { visitId } = req.params;
+      const recordService = new VisitRecordService(context);
+      const record = await recordService.addOpdEncounter(
+        visitId as string,
+        validatedData.data,
+      );
+      if (!record) {
+        throw new AppError("Visit not found", HTTP_STATUS.NOT_FOUND);
+      }
+      return this.created(res, record, "OPD encounter recorded successfully");
+    },
+  );
 }

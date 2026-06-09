@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { FacilityContext } from "../../context/facility-context";
+import { isDoctor } from "../../constants/rbac";
 import { AppointmentRepository } from "./appointment.repository";
 import { PatientRepository } from "../patients/patient.repository";
 import { UserRepository } from "../users/user.repository";
@@ -60,14 +61,17 @@ export class TelehealthService {
 
     // A doctor must only ever see appointments assigned to them — they cannot
     // browse other doctors' telehealth schedules. For non-doctor roles (admin,
-    // nurse/hfuser, municipality, palika) the optional client-supplied doctor
-    // filter is honoured as before.
-    const isDoctor =
-      this.context.userType === "doctor" || this.context.role === "doctor";
-    const doctorId = isDoctor
+    // nurse/hfuser, municipality) the optional client-supplied doctor filter is
+    // honoured as before.
+    const callerIsDoctor = isDoctor(this.context.role);
+    const doctorId = callerIsDoctor
       ? this.context.userId
       : (query.assignedDoctorId ?? query.doctorId);
 
+    // Doctors are global, cross-facility providers — their telehealth schedule
+    // spans every facility a patient booked them from, so drop the facility
+    // scope and let `doctorId = self` be the access boundary. Facility-side
+    // roles stay scoped to their own facility as before.
     return this.appointmentRepository.findMany({
       patientId: query.patientId,
       doctorId,
@@ -76,6 +80,7 @@ export class TelehealthService {
       toDate,
       limit: query.pageSize,
       offset: (query.page - 1) * query.pageSize,
+      crossFacility: callerIsDoctor,
     });
   }
 
@@ -87,7 +92,7 @@ export class TelehealthService {
 
     const doctor = await this.userRepository.findById(input.doctorId);
     if (!doctor) return { error: "DOCTOR_NOT_FOUND" as const };
-    if (doctor.userType !== "doctor")
+    if (!isDoctor(doctor.role?.name))
       return { error: "DOCTOR_NOT_FOUND" as const };
 
     // `scheduledAt` may now carry a time-of-day. Split it into the full instant

@@ -18,6 +18,7 @@ import {
   ConfirmDiagnosisCreateInput,
   HistoryCreateInput,
   MedicationCreateInput,
+  OpdEncounterCreateInput,
   PhysicalExaminationCreateInput,
   ProvisionalDiagnosisCreateInput,
   TestCreateInput,
@@ -56,7 +57,12 @@ export class VisitRecordService {
     return visit;
   }
 
-  private async createEncounter(tx: any, visit: any, encounterType: string) {
+  private async createEncounter(
+    tx: any,
+    visit: any,
+    encounterType: string,
+    service?: string,
+  ) {
     const inserted = await tx
       .insert(encounters)
       .values({
@@ -65,7 +71,11 @@ export class VisitRecordService {
         facilityId: this.context.facilityId,
         encounterAt: new Date(),
         reason: encounterType,
-        service: visit.service ?? null,
+        // A single visit can hold encounters from several clinical services, so
+        // the encounter carries its own service tag. Callers that record a
+        // specific service (e.g. the OPD wizard) pass it explicitly; otherwise
+        // we fall back to the visit's service.
+        service: service ?? visit.service ?? null,
         status: "finished",
         encounterType,
         doctorId: this.context.userId,
@@ -135,6 +145,9 @@ export class VisitRecordService {
         .insert(complaints)
         .values({
           ...input,
+          // description is optional; default to "" so the NOT NULL column stays
+          // satisfied without forcing the clinician to type a placeholder.
+          description: input.description ?? "",
           patientId: visit.patientId,
           visitId: visit.id,
           encounterId: encounter.id,
@@ -326,6 +339,120 @@ export class VisitRecordService {
         })
         .returning();
       return { encounter, record: inserted[0] };
+    });
+  }
+
+  /**
+   * Aggregate OPD encounter write. An OPD recording is **one** encounter —
+   * typed `OPD`, tagged service `opd` — that owns every clinical record the
+   * clinician filled (vitals, complaints, diagnoses, meds, orders…). All detail
+   * rows link back to that single encounter via `encounterId`, mirroring the
+   * register model where one outpatient sitting is a single OPD encounter.
+   *
+   * A visit can host several typed encounters (e.g. ANC + OPD on the same trip),
+   * so the OPD encounter is created inside the existing visit rather than a new
+   * one. Everything runs in a single transaction; a partial failure rolls back
+   * the whole submit, and absent sections are skipped.
+   */
+  public async addOpdEncounter(
+    visitId: string,
+    input: OpdEncounterCreateInput,
+  ) {
+    const visit = await this.getOwnedVisit(visitId);
+    if (!visit) return null;
+
+    const userId = this.context.userId;
+
+    return db.transaction(async (tx) => {
+      // One typed OPD encounter for the whole submit; every section's detail
+      // row links to it.
+      const encounter = await this.createEncounter(tx, visit, "OPD", "opd");
+
+      const records: Record<string, unknown> = {};
+
+      const writeDetail = async (
+        table: any,
+        values: Record<string, unknown>,
+      ) => {
+        const inserted = (await tx
+          .insert(table)
+          .values({
+            ...values,
+            visitId: visit.id,
+            encounterId: encounter.id,
+            createdBy: userId,
+            updatedBy: userId,
+          })
+          .returning()) as any[];
+        return inserted[0];
+      };
+
+      if (input.vitals) {
+        records.vitals = await writeDetail(vitals, input.vitals);
+      }
+      if (input.complaint) {
+        records.complaint = await writeDetail(complaints, {
+          ...input.complaint,
+          description: input.complaint.description ?? "",
+          patientId: visit.patientId,
+        });
+      }
+      if (input.history) {
+        records.history = await writeDetail(histories, {
+          medical: input.history.medical ?? "",
+          surgical: input.history.surgical ?? "",
+          obGyn: input.history.obGyn ?? "",
+          medication: input.history.medication ?? "",
+          familyHistory: input.history.familyHistory ?? "",
+          social: input.history.social ?? "",
+          other: input.history.other ?? null,
+        });
+      }
+      if (input.physicalExamination) {
+        records.physicalExamination = await writeDetail(physical_examinations, {
+          ...input.physicalExamination,
+          patientId: visit.patientId,
+        });
+      }
+      if (input.provisionalDiagnosis) {
+        records.provisionalDiagnosis = await writeDetail(provisional_diagnoses, {
+          ...input.provisionalDiagnosis,
+          patientId: visit.patientId,
+        });
+      }
+      if (input.confirmDiagnosis) {
+        records.confirmDiagnosis = await writeDetail(confirm_diagnoses, {
+          ...input.confirmDiagnosis,
+          patientId: visit.patientId,
+        });
+      }
+      if (input.treatment) {
+        records.treatment = await writeDetail(treatments, {
+          ...input.treatment,
+          patientId: visit.patientId,
+        });
+      }
+      if (input.medications?.length) {
+        const rows: unknown[] = [];
+        for (const medication of input.medications) {
+          rows.push(
+            await writeDetail(medications, {
+              ...medication,
+              patientId: visit.patientId,
+            }),
+          );
+        }
+        records.medications = rows;
+      }
+      if (input.tests?.length) {
+        const rows: unknown[] = [];
+        for (const test of input.tests) {
+          rows.push(await writeDetail(tests, test));
+        }
+        records.tests = rows;
+      }
+
+      return { encounter, records };
     });
   }
 }

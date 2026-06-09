@@ -7,6 +7,10 @@ import {
   authorizePermission,
 } from "../middlewares/authorize.middleware";
 import {
+  patientScopeFromParam,
+  patientScopeFromQuery,
+} from "../middlewares/patient-scope.middleware";
+import {
   CLINICAL_READ_ROLES,
   CLINICAL_WRITE_ROLES,
   COMMUNITY_WRITE_ROLES,
@@ -166,6 +170,7 @@ router.get(
   "/:id",
   authMiddleware,
   authorize([...CLINICAL_READ_ROLES]),
+  patientScopeFromParam("id"),
   patientController.getPatient,
 );
 

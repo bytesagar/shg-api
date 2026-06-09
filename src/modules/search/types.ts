@@ -21,8 +21,7 @@ export type SearchRole =
   | typeof RBAC_ROLES.PATIENT
   | typeof RBAC_ROLES.NURSE
   | typeof RBAC_ROLES.CHW
-  | typeof RBAC_ROLES.MUNICIPALITY_USER
-  | typeof RBAC_ROLES.PALIKA;
+  | typeof RBAC_ROLES.MUNICIPALITY_USER;
 
 export interface ScopeContext {
   userId: string;

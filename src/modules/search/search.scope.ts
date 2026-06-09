@@ -49,7 +49,6 @@ const FACILITY_BOUND_ROLES: ReadonlySet<SearchRole> = new Set([
   RBAC_ROLES.CHW,
   RBAC_ROLES.FCHV_USER,
   RBAC_ROLES.MUNICIPALITY_USER,
-  RBAC_ROLES.PALIKA,
 ]);
 
 const SELF_ONLY_ROLES: ReadonlySet<SearchRole> = new Set([
@@ -116,7 +115,7 @@ export async function buildSearchScope(
     };
   }
 
-  // ----- facility-bound (hfuser, nurse, chw, municipalityuser, palika) -----
+  // ----- facility-bound (hfuser, nurse, chw, municipalityuser) -----
   if (role && FACILITY_BOUND_ROLES.has(role)) {
     return {
       ctx,

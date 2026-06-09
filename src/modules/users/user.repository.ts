@@ -12,6 +12,7 @@ import {
   users,
 } from "../../db/schema";
 import { FacilityContext } from "../../context/facility-context";
+import { isDoctor } from "../../constants/rbac";
 import { FacilityRepository } from "../../core/facility-repository";
 import {
   SQL,
@@ -38,10 +39,26 @@ export class UserRepository extends FacilityRepository {
    * facility scope would hide doctors who belong to / were created under a
    * different facility, which is exactly what the affiliation selector needs.
    */
-  private targetsDoctors(p: { role?: string; userType?: string }): boolean {
-    return (
-      p.userType === "doctor" || (p.role ?? "").toLowerCase() === "doctor"
-    );
+  private targetsDoctors(p: { role?: string }): boolean {
+    return isDoctor(p.role);
+  }
+
+  /**
+   * SQL predicate: this user's role (via `userRoleId` → `user_roles.name`) is
+   * the doctor role. Correlated `EXISTS` so callers don't need to join
+   * `user_roles`. v2 keys behavior off role, never `users.userType`.
+   */
+  private isDoctorRoleSql(): SQL {
+    return sql`exists (select 1 from ${user_roles} where ${user_roles.id} = ${users.userRoleId} and lower(${user_roles.name}) = 'doctor')`;
+  }
+
+  /**
+   * SQL predicate: this user's role is roster-assignable — i.e. NOT an admin or
+   * a community volunteer (fchv/chw). Role-based replacement for the old
+   * `userType IN ('doctor','user','facility')` grouping.
+   */
+  private rosterAssignableRoleSql(): SQL {
+    return sql`not exists (select 1 from ${user_roles} where ${user_roles.id} = ${users.userRoleId} and lower(${user_roles.name}) in ('admin', 'fchvuser', 'chw'))`;
   }
 
   /**
@@ -57,7 +74,7 @@ export class UserRepository extends FacilityRepository {
     if (targetsDoctors) return where;
     const scope = or(
       eq(users.facilityId, this.context.facilityId),
-      eq(users.userType, "doctor"),
+      this.isDoctorRoleSql(),
     )!;
     return where ? and(scope, where) : scope;
   }
@@ -290,25 +307,19 @@ export class UserRepository extends FacilityRepository {
       .offset(opts.offset);
   }
 
-  /** Staff types that can appear on a facility roster (excludes global admins). */
-  private static readonly rosterAssignableUserTypes = [
-    "doctor",
-    "user",
-    "facility",
-  ] as const;
-
   /**
    * Roster-assignable staff = the active facility's own assignable staff PLUS
    * all cross-facility doctors (who carry no home `facilityId`). Without the
    * doctor OR, decoupled doctors — the primary telehealth roster target — would
-   * never appear as assignable.
+   * never appear as assignable. "Assignable" excludes admins and community
+   * volunteers (fchv/chw) by role.
    */
   private rosterAssignableScope(): SQL {
     return and(
-      inArray(users.userType, UserRepository.rosterAssignableUserTypes),
+      this.rosterAssignableRoleSql(),
       or(
         eq(users.facilityId, this.context.facilityId),
-        eq(users.userType, "doctor"),
+        this.isDoctorRoleSql(),
       ),
     )!;
   }
@@ -347,10 +358,33 @@ export class UserRepository extends FacilityRepository {
       .limit(1);
     const row = result[0];
     if (!row) return undefined;
-    if (row.userType !== "doctor" && row.facilityId !== this.context.facilityId) {
+    if (!isDoctor(row.role?.name) && row.facilityId !== this.context.facilityId) {
       return undefined;
     }
     return row;
+  }
+
+  /**
+   * Affiliate a user to one or more facilities (active). Idempotent: rows that
+   * already exist for a `(userId, facilityId)` pair are left untouched. Used
+   * when rostering a cross-facility doctor — the roster slot doubles as the
+   * facility assignment that grants them access.
+   */
+  public async affiliateToFacilities(
+    userId: string,
+    facilityIds: string[],
+  ): Promise<void> {
+    if (facilityIds.length === 0) return;
+    await db
+      .insert(user_facility_affiliations)
+      .values(
+        facilityIds.map((facilityId) => ({
+          userId,
+          facilityId,
+          isActive: true,
+        })),
+      )
+      .onConflictDoNothing();
   }
 
   public async findByEmail(email: string) {
@@ -419,14 +453,21 @@ export class UserRepository extends FacilityRepository {
       });
 
       const { roleIds: _roleIds, facilityId: inputFacilityId, ...insertValues } = data;
-      const isDoctor = data.userType === "doctor";
+      // Behavior keys off role, not `userType`: resolve the new user's primary
+      // role name to decide doctor-specific handling.
+      const [primaryRole] = await tx
+        .select({ name: user_roles.name })
+        .from(user_roles)
+        .where(eq(user_roles.id, data.userRoleId))
+        .limit(1);
+      const creatingDoctor = isDoctor(primaryRole?.name);
       // Facility the new user is being created under (the admin's active
       // facility, or an explicitly chosen one).
       const homeFacilityId = inputFacilityId ?? this.context.facilityId;
       // Doctors are cross-facility and carry no single home `facilityId`; they
       // reach facilities through `user_facility_affiliations` instead. Every
       // other user type keeps the facility pin.
-      const facilityId = isDoctor ? null : homeFacilityId;
+      const facilityId = creatingDoctor ? null : homeFacilityId;
 
       const insertedUsers = await tx
         .insert(users)
@@ -459,7 +500,7 @@ export class UserRepository extends FacilityRepository {
         finalRoleIds.map((roleId) => ({
           userId: createdUserId,
           roleId,
-          facilityId: isDoctor ? homeFacilityId : facilityId,
+          facilityId: creatingDoctor ? homeFacilityId : facilityId,
           municipalityId: data.municipalityId ?? null,
           isPrimary: roleId === data.userRoleId,
         })),
@@ -469,7 +510,7 @@ export class UserRepository extends FacilityRepository {
       // never resolve a facility at login. Affiliate the new doctor to the
       // facility they were created under so they can sign in immediately; an
       // admin can add/remove further facility affiliations afterwards.
-      if (isDoctor && homeFacilityId) {
+      if (creatingDoctor && homeFacilityId) {
         await tx
           .insert(user_facility_affiliations)
           .values({
