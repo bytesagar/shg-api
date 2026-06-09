@@ -7,7 +7,6 @@ export const RBAC_ROLES = {
   HF_USER: "hfuser",
   FCHV_USER: "fchvuser",
   MUNICIPALITY_USER: "municipalityuser",
-  PALIKA: "palika",
   USER: "user",
   FACILITY_LEGACY: "facility",
 } as const;
@@ -15,14 +14,25 @@ export const RBAC_ROLES = {
 export const ROLE_ALIAS_MAP: Record<string, string> = {
   facility: RBAC_ROLES.HF_USER,
   municipality: RBAC_ROLES.MUNICIPALITY_USER,
-  // `palika` is its own role with a distinct, narrower permission set — do not
-  // alias it to municipality.
+  // `palika` was a separate role but is identical in intent to
+  // `municipalityuser`; it's been removed and is now aliased so any lingering
+  // `palika` role still resolves to municipality access.
+  palika: RBAC_ROLES.MUNICIPALITY_USER,
 };
 
 export function normalizeRole(role?: string | null): string | undefined {
   if (!role) return undefined;
   const normalized = role.trim().toLowerCase();
   return ROLE_ALIAS_MAP[normalized] ?? normalized;
+}
+
+/**
+ * True when a role (any alias/casing) is the doctor role. v2 relies solely on
+ * `role` for behavior — never `users.userType` — so this is the single source
+ * of truth for "is this user a doctor".
+ */
+export function isDoctor(role?: string | null): boolean {
+  return normalizeRole(role) === RBAC_ROLES.DOCTOR;
 }
 
 export const AUTHENTICATED_ROLES = [
@@ -34,7 +44,6 @@ export const AUTHENTICATED_ROLES = [
   RBAC_ROLES.HF_USER,
   RBAC_ROLES.FCHV_USER,
   RBAC_ROLES.MUNICIPALITY_USER,
-  RBAC_ROLES.PALIKA,
   RBAC_ROLES.USER,
   RBAC_ROLES.FACILITY_LEGACY,
 ] as const;
@@ -100,6 +109,7 @@ export const ROLE_PERMISSIONS: Record<string, readonly string[]> = {
     "consent:update",
     "dashboard:read",
     "analytics:read",
+    "labTest:read",
     "survey:read",
     "survey:create",
     "survey:update",
@@ -134,6 +144,7 @@ export const ROLE_PERMISSIONS: Record<string, readonly string[]> = {
     "user:read",
     "user:create",
     "user:update",
+    "labTest:read",
     "survey:read",
     "survey:create",
     "survey:update",
@@ -165,9 +176,9 @@ export const ROLE_PERMISSIONS: Record<string, readonly string[]> = {
     "consent:create",
     "consent:update",
     "dashboard:read",
-    "survey:read",
-    "survey:create",
-    "survey:update",
+    // Doctors are global, cross-facility clinicians: they do not run surveys
+    // (FCHV/CHW/facility work) and have no access to the lab-test/service
+    // registry. Both `survey:*` and `labTest:*` are intentionally omitted.
   ],
   [RBAC_ROLES.ADMIN]: [
     "patient:read",
@@ -208,7 +219,6 @@ export const ROLE_PERMISSIONS: Record<string, readonly string[]> = {
   [RBAC_ROLES.HF_USER]: [],
   [RBAC_ROLES.FCHV_USER]: [],
   [RBAC_ROLES.MUNICIPALITY_USER]: [],
-  [RBAC_ROLES.PALIKA]: [],
   [RBAC_ROLES.USER]: [],
   [RBAC_ROLES.FACILITY_LEGACY]: [],
 };
@@ -229,13 +239,6 @@ ROLE_PERMISSIONS[RBAC_ROLES.MUNICIPALITY_USER] = [
   "patient:read",
   "appointment:read",
   "roster:read",
-];
-// Palika user — for now: search/view clients, palika dashboard/analytics, view appointments.
-ROLE_PERMISSIONS[RBAC_ROLES.PALIKA] = [
-  "dashboard:read",
-  "analytics:read",
-  "patient:read",
-  "appointment:read",
 ];
 ROLE_PERMISSIONS[RBAC_ROLES.FACILITY_LEGACY] = ROLE_PERMISSIONS[RBAC_ROLES.HF_USER];
 ROLE_PERMISSIONS[RBAC_ROLES.USER] = ROLE_PERMISSIONS[RBAC_ROLES.PATIENT];
@@ -277,6 +280,10 @@ export const PERMISSION_CATALOG = {
   consent: ["read", "create", "update", "delete"],
   audit: ["read"],
   survey: ["read", "create", "update", "delete"],
+  // Lab test / service catalog (the "Services" area). Read open to facility-side
+  // clinical roles; doctors are intentionally excluded — they consume clinical
+  // services, they don't manage the lab-test registry.
+  labTest: ["read", "create", "update", "delete"],
   smsLog: ["read"],
   doctorsSummary: ["read"],
 } as const satisfies Record<string, readonly string[]>;

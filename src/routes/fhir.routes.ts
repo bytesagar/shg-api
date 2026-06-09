@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorize } from "../middlewares/authorize.middleware";
+import { patientScopeFromQuery } from "../middlewares/patient-scope.middleware";
 import { FhirSearchController } from "../modules/fhir-search/fhir-search.controller";
 import { CLINICAL_READ_ROLES } from "../constants/rbac";
 
@@ -83,6 +84,7 @@ router.get(
   "/Immunization",
   authMiddleware,
   authorize([...CLINICAL_READ_ROLES]),
+  patientScopeFromQuery("patient"),
   controller.searchImmunization,
 );
 router.get(

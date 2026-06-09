@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorize } from "../middlewares/authorize.middleware";
+import { patientScopeFromAttachment } from "../middlewares/patient-scope.middleware";
 import { AttachmentController } from "../modules/attachments/attachment.controller";
 import {
   CLINICAL_READ_ROLES,
@@ -43,6 +44,7 @@ router.get(
   "/",
   authMiddleware,
   authorize([...CLINICAL_READ_ROLES]),
+  patientScopeFromAttachment(),
   attachmentController.listAttachments,
 );
 

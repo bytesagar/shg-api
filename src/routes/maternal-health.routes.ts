@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorize } from "../middlewares/authorize.middleware";
+import {
+  patientScopeFromPregnancyParam,
+  patientScopeFromQuery,
+} from "../middlewares/patient-scope.middleware";
 import { CLINICAL_READ_ROLES, CLINICAL_WRITE_ROLES } from "../constants/rbac";
 import { MaternalHealthController } from "../modules/maternal-health/maternal-health.controller";
 
@@ -17,12 +21,14 @@ router.get(
   "/pregnancies",
   authMiddleware,
   authorize([...CLINICAL_READ_ROLES]),
+  patientScopeFromQuery(),
   maternalHealthController.listPregnancies,
 );
 router.get(
   "/pregnancies/:id",
   authMiddleware,
   authorize([...CLINICAL_READ_ROLES]),
+  patientScopeFromPregnancyParam("id"),
   maternalHealthController.getPregnancy,
 );
 
@@ -36,6 +42,7 @@ router.get(
   "/antenatal-cares",
   authMiddleware,
   authorize([...CLINICAL_READ_ROLES]),
+  patientScopeFromQuery(),
   maternalHealthController.listAntenatalCares,
 );
 
@@ -49,6 +56,7 @@ router.get(
   "/deliveries",
   authMiddleware,
   authorize([...CLINICAL_READ_ROLES]),
+  patientScopeFromQuery(),
   maternalHealthController.listDeliveries,
 );
 
@@ -62,6 +70,7 @@ router.get(
   "/postnatal-cares",
   authMiddleware,
   authorize([...CLINICAL_READ_ROLES]),
+  patientScopeFromQuery(),
   maternalHealthController.listPostnatalCares,
 );
 

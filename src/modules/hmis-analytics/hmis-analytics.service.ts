@@ -186,7 +186,7 @@ export class HmisAnalyticsService {
   }
 
   public async recomputeMonthlyAggregate(year: number, month: number) {
-    if (this.context.role !== "admin" && this.context.userType !== "admin") {
+    if (this.context.role !== "admin") {
       // Allow facility users to recompute their own facility — but admins
       // additionally may target other facilities (out of scope here).
     }
